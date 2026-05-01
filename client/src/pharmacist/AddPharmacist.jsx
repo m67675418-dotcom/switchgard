@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './AddPharmacist.css';
 
+const API_BASE = 'http://localhost:5000/api'; // ✅ مسار أساسي
+
 const AddPharmacist = () => {
     const [formData, setFormData] = useState({
         userId: '',
+        gmail: '',           // ✅
+        password: '',        // ✅
         nomPharmacie: '',
         adressePharmacie: '',
         numAgrement: '',
@@ -26,24 +30,30 @@ const AddPharmacist = () => {
         setLoading(true);
         setStatus({ type: '', message: '' });
 
-        if (!formData.userId || !formData.nomPharmacie || !formData.adressePharmacie || !formData.numAgrement) {
+        // ✅ تصحيح الخطأ: نخرجو البيانات من formData
+        const { gmail, password, nomPharmacie, adressePharmacie, numAgrement } = formData;
+
+        // ✅ الآن المتغيرات معرفة
+        if (!gmail || !password || !nomPharmacie || !adressePharmacie || !numAgrement) {
             setStatus({ type: 'error', message: '⚠️ Please fill in all required fields' });
             setLoading(false);
             return;
         }
 
         try {
-            await axios.post('/api/pharmacist', formData);
+            await axios.post(`${API_BASE}/pharmacist/add`, formData);
             setStatus({ type: 'success', message: '✅ Pharmacist added successfully!' });
             setFormData({
                 userId: '',
+                gmail: '',
+                password: '',
                 nomPharmacie: '',
                 adressePharmacie: '',
                 numAgrement: '',
                 isNightShift: false
             });
         } catch (error) {
-            setStatus({ type: 'error', message: '❌ Failed to add: ' + error.message });
+            setStatus({ type: 'error', message: '❌ Failed to add: ' + (error.response?.data?.message || error.message) });
         } finally {
             setLoading(false);
         }
@@ -67,6 +77,21 @@ const AddPharmacist = () => {
                         name="userId" 
                         placeholder="🆔 User ID" 
                         value={formData.userId} 
+                        onChange={handleChange} 
+                    />
+                    <input 
+                        type="email"          
+                        name="gmail" 
+                        placeholder="📧 Email Address" 
+                        value={formData.gmail} 
+                        onChange={handleChange} 
+                        required 
+                    />
+                    <input 
+                        type="password"       
+                        name="password" 
+                        placeholder="🔒 Password" 
+                        value={formData.password} 
                         onChange={handleChange} 
                         required 
                     />

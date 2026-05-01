@@ -1,104 +1,89 @@
 require('dotenv').config();
-const cors = require('cors');
 const express = require('express');
-
+const cors = require('cors');
+const mongoose = require('mongoose');
 
 const app = express();
 
-const addDoctor = require('./routes/DoctorRoutes/addDoctor');
-const getDoctors = require('./routes/DoctorRoutes/getDoctors');
-const DeleteDoctor = require('./routes/DoctorRoutes/deleteDoctor');
-const updateDoctor = require('./routes/DoctorRoutes/updateDoctor');
-
-const addNurse = require('./routes/nurseRoutes/addNurse');
-const getNurse = require('./routes/nurseRoutes/getnurse');
-const deleteNurse = require('./routes/nurseRoutes/deleteNurse');
-const updateNurse = require('./routes/nurseRoutes/updateNurse');
-
-const AddFireFighter = require('./routes/FireFightersRoutes/addFireFighters');
-const getFireFighter = require('./routes/FireFightersRoutes/getFireFighter');
-const deletefirefighter = require('./routes/FireFightersRoutes/deleteFireFighters');
-const updateFireFighter = require('./routes/FireFightersRoutes/updateFireFighter');
-
-const addmessage = require('./routes/messageRoutes/addmessage');
-const getmessage = require('./routes/messageRoutes/getmessage');
-const deletemessage = require('./routes/messageRoutes/deletemessage');
-const updateMessage = require('./routes/messageRoutes/updateMessage');
-
-const addgarde = require('./routes/gardeRoutes/addgarde');
-const getgarde = require('./routes/gardeRoutes/getgarde');
-const deletegarde = require('./routes/gardeRoutes/deletegarde');
-const updateGarde = require('./routes/gardeRoutes/updateGarde');
-
-const addpharmacist = require('./routes/pharmacistRoutes/addpharmacist');
-const getpharmacist = require('./routes/pharmacistRoutes/getpharmacist');
-const deletepharmacist = require('./routes/pharmacistRoutes/deletepharmacist');
-const updatePharmacist = require('./routes/pharmacistRoutes/updatePharmacist');
-
-const addtransaction = require('./routes/TransactionRoutes.js/addtransaction');
-const gettransaction = require('./routes/TransactionRoutes.js/gettransaction');
-const deletetransaction = require('./routes/TransactionRoutes.js/deletetransaction');
-const updateTransaction = require('./routes/TransactionRoutes.js/updateTransaction');
-
-const authRoutes = require('./routes/sendmessage/authRoutes');
-const sendEmailRoutes = require('./routes/sendmessage/sendEmail');
-
-const createAccount = require('./routes/accountRoutes/createAccount');
-
-
-//SconnectDB();  
-
-// 2. Middleware ضروري جداً لقراءة البيانات من Postman
+// ✅ Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// 3. رابط الاختبار (للتأكد أن السيرفر شغال)
-app.get("/test", (req, res) => {
-    res.json({ message: "Server is working perfectly!" });
+
+// ✅ Database Connection
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/User')
+  .then(() => console.log('✅ MongoDB Connected Successfully'))
+  .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// ✅ Account Routes (Auth)
+app.use('/api/account/login', require('./routes/accountRoutes/Login'));
+app.use('/api/account/register', require('./routes/accountRoutes/Register'));
+app.use('/api/account/profile', require('./routes/accountRoutes/getProfile'));
+
+// ✅ Doctor Routes
+app.use('/api/doctor/add', require('./routes/DoctorRoutes/addDoctor'));
+app.use('/api/doctor/getAll', require('./routes/DoctorRoutes/getDoctors'));
+app.use('/api/doctor', require('./routes/DoctorRoutes/GetSingleDoctor'));
+app.use('/api/doctor', require('./routes/DoctorRoutes/deleteDoctor'));
+app.use('/api/doctor', require('./routes/DoctorRoutes/updateDoctor'));
+// ✅ Nurse Routes
+app.use('/api/nurse/add', require('./routes/nurseRoutes/addNurse'));
+app.use('/api/nurse/getAll', require('./routes/nurseRoutes/getnurse'));
+app.use('/api/nurse', require('./routes/nurseRoutes/GetSingleNurse'));
+app.use('/api/nurse', require('./routes/nurseRoutes/updateNurse'));
+app.use('/api/nurse', require('./routes/nurseRoutes/deleteNurse'));
+// ✅ Pharmacist Routes
+app.use('/api/pharmacist/add', require('./routes/pharmacistRoutes/addpharmacist'));
+app.use('/api/pharmacist/getAll', require('./routes/pharmacistRoutes/getpharmacist'));
+app.use('/api/pharmacist', require('./routes/pharmacistRoutes/GetSinglePharmacist'));
+app.use('/api/pharmacist', require('./routes/pharmacistRoutes/updatePharmacist'));
+app.use('/api/pharmacist', require('./routes/pharmacistRoutes/deletepharmacist'));
+
+// ✅ FireFighter Routes
+app.use('/api/firefighter/add', require('./routes/FireFightersRoutes/addFireFighters'));
+app.use('/api/firefighter/getAll', require('./routes/FireFightersRoutes/getFireFighter'));
+app.use('/api/firefighter', require('./routes/FireFightersRoutes/GetSingleFireFighter'));
+app.use('/api/firefighter', require('./routes/FireFightersRoutes/updateFireFighter'));
+app.use('/api/firefighter', require('./routes/FireFightersRoutes/deleteFireFighters'));
+
+// ✅ Garde Routes
+app.use('/api/garde/add', require('./routes/gardeRoutes/addgarde'));
+app.use('/api/garde/getAll', require('./routes/gardeRoutes/getgarde'));
+app.use('/api/garde', require('./routes/gardeRoutes/GetSingleGarde'));
+app.use('/api/garde', require('./routes/gardeRoutes/updateGarde'));
+app.use('/api/garde', require('./routes/gardeRoutes/deleteGarde'));
+
+// ✅ Message Routes
+app.use('/api/message/add', require('./routes/messageRoutes/addmessage'));
+app.use('/api/message/getAll', require('./routes/messageRoutes/getmessage'));
+app.use('/api/message/conversation', require('./routes/messageRoutes/GetConversation'));
+app.use('/api/message', require('./routes/messageRoutes/GetSingleMessage'));
+app.use('/api/message', require('./routes/messageRoutes/updateMessage'));
+app.use('/api/message', require('./routes/messageRoutes/deletemessage'));
+
+
+// ✅ Transaction Routes
+app.use('/api/transaction/add', require('./routes/TransactionRoutes/addtransaction'));
+app.use('/api/transaction/getAll', require('./routes/TransactionRoutes/gettransaction'));
+app.use('/api/transaction', require('./routes/TransactionRoutes/GetSingleTransaction'));
+app.use('/api/transaction', require('./routes/TransactionRoutes/updateTransaction'));
+app.use('/api/transaction', require('./routes/TransactionRoutes/deletetransaction'));
+
+// ✅ Email Routes
+app.use('/api/email/send', require('./routes/emailHandlers/emailMain'));
+app.use('/api/email', require('./routes/emailHandlers/GetSingleEmail'));
+app.use('/api/email', require('./routes/emailHandlers/DeleteEmail'));
+app.use('/api/email', require('./routes/emailHandlers/UpdateEmail'));
+// ✅ Admin Protected Routes
+const { protect, authorize } = require('./middleware/authMiddleware');
+app.get('/api/admin/dashboard', protect, authorize('admin'), (req, res) => {
+  res.json({ success: true, message: '🛡️ Admin Dashboard', adminId: req.user.id });
 });
 
-// 4. ربط مسارات الأطباء (هنا السر!)
- app.use('/api/Doctors',addDoctor);
- app.use('/api/Doctor/getAll', getDoctors);
- app.use('/DeleteDoctor', DeleteDoctor);
- app.use('/updateDoctor',updateDoctor);
-
- app.use('/api/nurse',addNurse);
- app.use('/api/Nurse/getAll',getNurse);
- app.use('/deleteNurse', deleteNurse);
- app.use('/updateNurse', updateNurse); 
-
- app.use('/api/FireFighter',AddFireFighter);
- app.use('/api/FireFighter/getAll', getFireFighter);
- app.use('/deletefirefighter', deletefirefighter);
- app.use('/updateFireFighter',updateFireFighter);
-
- app.use('/api/message',addmessage );
- app.use('/api/message/getAll',getmessage);
- app.use('/deletemessage',deletemessage);
- app.use('/updateMessage',updateMessage);
-
- app.use('/api/Garde',addgarde );
- app.use('/api/garde/getAll',getgarde);
- app.use('/deletegarde',deletegarde);
- app.use('/updateGarde',updateGarde);
-
- app.use('/api/pharmacist',addpharmacist);
- app.use('/api/pharmacist/getAll',getpharmacist);
- app.use('/deletepharmacist',deletepharmacist);
- app.use('/updatePharmacist',updatePharmacist);
-
- app.use('/api/Transaction',addtransaction);
- app.use('/api/transaction/getAll',gettransaction);
- app.use('/deletetransaction',deletetransaction);
- app.use('/updateTransaction',updateTransaction);
-
- app.use('/api/auth', authRoutes);
- app.use('/api/sendEmail', sendEmailRoutes);
-
- app.use('/api/createAccount',createAccount);
-// في نهاية ملف server.js
-const port = process.env.PORT; // 
-
-app.listen(port, () => {
-    console.log(`Server running at port ${port}`);
+// ✅ Start Server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
+
+module.exports = app;

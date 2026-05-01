@@ -1,18 +1,19 @@
-//getmessage
 const express = require('express');
 const router = express.Router();
-const message = require('../../models/Message');
-const connectDB = require('../../database/db');
+const Message = require('../../models/Message');
 
-
-// المسار لإضافة طبيب جديد
+// ✅ المسار: GET /api/message/getAll
 router.get('/', async (req, res) => {
-    connectDB();
     try {
-        const docs = await message.find();
-        res.json(docs);
-    } catch (err) {
-        res.json({ error: err.message });
+        const messages = await Message.find();
+        res.json(messages);
+    } catch (error) {
+        console.error('❌ Error fetching messages:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error', 
+            error: error.message 
+        });
     }
 });
 

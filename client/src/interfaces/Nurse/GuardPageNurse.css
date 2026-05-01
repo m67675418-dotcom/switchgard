@@ -1,0 +1,44 @@
+.guard-nurse-container { padding: 20px; background: #fcfcfc; min-height: 100vh; padding-bottom: 90px; }
+
+.guard-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+.back-icon { cursor: pointer; color: #26c6da; font-size: 20px; }
+.header-title { flex: 1; margin: 0; color: #1e3a8a; font-size: 18px; text-align: center; font-weight: 700; }
+
+.btn-add {
+  background: #26c6da; color: white; padding: 8px 15px; border-radius: 12px;
+  display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; cursor: pointer; transition: 0.2s;
+}
+.btn-add:hover { background: #00acc1; }
+
+.tabs-container { display: flex; background: #e0f7fa; border-radius: 12px; padding: 4px; margin-bottom: 20px; }
+.tab-btn {
+  flex: 1; padding: 10px; border: none; background: transparent; border-radius: 10px;
+  font-weight: 600; color: #1e3a8a; cursor: pointer; transition: 0.2s;
+}
+.tab-btn.active { background: #26c6da; color: white; box-shadow: 0 2px 8px rgba(38, 198, 218, 0.2); }
+
+.shifts-list { display: flex; flex-direction: column; gap: 15px; }
+
+.shift-card {
+  background: white; border-radius: 20px; padding: 15px;
+  box-shadow: 0 4px 12px rgba(38, 198, 218, 0.08); border: 1px solid #eef; transition: 0.2s;
+}
+.shift-card:hover { transform: translateY(-2px); border-color: #26c6da; }
+
+.shift-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.owner-info h4 { margin: 0; color: #1e3a8a; font-size: 14px; font-weight: 600; }
+.owner-info p { margin: 0; color: #777; font-size: 12px; }
+
+.shift-avatar {
+  width: 40px; height: 40px; background: #e0f7fa; border-radius: 15px;
+  display: flex; align-items: center; justify-content: center; color: #26c6da; font-size: 20px;
+}
+
+.shift-card-footer { display: flex; justify-content: space-between; align-items: center; }
+.status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.status-badge.upcoming { background: #e0f7fa; color: #26c6da; }
+.status-badge.completed { background: #d1fae5; color: #059669; }
+.status-badge.canceled { background: #fee2e2; color: #dc2626; }
+
+.delete-icon { color: #ef4444; cursor: pointer; font-size: 16px; transition: 0.2s; }
+.delete-icon:hover { transform: scale(1.1); }

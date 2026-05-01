@@ -1,19 +1,61 @@
-//addDoctor(doctorRoutes)
-const Doctor = require('../../models/DoctorModel');
 const express = require('express');
 const router = express.Router();
-const connectDB = require('../../database/db');
+const Doctor = require('../../models/DoctorModel');
 
-// 1. مسار إضافة طبيب جديد (POST)
+// ✅ المسار: POST /api/doctor/add
 router.post('/', async (req, res) => {
-    const {fullName, email, specialty, numOrdre, location , isAvailable} = req.body;
-    connectDB();
-
     try {
-        await Doctor.create ({fullName: fullName, email: email, specialty: specialty, numOrdre: numOrdre, location: location, isAvailable: isAvailable});
-        res.send ("Doctoradded");
-    } catch (error){
-        console.log(error.message);
+        const { fullName, email, password, specialty, numOrdre, location, isAvailable } = req.body;
+
+        console.log('📝 Received data:', { fullName, email, specialty, numOrdre, location });
+
+        if (!fullName || !email || !password || !specialty || !numOrdre || !location) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '⚠️ Please fill in all required fields' 
+            });
+        }
+
+        const existingDoctor = await Doctor.findOne({ email: email.toLowerCase() });
+        if (existingDoctor) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'هذا الإيميل مستخدم بالفعل' 
+            });
+        }
+
+        const doctor = new Doctor({
+            fullName,
+            email: email.toLowerCase(),
+            password,
+            specialty,
+            numOrdre,
+            location,
+            isAvailable: isAvailable || false
+        });
+
+        await doctor.save();
+        
+        console.log('✅ Doctor added successfully:', doctor.email);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Doctor added successfully',
+            doctor: {
+                id: doctor._id,
+                fullName: doctor.fullName,
+                email: doctor.email
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error adding doctor:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error',
+            error: error.message 
+        });
     }
 });
-module.exports = router; 
+
+module.exports = router;

@@ -1,35 +1,29 @@
-const connectDB = require('../../database/db');
-const Pharmacist = require("../../models/pharmacistModel");
 const express = require('express');
 const router = express.Router();
+const Pharmacist = require('../../models/pharmacistModel');
 
 router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const { userId, nomPharmacie, adressePharmacie, numAgrement, isNightShift } = req.body;
-    
-    connectDB(); // كما طلب البروف
-
     try {
-        const up = await Pharmacist.findByIdAndUpdate(
-            id,
-            {
-                userId: userId,
-                nomPharmacie: nomPharmacie,
-                adressePharmacie: adressePharmacie,
-                numAgrement: numAgrement,
-                isNightShift: isNightShift
-            }
-        );
+        const { id } = req.params;
+        const { userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift } = req.body;
+
+        console.log('✏️ Updating pharmacist:', id);
+
+        const updated = await Pharmacist.findByIdAndUpdate(
+            id, 
+            { userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift },
+            { new: true, runValidators: true }
+        ).select('-password');
         
-        if(!up) {
-            return res.send('This pharmacist is not in the database');
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Pharmacist not found' });
         }
         
-        res.send("Pharmacist information updated");
-        
-    } catch(error) {
-        console.log(error.message);
-        res.send("Error: " + error.message);
+        res.json({ success: true, message: 'Pharmacist updated', pharmacist: updated });
+
+    } catch (error) {
+        console.error('❌ Update error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

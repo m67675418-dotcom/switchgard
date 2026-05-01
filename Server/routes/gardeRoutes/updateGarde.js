@@ -1,33 +1,29 @@
-const connectDB = require('../../database/db');
-const Garde = require("../../models/Garde");
 const express = require('express');
 const router = express.Router();
+const Garde = require('../../models/Garde');
 
 router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const { owner, dateGarde, status } = req.body;
-    
-    connectDB(); // كما طلب البروف
-
     try {
-        const up = await Garde.findByIdAndUpdate(
-           id,
-            {
-                owner: owner,
-                dateGarde: dateGarde,
-                status: status
-            }
+        const { id } = req.params;
+        const { owner, dateGarde, status } = req.body;
+
+        console.log('✏️ Updating garde:', id);
+
+        const updated = await Garde.findByIdAndUpdate(
+            id, 
+            { owner, dateGarde, status },
+            { new: true, runValidators: true }
         );
         
-        if(!up) {
-            return res.send('This garde is not in the database');
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Garde not found' });
         }
         
-        res.send("Garde information updated");
-        
-    } catch(error) {
-        console.log(error.message);
-        res.send("Error: " + error.message);
+        res.json({ success: true, message: 'Garde updated', garde: updated });
+
+    } catch (error) {
+        console.error('❌ Update error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

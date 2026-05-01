@@ -1,33 +1,29 @@
-const connectDB = require('../../database/db');
-const FireFighter = require("../../models/FireFighters");
 const express = require('express');
 const router = express.Router();
+const FireFighter = require('../../models/FireFighters');
 
 router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const { userId, matricule, grade, uniteIntervention } = req.body;
-    
-    connectDB(); 
-
     try {
-        const up = await FireFighter.findByIdAndUpdate(id,
-            {
-                userId: userId,
-                matricule: matricule,
-                grade: grade,
-                uniteIntervention: uniteIntervention
-            }
-        );
+        const { id } = req.params;
+        const { userId, gmail, matricule, grade, uniteIntervention } = req.body;
+
+        console.log('✏️ Updating firefighter:', id);
+
+        const updated = await FireFighter.findByIdAndUpdate(
+            id, 
+            { userId, gmail, matricule, grade, uniteIntervention },
+            { new: true, runValidators: true }
+        ).select('-password');
         
-        if(!up) {
-            return res.send('This firefighter is not in the database');
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'FireFighter not found' });
         }
         
-        res.send("Firefighter information updated");
-        
-    } catch(error) {
-        console.log(error.message);
-        res.send("Error: " + error.message);
+        res.json({ success: true, message: 'FireFighter updated', firefighter: updated });
+
+    } catch (error) {
+        console.error('❌ Update error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

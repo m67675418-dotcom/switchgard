@@ -1,22 +1,24 @@
-//deletemessage
-const message = require('../../models/Message');
 const express = require('express');
 const router = express.Router();
-const connectDB = require('../../database/db');
+const Message = require('../../models/Message');
 
-// supprision
 router.delete('/:id', async (req, res) => {
-    const id = req.params.id;
-    connectDB();
-
     try {
-        const del = await message.findByIdAndDelete(id);
-        if(!del) {
-           res.send ('This message is not in the database');
-     } 
-        res.send ("messagedelete");
-    } catch (error){
-        console.log(error.message);
+        const { id } = req.params;
+        console.log('🗑️ Deleting message:', id);
+
+        const deleted = await Message.findByIdAndDelete(id);
+        
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: 'Message not found' });
+        }
+        
+        res.json({ success: true, message: 'Message deleted successfully' });
+
+    } catch (error) {
+        console.error('❌ Delete error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
-module.exports = router; 
+
+module.exports = router;

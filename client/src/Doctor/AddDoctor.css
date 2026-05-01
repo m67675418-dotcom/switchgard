@@ -1,138 +1,101 @@
-/* AddDoctor.css - Exact match to AddNurse/Login interface */
+/* 📁 src/App.css */
 
-.login-page {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #fff;
-    font-family: 'Segoe UI', sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* الخلفية الرئيسية */
+.App {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); /* خلفية هادية واحترافية */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* المحتوى الرئيسي */
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+/* بطاقة Logout صغيرة */
+.simple-logout {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.user-badge {
+  background: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logout-small-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.logout-small-btn:hover {
+  background: #dc2626;
+}
+
+/* تنسيق الأقسام (Sections) */
+.section-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-top: 5px solid transparent; /* للتلوين */
+  transition: transform 0.3s;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 24px;
+  color: #1e293b;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+/* ألوان الحدود لكل قسم */
+.doctors-section { border-top-color: #3b82f6; }       /* Blue */
+.nurses-section { border-top-color: #ec4899; }        /* Pink */
+.firefighters-section { border-top-color: #ef4444; }  /* Red */
+.gardes-section { border-top-color: #8b5cf6; }        /* Purple */
+.messages-section { border-top-color: #22c55e; }      /* Green */
+.pharmacists-section { border-top-color: #16a34a; }   /* Dark Green */
+.transactions-section { border-top-color: #f59e0b; }  /* Orange */
+.email-section { border-top-color: #6366f1; }         /* Indigo */
+
+/* Responsive للهاتف */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px 10px;
+  }
+  .section-card {
     padding: 20px;
-}
-
-.login-card {
-    width: 100%;
-    max-width: 500px;
-    text-align: center;
-    padding: 30px;
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-}
-
-.logo-text {
-    font-size: 28px;
-    color: #1e3a8a;
-    margin-bottom: 5px;
-    font-weight: bold;
-}
-
-.logo-text span {
-    color: #3b82f6; /* Blue accent for Doctors */
-}
-
-.tagline {
-    color: #64748b;
-    margin-bottom: 30px;
-    font-size: 14px;
-}
-
-/* Form Inputs & Selects */
-form input[type="text"],
-form input[type="email"],
-form .form-select {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #e2e8f0;
-    border-radius: 25px; /* Pill shape */
-    background: #f8fafc;
-    outline: none;
-    text-align: center;
-    font-size: 14px;
-    box-sizing: border-box;
-    transition: all 0.3s;
-    color: #334155;
-}
-
-form input:focus,
-form .form-select:focus {
-    border-color: #3b82f6;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* Checkbox Label */
-.checkbox-label {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    margin: 10px 0 20px;
-    cursor: pointer;
-    color: #334155;
-    font-size: 14px;
-}
-
-.checkbox-label input {
-    width: 18px;
-    height: 18px;
-    accent-color: #3b82f6;
-    cursor: pointer;
-}
-
-/* Status Messages */
-.status-message {
-    padding: 12px;
-    margin-bottom: 15px;
-    border-radius: 25px;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-.status-message.success {
-    background: #dcfce7;
-    color: #16a34a;
-    border: 1px solid #86efac;
-}
-
-.status-message.error {
-    background: #fee2e2;
-    color: #dc2626;
-    border: 1px solid #fca5a5;
-}
-
-/* Submit Button */
-.main-btn {
-    width: 100%;
-    padding: 12px;
-    background: #3b82f6;
-    color: white;
-    border: none;
-    border-radius: 25px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-size: 16px;
-}
-
-.main-btn:hover {
-    background: #2563eb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-}
-
-.main-btn:disabled {
-    background: #94a3b8;
-    cursor: not-allowed;
-    transform: none;
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-    .login-card { padding: 20px; }
-    .logo-text { font-size: 24px; }
-    form input[type="text"],
-    form input[type="email"],
-    form .form-select { padding: 10px; font-size: 13px; }
+  }
+  .section-title {
+    font-size: 20px;
+  }
 }

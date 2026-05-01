@@ -1,17 +1,60 @@
-//addfirefighter
-const FireFighter = require('../../models/FireFighters');
+// 📁 Server/routes/FireFightersRoutes/addFireFighters.js
 const express = require('express');
 const router = express.Router();
-const connectDB = require('../../database/db');
+const FireFighter = require('../../models/FireFighters');
 
 router.post('/', async (req, res) => {
-    const {userId, matricule, grade,  uniteIntervention} = req.body;
     try {
-        connectDB();
-        await FireFighter.create({userId: userId, matricule: matricule, grade: grade, uniteIntervention: uniteIntervention});
-        res.send("firefighterModel added");
+        const { userId, gmail, matricule, password, grade, uniteIntervention } = req.body;
+
+        console.log('📝 Received firefighter data:', { gmail, matricule, grade });
+
+        if (!gmail || !matricule || !password || !grade || !uniteIntervention) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '⚠️ Please fill in all required fields' 
+            });
+        }
+
+        const existing = await FireFighter.findOne({ gmail: gmail.toLowerCase() });
+        if (existing) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'هذا الإيميل مستخدم بالفعل' 
+            });
+        }
+
+        const firefighter = new FireFighter({
+            userId,
+            gmail: gmail.toLowerCase(),
+            matricule,
+            password,
+            grade,
+            uniteIntervention
+        });
+
+        await firefighter.save();
+        
+        console.log('✅ Firefighter added successfully:', firefighter.gmail);
+        
+        res.status(201).json({ 
+            success: true, 
+            message: 'Firefighter added successfully',
+            firefighter: {
+                id: firefighter._id,
+                matricule: firefighter.matricule,
+                grade: firefighter.grade
+            }
+        });
+
     } catch (error) {
-       console.log(error.message);}
+        console.error('❌ Error adding firefighter:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error', 
+            error: error.message 
+        });
+    }
 });
 
 module.exports = router;

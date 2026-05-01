@@ -3,61 +3,29 @@ import axios from 'axios';
 import './createAccount.css';
 
 const CreateAccount = () => {
-    const [step, setStep] = useState(1);
-    const [accountCode, setAccountCode] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
+        username: '',
         email: '',
         password: '',
         confirmPassword: '',
-        role: ''
+        role: 'user',
+        phone: ''
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
 
-    // ✅ Handle code validation (Step 1)
-    const handleValidateCode = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setStatus({ type: '', message: '' });
-
-        if (!accountCode.trim()) {
-            setStatus({ type: 'error', message: '⚠️ Please enter the account code' });
-            setLoading(false);
-            return;
-        }
-
-        try {
-            const res = await axios.post('/api/createAccount/validate-code', { accountCode });
-            if (res.data.success) {
-                setStatus({ type: 'success', message: '✅ Code validated! Continue to registration' });
-                setTimeout(() => setStep(2), 1500);
-            }
-        } catch (error) {
-            setStatus({ 
-                type: 'error', 
-                message: error.response?.data?.message || '❌ Invalid code' 
-            });
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    // ✅ Handle form input changes (Step 2)
-    const handleInputChange = (e) => {
+    const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     };
 
-    // ✅ Handle account creation (Step 2)
-    const handleCreateAccount = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setStatus({ type: '', message: '' });
 
-        // Validation
-        if (!formData.name || !formData.email || !formData.password || !formData.role) {
-            setStatus({ type: 'error', message: '⚠️ Please fill in all required fields' });
+        if (!formData.username || !formData.email || !formData.password) {
+            setStatus({ type: 'error', message: '⚠️ Please fill in username, email and password' });
             setLoading(false);
             return;
         }
@@ -73,54 +41,49 @@ const CreateAccount = () => {
         }
 
         try {
-            const res = await axios.post('/api/createAccount/create', {
-                name: formData.name,
+            const res = await axios.post('/api/account/create', {
+                username: formData.username,
                 email: formData.email,
                 password: formData.password,
-                role: formData.role
+                role: formData.role,
+                phone: formData.phone
             });
+            
             if (res.data.success) {
-                setStatus({ type: 'success', message: `✅ ${formData.role} account created! Redirecting...` });
-                // Redirect after success (adjust URL as needed)
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
+                setStatus({ type: 'success', message: '✅ Account created successfully!' });
+                setFormData({
+                    username: '',
+                    email: '',
+                    password: '',
+                    confirmPassword: '',
+                    role: 'user',
+                    phone: ''
+                });
             }
         } catch (error) {
             setStatus({ 
                 type: 'error', 
-                message: error.response?.data?.message || '❌ Failed to create account' 
+                message: error.response?.data?.error || '❌ Failed to create account' 
             });
         } finally {
             setLoading(false);
         }
     };
 
-    // ✅ Role options
     const roleOptions = [
-        { value: '', label: '-- Select Role --' },
-        { value: 'Doctor', label: '👨‍⚕️ Doctor' },
-        { value: 'Nurse', label: '🩺 Nurse' },
-        { value: 'Pharmacist', label: '💊 Pharmacist' }
+        { value: 'user', label: '👤 User' },
+        { value: 'admin', label: '👑 Admin' },
+        { value: 'doctor', label: '👨‍️ Doctor' },
+        { value: 'nurse', label: '🩺 Nurse' },
+        { value: 'pharmacist', label: '💊 Pharmacist' },
+        { value: 'firefighter', label: '👨‍🚒 Fire Fighter' }  // ✅ هنا زدنا FireFighter
     ];
 
     return (
         <div className="login-page">
             <div className="login-card">
-                {/* Progress Indicator */}
-                <div className="progress-bar">
-                    <div className={`progress-step ${step >= 1 ? 'active' : ''}`}>
-                        <span className="step-number">1</span>
-                        <span className="step-label">Validate Code</span>
-                    </div>
-                    <div className={`progress-step ${step >= 2 ? 'active' : ''}`}>
-                        <span className="step-number">2</span>
-                        <span className="step-label">Create Account</span>
-                    </div>
-                </div>
-
                 <div className="logo-text">
-                    🏥 <span>Create</span> Account
+                    👤 <span>Create</span> Account
                 </div>
                 <p className="tagline">Hospital Management System</p>
 
@@ -128,86 +91,94 @@ const CreateAccount = () => {
                     <div className={`status-message ${status.type}`}>{status.message}</div>
                 )}
 
-                {/* STEP 1: Validate Code */}
-                {step === 1 && (
-                    <form onSubmit={handleValidateCode}>
-                        <input 
-                            type="text" 
-                            placeholder="🔑 Enter Account Code" 
-                            value={accountCode}
-                            onChange={(e) => setAccountCode(e.target.value)}
-                            required
-                            className="code-input"
-                        />
-                        <button type="submit" className="main-btn" disabled={loading}>
-                            {loading ? '⏳ Validating...' : '✅ Validate Code'}
-                        </button>
-                    </form>
-                )}
-
-                {/* STEP 2: Create Account */}
-                {step === 2 && (
-                    <form onSubmit={handleCreateAccount}>
-                        <input 
-                            type="text" 
-                            name="name"
-                            placeholder="👤 Full Name" 
-                            value={formData.name}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        <input 
-                            type="email" 
-                            name="email"
-                            placeholder="📧 Email Address" 
-                            value={formData.email}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        <input 
-                            type="password" 
-                            name="password"
-                            placeholder="🔒 Password (min. 6 chars)" 
-                            value={formData.password}
-                            onChange={handleInputChange}
-                            required
-                            minLength="6"
-                        />
-                        <input 
-                            type="password" 
-                            name="confirmPassword"
-                            placeholder="🔐 Confirm Password" 
-                            value={formData.confirmPassword}
-                            onChange={handleInputChange}
-                            required
-                        />
-                        <select 
-                            name="role"
-                            value={formData.role}
-                            onChange={handleInputChange}
-                            required
-                            className="form-select"
-                        >
-                            {roleOptions.map(opt => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-
-                        <div className="form-actions">
-                            <button 
-                                type="button" 
-                                className="cancel-btn" 
-                                onClick={() => setStep(1)}
-                                disabled={loading}
-                            >
-                                ⬅️ Back
-                            </button>
-                            <button type="submit" className="main-btn" disabled={loading}>
-                                {loading ? '⏳ Creating...' : '🚀 Create Account'}
-                            </button>
+                <form onSubmit={handleSubmit}>
+                    <div className="form-grid">
+                        <div className="form-group">
+                            <label htmlFor="username">Username *</label>
+                            <input 
+                                type="text" 
+                                id="username"
+                                name="username" 
+                                placeholder="Enter username" 
+                                value={formData.username} 
+                                onChange={handleChange} 
+                                required 
+                            />
                         </div>
-                    </form>
-                )}
+                        <div className="form-group">
+                            <label htmlFor="email">Email Address *</label>
+                            <input 
+                                type="email" 
+                                id="email"
+                                name="email" 
+                                placeholder="Enter email" 
+                                value={formData.email} 
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="phone">Phone Number</label>
+                            <input 
+                                type="tel" 
+                                id="phone"
+                                name="phone" 
+                                placeholder="Enter phone" 
+                                value={formData.phone} 
+                                onChange={handleChange} 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="role">Account Role</label>
+                            <select 
+                                id="role"
+                                name="role" 
+                                value={formData.role} 
+                                onChange={handleChange}
+                            >
+                                {roleOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="password">Password *</label>
+                            <input 
+                                type="password" 
+                                id="password"
+                                name="password" 
+                                placeholder="Min. 6 characters" 
+                                value={formData.password} 
+                                onChange={handleChange} 
+                                required 
+                                minLength="6"
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="confirmPassword">Confirm Password *</label>
+                            <input 
+                                type="password" 
+                                id="confirmPassword"
+                                name="confirmPassword" 
+                                placeholder="Confirm password" 
+                                value={formData.confirmPassword} 
+                                onChange={handleChange} 
+                                required 
+                            />
+                        </div>
+                    </div>
+
+                    <div className="form-actions">
+                        <button type="submit" className="main-btn" disabled={loading}>
+                            {loading ? '⏳ Creating...' : '🚀 Create Account'}
+                        </button>
+                    </div>
+                </form>
+
+                <div className="warning-box">
+                    <p>⚠️ All fields marked with * are required</p>
+                    <p style={{fontSize:'12px',color:'#64748b'}}>🔐 Password is encrypted automatically</p>
+                </div>
             </div>
         </div>
     );

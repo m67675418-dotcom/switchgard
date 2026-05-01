@@ -1,0 +1,154 @@
+/* GuardPagePharmacist.css - Theme: Green (#10b981) */
+
+.guard-pharmacy-container { 
+    padding: 20px; 
+    background: #f0fdf4; 
+    min-height: 100vh; 
+    padding-bottom: 90px; 
+}
+
+.guard-header { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    margin-bottom: 20px; 
+}
+
+.back-icon { 
+    cursor: pointer; 
+    color: #10b981; 
+    font-size: 20px; 
+}
+
+.header-title { 
+    flex: 1; 
+    margin: 0; 
+    color: #065f46; 
+    font-size: 18px; 
+    text-align: center; 
+}
+
+.btn-add {
+    background: #10b981; 
+    color: white; 
+    padding: 8px 15px; 
+    border-radius: 12px;
+    display: flex; 
+    align-items: center; 
+    gap: 5px; 
+    font-size: 12px; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-add:hover { 
+    background: #059669; 
+}
+
+.tabs-container { 
+    display: flex; 
+    background: #d1fae5; 
+    border-radius: 12px; 
+    padding: 4px; 
+    margin-bottom: 20px; 
+}
+
+.tab-btn {
+    flex: 1; 
+    padding: 10px; 
+    border: none; 
+    background: transparent; 
+    border-radius: 10px;
+    font-weight: 600; 
+    color: #065f46; 
+    cursor: pointer; 
+    transition: 0.2s;
+}
+
+.tab-btn.active { 
+    background: #10b981; 
+    color: white; 
+    box-shadow: 0 2px 8px rgba(16,185,129,0.2); 
+}
+
+.shifts-list { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+}
+
+.shift-card {
+    background: white; 
+    border-radius: 15px; 
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03); 
+    border-left: 4px solid #10b981;
+    border: 1px solid #d1fae5; 
+    transition: 0.2s;
+}
+
+.shift-card:hover { 
+    transform: translateY(-2px); 
+    border-color: #10b981; 
+}
+
+.shift-card-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 10px; 
+}
+
+.owner-info h4 { 
+    margin: 0; 
+    color: #065f46; 
+    font-size: 14px; 
+}
+
+.owner-info p { 
+    margin: 0; 
+    color: #777; 
+    font-size: 12px; 
+}
+
+.shift-avatar {
+    width: 40px; 
+    height: 40px; 
+    background: #d1fae5; 
+    border-radius: 10px;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    color: #10b981; 
+    font-size: 20px;
+}
+
+.shift-card-footer { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+}
+
+.status-badge { 
+    padding: 4px 10px; 
+    border-radius: 20px; 
+    font-size: 11px; 
+    font-weight: 600; 
+}
+
+.status-badge.upcoming { 
+    background: #d1fae5; 
+    color: #10b981; 
+}
+
+.status-badge.completed { 
+    background: #d1fae5; 
+    color: #059669; 
+}
+
+.delete-icon { 
+    color: #ef4444; 
+    cursor: pointer; 
+    font-size: 16px; 
+}

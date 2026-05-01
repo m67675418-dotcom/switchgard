@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageNurse.css';
 
-const ManageNurse = () => {
+const API_BASE = 'http://localhost:5000/api';
+
+const ManageNurse = ({ onSelectNurse }) => {
     const [nurses, setNurses] = useState([]);
     const [selectedNurse, setSelectedNurse] = useState(null);
     const [formData, setFormData] = useState({
@@ -25,13 +27,11 @@ const ManageNurse = () => {
         onConfirm: null
     });
 
-    // ✅ Status message
     const showStatus = useCallback((type, message) => {
         setStatus({ type, message });
         setTimeout(() => setStatus({ type: '', message: '' }), 4000);
     }, []);
 
-    // ✅ Modal handlers
     const showModal = useCallback((config) => {
         setModal({ show: true, ...config });
     }, []);
@@ -40,18 +40,16 @@ const ManageNurse = () => {
         setModal(prev => ({ ...prev, show: false }));
     }, []);
 
-    // ✅ Cancel / Reset
     const handleCancel = useCallback(() => {
         setSelectedNurse(null);
         setFormData({ userId: '', diplome: '', service: '', equipe: '' });
         setSearchId('');
     }, []);
 
-    // ✅ Fetch all nurses
     const fetchNurses = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/Nurse/getAll');
+            const res = await axios.get(`${API_BASE}/Nurse/getAll`);
             setNurses(res.data || []);
             setLoading(false);
         } catch (err) {
@@ -60,13 +58,10 @@ const ManageNurse = () => {
         }
     }, [showStatus]);
 
-    useEffect(() => {
-        fetchNurses();
-    }, [fetchNurses]);
+    useEffect(() => { fetchNurses(); }, [fetchNurses]);
 
-    // ✅ Row click selection
     const handleRowClick = useCallback((nurse) => {
-        const id = nurse.id || nurse._id;
+        const id = nurse._id; // ✅ نستخدمو _id ديال MongoDB
         setSearchId(id);
         setSelectedNurse(nurse);
         setFormData({
@@ -77,7 +72,15 @@ const ManageNurse = () => {
         });
     }, []);
 
-    // ✅ Search by ID
+    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleNurse
+    const handleViewDetails = useCallback((nurse) => {
+        const id = nurse._id; // ✅ نبعثو الـ _id ماشي id
+        console.log('👁️ Viewing nurse _id:', id);
+        if (onSelectNurse) {
+            onSelectNurse(id);
+        }
+    }, [onSelectNurse]);
+
     const handleSearch = useCallback(async (e) => {
         e.preventDefault();
         if (!searchId.trim()) {
@@ -86,8 +89,8 @@ const ManageNurse = () => {
         }
         setLoading(true);
         try {
-            const res = await axios.get('/api/Nurse/getAll');
-            const found = res.data.find(n => (n.id || n._id) === searchId.trim());
+            const res = await axios.get(`${API_BASE}/Nurse/getAll`);
+            const found = res.data.find(n => n._id === searchId.trim());
             if (found) {
                 handleRowClick(found);
                 showStatus('success', 'Nurse found!');
@@ -102,15 +105,13 @@ const ManageNurse = () => {
         }
     }, [searchId, showStatus, handleRowClick]);
 
-    // ✅ Input change
     const handleInputChange = useCallback((e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    // ✅ Delete with modal
     const handleDelete = useCallback((nurse) => {
-        const id = nurse.id || nurse._id;
+        const id = nurse._id;
         showModal({
             type: 'confirmDelete',
             title: '🗑️ Confirm Delete',
@@ -123,11 +124,9 @@ const ManageNurse = () => {
             },
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/deleteNurse/${id}`);
-                    showStatus('success', `✅ Nurse ${id} deleted!`);
-                    if (selectedNurse && (selectedNurse.id === id || selectedNurse._id === id)) {
-                        handleCancel();
-                    }
+                    await axios.delete(`${API_BASE}/Nurse/${id}`);
+                    showStatus('success', `✅ Nurse deleted!`);
+                    if (selectedNurse && selectedNurse._id === id) handleCancel();
                     fetchNurses();
                 } catch (err) {
                     showStatus('error', '❌ Delete failed: ' + err.message);
@@ -136,7 +135,6 @@ const ManageNurse = () => {
         });
     }, [selectedNurse, showModal, showStatus, fetchNurses, handleCancel]);
 
-    // ✅ Update with modal
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         if (!selectedNurse) {
@@ -148,7 +146,7 @@ const ManageNurse = () => {
             title: '✏️ Confirm Update',
             message: 'Update this nurse information?',
             details: {
-                'Nurse ID': selectedNurse.id || selectedNurse._id,
+                'Nurse ID': selectedNurse._id,
                 'User ID': formData.userId,
                 'Service': formData.service,
                 'Team': formData.equipe
@@ -156,9 +154,9 @@ const ManageNurse = () => {
             onConfirm: async () => {
                 setLoading(true);
                 try {
-                    const id = selectedNurse.id || selectedNurse._id;
-                    await axios.put(`/updateNurse/${id}`, formData);
-                    showStatus('success', `✅ Nurse ${id} updated!`);
+                    const id = selectedNurse._id;
+                    await axios.put(`${API_BASE}/Nurse/${id}`, formData);
+                    showStatus('success', `✅ Nurse updated!`);
                     fetchNurses();
                     handleCancel();
                 } catch (err) {
@@ -170,14 +168,13 @@ const ManageNurse = () => {
         });
     }, [selectedNurse, formData, showModal, showStatus, fetchNurses, handleCancel]);
 
-    // ✅ Filter for text search
     const filteredNurses = nurses.filter(nurse => {
         const q = searchQuery.toLowerCase();
         return (nurse.userId || '').toLowerCase().includes(q) ||
                (nurse.diplome || '').toLowerCase().includes(q) ||
                (nurse.service || '').toLowerCase().includes(q) ||
                (nurse.equipe || '').toLowerCase().includes(q) ||
-               ((nurse.id || nurse._id) || '').toLowerCase().includes(q);
+               (nurse._id || '').toLowerCase().includes(q);
     });
 
     return (
@@ -190,7 +187,6 @@ const ManageNurse = () => {
                     <div className={`status-message ${status.type}`}>{status.message}</div>
                 )}
 
-                {/* ID Search */}
                 <form onSubmit={handleSearch} className="search-box">
                     <input
                         type="text"
@@ -204,7 +200,6 @@ const ManageNurse = () => {
                     </button>
                 </form>
 
-                {/* Text Filter */}
                 <div className="search-box" style={{ marginBottom: '10px' }}>
                     <input
                         type="text"
@@ -218,7 +213,6 @@ const ManageNurse = () => {
                     </button>
                 </div>
 
-                {/* Table */}
                 <div className="table-wrapper">
                     {loading && nurses.length === 0 ? (
                         <div className="loading">⏳ Loading nurses...</div>
@@ -240,8 +234,8 @@ const ManageNurse = () => {
                             </thead>
                             <tbody>
                                 {filteredNurses.map((nurse) => {
-                                    const nurseId = nurse.id || nurse._id;
-                                    const isSelected = selectedNurse && (selectedNurse.id === nurseId || selectedNurse._id === nurseId);
+                                    const nurseId = nurse._id; // ✅ نستخدمو _id للـ key
+                                    const isSelected = selectedNurse && selectedNurse._id === nurseId;
                                     
                                     return (
                                         <tr 
@@ -249,14 +243,24 @@ const ManageNurse = () => {
                                             className={isSelected ? 'selected' : ''}
                                             onClick={() => handleRowClick(nurse)}
                                         >
-                                            <td>{nurseId}</td>
-                                            <td><strong>{nurse.userId || 'N/A'}</strong></td>
+                                            <td><small className="text-muted">{nurseId?.slice(-6)}</small></td>
+                                            <td><strong>{nurse.userId?.slice(-8) || 'N/A'}</strong></td>
                                             <td><span className="badge diploma">{nurse.diplome || 'N/A'}</span></td>
                                             <td><span className="badge service">{nurse.service || 'N/A'}</span></td>
                                             <td><span className="badge equipe">{nurse.equipe || 'N/A'}</span></td>
                                             <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
-                                                <button className="action-btn edit" onClick={() => handleRowClick(nurse)}>✏️ Edit</button>
-                                                <button className="action-btn delete" onClick={() => handleDelete(nurse)}>🗑️ Delete</button>
+                                                <button 
+                                                    className="action-btn view" 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleViewDetails(nurse);
+                                                    }}
+                                                    title="View Details"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button className="action-btn edit" onClick={() => handleRowClick(nurse)}>✏️</button>
+                                                <button className="action-btn delete" onClick={() => handleDelete(nurse)}>🗑️</button>
                                             </td>
                                         </tr>
                                     );
@@ -266,55 +270,53 @@ const ManageNurse = () => {
                     )}
                 </div>
 
-                {/* Edit Form */}
                 {selectedNurse && (
-                    <div className="divider"><span>✏️ Edit Mode</span></div>
-                )}
+                    <>
+                        <div className="divider"><span>✏️ Edit Mode</span></div>
+                        <form onSubmit={handleSubmit} className="edit-form">
+                            <h3>📋 Edit Nurse Information</h3>
+                            
+                            <input 
+                                type="text" 
+                                name="userId" 
+                                placeholder="🆔 User ID" 
+                                value={formData.userId} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
+                            <input 
+                                type="text" 
+                                name="diplome" 
+                                placeholder="🎓 Diploma/Certification" 
+                                value={formData.diplome} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
+                            <input 
+                                type="text" 
+                                name="service" 
+                                placeholder="🏥 Service/Department" 
+                                value={formData.service} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
+                            <input 
+                                type="text" 
+                                name="equipe" 
+                                placeholder="👥 Team/Shift" 
+                                value={formData.equipe} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
 
-                {selectedNurse && (
-                    <form onSubmit={handleSubmit} className="edit-form">
-                        <h3>📋 Edit Nurse Information</h3>
-                        
-                        <input 
-                            type="text" 
-                            name="userId" 
-                            placeholder="🆔 User ID" 
-                            value={formData.userId} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-                        <input 
-                            type="text" 
-                            name="diplome" 
-                            placeholder="🎓 Diploma/Certification" 
-                            value={formData.diplome} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-                        <input 
-                            type="text" 
-                            name="service" 
-                            placeholder="🏥 Service/Department" 
-                            value={formData.service} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-                        <input 
-                            type="text" 
-                            name="equipe" 
-                            placeholder="👥 Team/Shift" 
-                            value={formData.equipe} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-
-                        <div className="form-actions">
-                            <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                            <button type="submit" className="main-btn" disabled={loading}>
-                                {loading ? '⏳ Updating...' : '💾 Update'}
-                            </button>
-                        </div>
-                    </form>
+                            <div className="form-actions">
+                                <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
+                                <button type="submit" className="main-btn" disabled={loading}>
+                                    {loading ? '⏳ Updating...' : '💾 Update'}
+                                </button>
+                            </div>
+                        </form>
+                    </>
                 )}
 
                 <div className="warning-box">
@@ -325,7 +327,6 @@ const ManageNurse = () => {
                 <button className="refresh-btn" onClick={fetchNurses}>🔄 Refresh List</button>
             </div>
 
-            {/* ============ MODAL DIALOG ============ */}
             {modal.show && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-dialog" onClick={e => e.stopPropagation()}>

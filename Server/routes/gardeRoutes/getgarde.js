@@ -1,18 +1,19 @@
-//getgarde
 const express = require('express');
 const router = express.Router();
 const Garde = require('../../models/Garde');
-const connectDB = require('../../database/db');
 
-
-// المسار لإضافة طبيب جديد
+// ✅ المسار: GET /api/garde/getAll
 router.get('/', async (req, res) => {
-    connectDB();
     try {
-        const docs = await Garde.find();
-        res.json(docs);
-    } catch (err) {
-        res.json({ error: err.message });
+        const gardes = await Garde.find();
+        res.json(gardes);
+    } catch (error) {
+        console.error('❌ Error fetching gardes:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error', 
+            error: error.message 
+        });
     }
 });
 

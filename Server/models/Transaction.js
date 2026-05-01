@@ -4,6 +4,9 @@ const transactionSchema = new mongoose.Schema({
     gardeId: { type: String, ref: 'User' }, 
     demanderId: { type: String, ref: 'User' },
     status: { type: String, default: 'en_attente' }
-}, 
-{collection: "Transaction"});
+}, {
+    collection: "Transaction",
+    timestamps: true
+});
+
 module.exports = mongoose.model('Transaction', transactionSchema);

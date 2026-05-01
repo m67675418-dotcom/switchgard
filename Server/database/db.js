@@ -1,16 +1,19 @@
-// CODE DATA BASE FICHER / db.js
 const mongoose = require('mongoose');
-require('dotenv').config(); // تحميل الإعدادات من ملف .env
 
 const connectDB = async () => {
-    try {
-        // نضع الرابط مباشرة هنا للتجربة فقط، حتى نتأكد أن الاتصال يعمل
-        const conn = await mongoose.connect(process.env.MONGO_URI);
-        console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (err) {
-        console.error(`Error: ${err.message}`);
-        process.exit(1);
-    }
+  try {
+    console.log('🔍 Connecting to MongoDB...');
+    console.log('URI:', process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/User');
+    
+    await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/User');
+    
+    console.log('✅ MongoDB Connected Successfully');
+  } catch (err) {
+    console.error('❌ MongoDB Connection Error:', err.message);
+    process.exit(1);
+  }
 };
 
-module.exports = connectDB;
+connectDB();
+
+module.exports = mongoose;

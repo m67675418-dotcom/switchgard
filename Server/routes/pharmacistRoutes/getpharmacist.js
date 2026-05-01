@@ -1,18 +1,14 @@
-//getpharmacist
 const express = require('express');
 const router = express.Router();
-const pharmacist = require('../../models/pharmacistModel');
-const connectDB = require('../../database/db');
+const Pharmacist = require('../../models/pharmacistModel');
 
-
-// المسار لإضافة طبيب جديد
 router.get('/', async (req, res) => {
-    connectDB();
     try {
-        const docs = await pharmacist.find();
-        res.json(docs);
-    } catch (err) {
-        res.json({ error: err.message });
+        const pharmacists = await Pharmacist.find().select('-password');
+        res.json(pharmacists);
+    } catch (error) {
+        console.error('❌ Error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

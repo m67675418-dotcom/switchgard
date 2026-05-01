@@ -1,0 +1,25 @@
+.shifts-pharmacy-container { padding: 20px; background: #f0fdf4; min-height: 100vh; padding-bottom: 90px; }
+
+.shifts-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; }
+.back-icon { cursor: pointer; color: #10b981; font-size: 20px; }
+.header-title { flex: 1; margin: 0; color: #065f46; font-size: 20px; text-align: center; }
+
+.btn-manage {
+  background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 12px;
+  cursor: pointer; font-weight: 600; transition: 0.2s;
+}
+.btn-manage:hover { background: #059669; }
+
+.shift-card {
+  background: white; border-radius: 20px; padding: 20px; border-left: 5px solid #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08); border: 1px solid #d1fae5;
+}
+
+.shift-header-row { display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.shift-type { font-weight: bold; color: #10b981; }
+.shift-icon { color: #10b981; }
+
+.shift-details { display: flex; flex-direction: column; gap: 5px; }
+.detail-item { display: flex; align-items: center; gap: 8px; color: #333; }
+.detail-icon { color: #10b981; }
+.detail-text { color: #666; font-size: 13px; }

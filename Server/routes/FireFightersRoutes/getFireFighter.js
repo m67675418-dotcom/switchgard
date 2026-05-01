@@ -1,18 +1,19 @@
-//getfirefighter
 const express = require('express');
 const router = express.Router();
-const fireFighter = require('../../models/FireFighters');
-const connectDB = require('../../database/db');
+const FireFighter = require('../../models/FireFighters');
 
-
-// المسار لإضافة 
+// ✅ المسار: GET /api/firefighter/getAll
 router.get('/', async (req, res) => {
-    connectDB();
     try {
-        const docs = await fireFighter.find();
-        res.json(docs);
-    } catch (err) {
-        res.json({ error: err.message });
+        const firefighters = await FireFighter.find().select('-password');
+        res.json(firefighters);
+    } catch (error) {
+        console.error('❌ Error fetching firefighters:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Server error', 
+            error: error.message 
+        });
     }
 });
 

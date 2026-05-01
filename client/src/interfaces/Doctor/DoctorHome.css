@@ -1,0 +1,330 @@
+/* DoctorHome.css - Style identique à Login */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #fff;
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.greeting {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.title {
+  font-size: 24px;
+  color: #1e3a8a;
+  font-weight: bold;
+}
+
+.profileBtn {
+  width: 45px;
+  height: 45px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 25px;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileBtn:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* Search Box */
+.searchBox {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 15px 12px 45px;
+  border: 1px solid #e2e8f0;
+  border-radius: 25px;
+  background: #f8fafc;
+  outline: none;
+  font-size: 14px;
+  font-family: 'Segoe UI', sans-serif;
+  color: #334155;
+  box-sizing: border-box;
+}
+
+.searchInput:focus {
+  border-color: #2563eb;
+  background: white;
+}
+
+/* Categories Scroll */
+.catScroll {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+  scrollbar-width: thin;
+}
+
+.catChip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.catChip:hover {
+  border-color: #2563eb;
+  background: white;
+}
+
+.catActive {
+  background: #2563eb;
+  border-color: #2563eb;
+  color: white;
+}
+
+.catActive .catLabel {
+  color: white;
+}
+
+.catIcon {
+  font-size: 16px;
+}
+
+.catLabel {
+  font-size: 13px;
+  color: #334155;
+}
+
+/* Shortcuts */
+.shortcuts {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.shortcutBtn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 15px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+  color: #334155;
+}
+
+.shortcutBtn:hover {
+  background: #eff6ff;
+  border-color: #2563eb;
+  transform: translateY(-3px);
+}
+
+.shortcutBtn span:first-child {
+  font-size: 28px;
+}
+
+/* Section Title */
+.sectionTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.sectionTitle h3 {
+  font-size: 18px;
+  color: #1e3a8a;
+}
+
+.count {
+  background: #2563eb;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* List */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.card:hover {
+  background: #eff6ff;
+  transform: translateX(5px);
+}
+
+.cardAvatar {
+  font-size: 40px;
+}
+
+.cardInfo {
+  flex: 1;
+}
+
+.cardName {
+  font-weight: bold;
+  color: #1e3a8a;
+  margin-bottom: 4px;
+  font-size: 15px;
+}
+
+.cardSpec {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.cardLoc {
+  font-size: 11px;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+.cardRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.badgeGreen {
+  background: #dcfce7;
+  color: #16a34a;
+}
+
+.badgeRed {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.arrow {
+  font-size: 20px;
+  color: #94a3b8;
+}
+
+/* Loading & Empty */
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.skeleton {
+  height: 80px;
+  background: #f1f5f9;
+  border-radius: 15px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.empty {
+  text-align: center;
+  padding: 50px;
+  color: #94a3b8;
+}
+
+.empty span {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* Bottom Nav */
+.bottomNav {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  background: white;
+  border-top: 1px solid #e2e8f0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.navBtn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  padding: 8px;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+
+.navBtn:hover {
+  background: #eff6ff;
+}
+
+.navActive {
+  background: #eff6ff;
+  color: #2563eb;
+}

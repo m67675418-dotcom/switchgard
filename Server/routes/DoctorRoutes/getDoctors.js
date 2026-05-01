@@ -1,19 +1,15 @@
- //getDoctor
 const express = require('express');
 const router = express.Router();
 const Doctor = require('../../models/DoctorModel');
-const connectDB = require('../../database/db');
 
-
-// المسار لإضافة طبيب جديد
 router.get('/', async (req, res) => {
-    connectDB();
-    try {
-        const docs = await Doctor.find();
-        res.json(docs);
-    } catch (err) {
-        res.json({ error: err.message });
-    }
+  try {
+    const doctors = await Doctor.find().select('-password');
+    res.json(doctors);
+  } catch (error) {
+    console.error('❌ Error:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
+  }
 });
 
 module.exports = router;

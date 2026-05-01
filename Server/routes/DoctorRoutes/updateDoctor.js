@@ -1,35 +1,30 @@
-const connectDB = require('../../database/db');
-const Doctor = require("../../models/DoctorModel");
 const express = require('express');
 const router = express.Router();
+const Doctor = require('../../models/DoctorModel');
 
+// ✅ مهم جداً: '/' فقط، ماشي '/:id'
 router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const { fullName, email, specialty, numOrdre, location, isAvailable } = req.body;
-    
-    connectDB(); // كما طلب البروف
-
     try {
-        const up = await Doctor.findByIdAndUpdate(id, 
-            {
-                fullName: fullName,
-                email: email,
-                specialty: specialty,
-                numOrdre: numOrdre,
-                location: location,
-                isAvailable: isAvailable
-            }
-        );
+        const { id } = req.params;
+        const { fullName, email, specialty, numOrdre, location, isAvailable } = req.body;
+
+        console.log('✏️ Updating doctor:', id);
+
+        const updated = await Doctor.findByIdAndUpdate(
+            id, 
+            { fullName, email, specialty, numOrdre, location, isAvailable },
+            { new: true, runValidators: true }
+        ).select('-password');
         
-        if(!up) {
-            return res.send('This doctor is not in the database');
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Doctor not found' });
         }
         
-        res.send("Doctor information updated");
-        
-    } catch(error) {
-        console.log(error.message);
-        res.send("Error: " + error.message);
+        res.json({ success: true, message: 'Doctor updated', doctor: updated });
+
+    } catch (error) {
+        console.error('❌ Update error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

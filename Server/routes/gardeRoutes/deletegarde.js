@@ -1,22 +1,24 @@
-//deletegarde
-const garde = require('../../models/Garde');
 const express = require('express');
 const router = express.Router();
-const connectDB = require('../../database/db');
+const Garde = require('../../models/Garde');
 
-// supprision
 router.delete('/:id', async (req, res) => {
-    const id = req.params.id;
-    connectDB();
-
     try {
-        const del = await garde.findByIdAndDelete(id);
-        if(!del) {
-           res.send ('This Garde is not in the database');
-     } 
-        res.send ("gardedelete");
-    } catch (error){
-        console.log(error.message);
+        const { id } = req.params;
+        console.log('🗑️ Deleting garde:', id);
+
+        const deleted = await Garde.findByIdAndDelete(id);
+        
+        if (!deleted) {
+            return res.status(404).json({ success: false, message: 'Garde not found' });
+        }
+        
+        res.json({ success: true, message: 'Garde deleted successfully' });
+
+    } catch (error) {
+        console.error('❌ Delete error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
-module.exports = router; 
+
+module.exports = router;

@@ -1,3 +1,5 @@
+/* SendEmail.css - Matching ManageTransactions Style (Navy + Red) */
+
 .login-page {
     display: flex;
     justify-content: center;
@@ -6,7 +8,6 @@
     background: #fff;
     font-family: 'Segoe UI', sans-serif;
     padding: 20px;
-    box-sizing: border-box;
 }
 
 .login-card {
@@ -17,18 +18,17 @@
     background: white;
     border-radius: 15px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
 }
 
 .logo-text {
     font-size: 28px;
-    color: #1e3a8a;
+    color: #1e3a8a; /* Navy Blue */
     margin-bottom: 5px;
     font-weight: bold;
 }
 
 .logo-text span {
-    color: #ef4444;
+    color: #ef4444; /* Red Accent */
 }
 
 .tagline {
@@ -37,65 +37,81 @@
     font-size: 14px;
 }
 
+/* Form Inputs & Textarea */
+form input[type="email"],
 form input[type="text"],
-form input[type="email"] {
+form .form-textarea {
     width: 100%;
-    padding: 12px;
+    padding: 12px 15px;
     margin-bottom: 15px;
-    border: 1px solid #e2e8f0;
+    border: 2px solid #e2e8f0;
     border-radius: 25px;
+    font-size: 14px;
+    transition: all 0.3s;
     background: #f8fafc;
     outline: none;
     text-align: center;
-    font-size: 14px;
+    color: #334155;
     box-sizing: border-box;
 }
 
-/* Added for multi-line email body fields */
-form textarea {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    border: 1px solid #e2e8f0;
+form .form-textarea {
     border-radius: 15px;
-    background: #f8fafc;
-    outline: none;
     text-align: left;
-    font-size: 14px;
     resize: vertical;
-    min-height: 80px;
-    font-family: inherit;
-    box-sizing: border-box;
+    min-height: 100px;
+    font-family: 'Courier New', monospace;
 }
 
 form input:focus,
-form textarea:focus {
-    border-color: #2563eb;
+form .form-textarea:focus {
+    outline: none;
+    border-color: #1e3a8a; /* Navy focus */
+    box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.1);
     background: white;
 }
 
-.checkbox-label {
+/* Mode Toggle (Rouge + Bleu) */
+.mode-toggle {
     display: flex;
-    align-items: center;
-    justify-content: center;
     gap: 10px;
-    margin: 15px 0;
+    margin-bottom: 15px;
+    justify-content: center;
+}
+
+.toggle-btn {
+    flex: 1;
+    padding: 10px 20px;
+    border: 2px solid #e2e8f0;
+    border-radius: 25px;
+    background: #f8fafc;
+    color: #475569;
+    font-size: 13px;
+    font-weight: 600;
     cursor: pointer;
-    color: #334155;
+    transition: all 0.3s;
 }
 
-.checkbox-label input {
-    width: 18px;
-    height: 18px;
-    accent-color: #2563eb;
+.toggle-btn.active {
+    background: #ef4444; /* Red for active */
+    border-color: #ef4444;
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
 }
 
+.toggle-btn:hover:not(.active) {
+    border-color: #1e3a8a;
+    color: #1e3a8a;
+}
+
+/* Status Messages */
 .status-message {
     padding: 12px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     border-radius: 25px;
     font-size: 14px;
     font-weight: 500;
+    animation: slideIn 0.3s ease;
 }
 
 .status-message.success {
@@ -110,26 +126,66 @@ form textarea:focus {
     border: 1px solid #fca5a5;
 }
 
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Submit Button (Navy Blue like Search/Update) */
 .main-btn {
     width: 100%;
-    padding: 12px;
-    background: #2563eb;
+    padding: 12px 25px;
+    background: #1e3a8a;
     color: white;
     border: none;
     border-radius: 25px;
-    font-weight: bold;
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
+    font-size: 15px;
 }
 
-.main-btn:hover {
-    background: #1d4ed8;
+.main-btn:hover:not(:disabled) {
+    background: #1e40af;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
 }
 
 .main-btn:disabled {
     background: #94a3b8;
     cursor: not-allowed;
     transform: none;
+}
+
+/* Info Box */
+.info-box {
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    border-radius: 15px;
+    padding: 12px 15px;
+    margin-top: 20px;
+    text-align: left;
+}
+
+.info-box p {
+    margin: 4px 0;
+    color: #92400e;
+    font-size: 13px;
+}
+
+.info-box code {
+    background: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #ef4444;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .login-card { padding: 20px; }
+    .logo-text { font-size: 24px; }
+    form input, form .form-textarea { padding: 10px; font-size: 13px; }
+    .mode-toggle { flex-direction: column; }
+    .toggle-btn, .main-btn { width: 100%; }
 }

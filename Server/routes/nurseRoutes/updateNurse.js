@@ -1,33 +1,29 @@
-const connectDB = require('../../database/db');
-const Nurse = require("../../models/nurseModel");
 const express = require('express');
 const router = express.Router();
+const Nurse = require('../../models/nurseModel');
 
 router.put('/:id', async (req, res) => {
-    const id = req.params.id;
-    const {userId, diplome, service, equipe} = req.body;
-    
-    connectDB(); // خليتها كيف ما طلبتي
-
     try {
-        const up = await Nurse.findByIdAndUpdate(
-          id,  {
-                userId: userId, 
-                diplome: diplome, 
-                service: service, 
-                equipe: equipe
-            }
-        );
+        const { id } = req.params;
+        const { userId, gmail, diplome, service, equipe } = req.body;
+
+        console.log('✏️ Updating nurse:', id);
+
+        const updated = await Nurse.findByIdAndUpdate(
+            id, 
+            { userId, gmail, diplome, service, equipe },
+            { new: true, runValidators: true }
+        ).select('-password');
         
-        if(!up) {
-            return res.send('This nurse is not in the database'); 
+        if (!updated) {
+            return res.status(404).json({ success: false, message: 'Nurse not found' });
         }
         
-        res.send("Nurse information updated");
-        
-    } catch(error) {
-        console.log(error.message);
-        res.send("Error: " + error.message); // ⚠️ ضروري باش مايوقعش hang للـ request
+        res.json({ success: true, message: 'Nurse updated', nurse: updated });
+
+    } catch (error) {
+        console.error('❌ Update error:', error);
+        res.status(500).json({ success: false, message: 'Server error', error: error.message });
     }
 });
 

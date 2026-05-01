@@ -1,0 +1,109 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.App {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.main-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.simple-logout {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.user-badge {
+  background: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-weight: 600;
+  color: #334155;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.logout-small-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.logout-small-btn:hover {
+  background: #dc2626;
+}
+
+.section-card {
+  background: white;
+  border-radius: 20px;
+  padding: 30px;
+  margin-bottom: 40px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-top: 5px solid transparent;
+  transition: transform 0.3s;
+}
+
+.section-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+}
+
+.section-title {
+  font-size: 24px;
+  color: #1e293b;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.doctors-section { border-top-color: #3b82f6; }
+.nurses-section { border-top-color: #ec4899; }
+.firefighters-section { border-top-color: #ef4444; }
+.gardes-section { border-top-color: #8b5cf6; }
+.messages-section { border-top-color: #22c55e; }
+.pharmacists-section { border-top-color: #16a34a; }
+.transactions-section { border-top-color: #f59e0b; }
+.email-section { border-top-color: #6366f1; }
+
+.role-select {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 15px;
+  border: 2px solid #e2e8f0;
+  border-radius: 10px;
+  background: #f8fafc;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 20px 10px;
+  }
+  .section-card {
+    padding: 20px;
+  }
+  .section-title {
+    font-size: 20px;
+  }
+}
+.doctor-interface-wrapper {
+  width: 100%;
+  min-height: 100vh;
+  background: #f5f7fa;
+}

@@ -2,7 +2,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageGarde.css';
 
-const ManageGarde = () => {
+const API_BASE = 'http://localhost:5000/api';
+
+const ManageGarde = ({ onSelectGarde }) => {
     const [gardes, setGardes] = useState([]);
     const [selectedGarde, setSelectedGarde] = useState(null);
     const [formData, setFormData] = useState({
@@ -24,13 +26,11 @@ const ManageGarde = () => {
         onConfirm: null
     });
 
-    // ✅ Status message
     const showStatus = useCallback((type, message) => {
         setStatus({ type, message });
         setTimeout(() => setStatus({ type: '', message: '' }), 4000);
     }, []);
 
-    // ✅ Modal handlers
     const showModal = useCallback((config) => {
         setModal({ show: true, ...config });
     }, []);
@@ -39,18 +39,16 @@ const ManageGarde = () => {
         setModal(prev => ({ ...prev, show: false }));
     }, []);
 
-    // ✅ Cancel / Reset
     const handleCancel = useCallback(() => {
         setSelectedGarde(null);
         setFormData({ owner: '', dateGarde: '', status: '' });
         setSearchId('');
     }, []);
 
-    // ✅ Fetch all gardes
     const fetchGardes = useCallback(async () => {
         try {
             setLoading(true);
-            const res = await axios.get('/api/garde/getAll');
+            const res = await axios.get(`${API_BASE}/garde/getAll`);
             setGardes(res.data || []);
             setLoading(false);
         } catch (err) {
@@ -63,9 +61,8 @@ const ManageGarde = () => {
         fetchGardes();
     }, [fetchGardes]);
 
-    // ✅ Row click selection
     const handleRowClick = useCallback((garde) => {
-        const id = garde.id || garde._id;
+        const id = garde._id;
         setSearchId(id);
         setSelectedGarde(garde);
         setFormData({
@@ -75,7 +72,15 @@ const ManageGarde = () => {
         });
     }, []);
 
-    // ✅ Search by ID
+    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleGarde
+    const handleViewDetails = useCallback((garde) => {
+        const id = garde._id;
+        console.log('👁️ Viewing garde _id:', id);
+        if (onSelectGarde) {
+            onSelectGarde(id);
+        }
+    }, [onSelectGarde]);
+
     const handleSearch = useCallback(async (e) => {
         e.preventDefault();
         if (!searchId.trim()) {
@@ -84,8 +89,8 @@ const ManageGarde = () => {
         }
         setLoading(true);
         try {
-            const res = await axios.get('/api/garde/getAll');
-            const found = res.data.find(g => (g.id || g._id) === searchId.trim());
+            const res = await axios.get(`${API_BASE}/garde/getAll`);
+            const found = res.data.find(g => g._id === searchId.trim());
             if (found) {
                 handleRowClick(found);
                 showStatus('success', 'Garde found!');
@@ -100,15 +105,13 @@ const ManageGarde = () => {
         }
     }, [searchId, showStatus, handleRowClick]);
 
-    // ✅ Input change
     const handleInputChange = useCallback((e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    // ✅ Delete with modal
     const handleDelete = useCallback((garde) => {
-        const id = garde.id || garde._id;
+        const id = garde._id;
         showModal({
             type: 'confirmDelete',
             title: '🗑️ Confirm Delete',
@@ -121,11 +124,9 @@ const ManageGarde = () => {
             },
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/deletegarde/${id}`);
-                    showStatus('success', `✅ Garde ${id} deleted!`);
-                    if (selectedGarde && (selectedGarde.id === id || selectedGarde._id === id)) {
-                        handleCancel();
-                    }
+                    await axios.delete(`${API_BASE}/garde/${id}`);
+                    showStatus('success', `✅ Garde deleted!`);
+                    if (selectedGarde && selectedGarde._id === id) handleCancel();
                     fetchGardes();
                 } catch (err) {
                     showStatus('error', '❌ Delete failed: ' + err.message);
@@ -134,7 +135,6 @@ const ManageGarde = () => {
         });
     }, [selectedGarde, showModal, showStatus, fetchGardes, handleCancel]);
 
-    // ✅ Update with modal
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
         if (!selectedGarde) {
@@ -146,7 +146,7 @@ const ManageGarde = () => {
             title: '✏️ Confirm Update',
             message: 'Update this garde information?',
             details: {
-                'Garde ID': selectedGarde.id || selectedGarde._id,
+                'Garde ID': selectedGarde._id,
                 'Owner': formData.owner,
                 'Date': formData.dateGarde,
                 'Status': formData.status
@@ -154,9 +154,9 @@ const ManageGarde = () => {
             onConfirm: async () => {
                 setLoading(true);
                 try {
-                    const id = selectedGarde.id || selectedGarde._id;
-                    await axios.put(`/updateGard/${id}`, formData);
-                    showStatus('success', `✅ Garde ${id} updated!`);
+                    const id = selectedGarde._id;
+                    await axios.put(`${API_BASE}/garde/${id}`, formData);
+                    showStatus('success', `✅ Garde updated!`);
                     fetchGardes();
                     handleCancel();
                 } catch (err) {
@@ -168,16 +168,14 @@ const ManageGarde = () => {
         });
     }, [selectedGarde, formData, showModal, showStatus, fetchGardes, handleCancel]);
 
-    // ✅ Filter for text search
     const filteredGardes = gardes.filter(g => {
         const q = searchQuery.toLowerCase();
         return (g.owner || '').toLowerCase().includes(q) ||
                (g.status || '').toLowerCase().includes(q) ||
                (g.dateGarde || '').toLowerCase().includes(q) ||
-               ((g.id || g._id) || '').toLowerCase().includes(q);
+               (g._id || '').toLowerCase().includes(q);
     });
 
-    // ✅ Status options
     const statusOptions = [
         { value: '', label: '-- Select Status --' },
         { value: 'Active', label: '🟢 Active' },
@@ -186,7 +184,6 @@ const ManageGarde = () => {
         { value: 'Cancelled', label: '❌ Cancelled' }
     ];
 
-    // ✅ Format date for display
     const formatDate = (dateStr) => {
         if (!dateStr) return 'N/A';
         return new Date(dateStr).toLocaleDateString('en-US', {
@@ -194,7 +191,6 @@ const ManageGarde = () => {
         });
     };
 
-    // ✅ Status badge color
     const getStatusBadge = (status) => {
         const map = {
             'Active': { bg: '#dcfce7', color: '#16a34a', text: '🟢 Active' },
@@ -215,7 +211,6 @@ const ManageGarde = () => {
                     <div className={`status-message ${status.type}`}>{status.message}</div>
                 )}
 
-                {/* ID Search */}
                 <form onSubmit={handleSearch} className="search-box">
                     <input
                         type="text"
@@ -229,7 +224,6 @@ const ManageGarde = () => {
                     </button>
                 </form>
 
-                {/* Text Filter */}
                 <div className="search-box" style={{ marginBottom: '10px' }}>
                     <input
                         type="text"
@@ -243,7 +237,6 @@ const ManageGarde = () => {
                     </button>
                 </div>
 
-                {/* Table */}
                 <div className="table-wrapper">
                     {loading && gardes.length === 0 ? (
                         <div className="loading">⏳ Loading gardes...</div>
@@ -264,8 +257,8 @@ const ManageGarde = () => {
                             </thead>
                             <tbody>
                                 {filteredGardes.map((garde) => {
-                                    const gardeId = garde.id || garde._id;
-                                    const isSelected = selectedGarde && (selectedGarde.id === gardeId || selectedGarde._id === gardeId);
+                                    const gardeId = garde._id;
+                                    const isSelected = selectedGarde && selectedGarde._id === gardeId;
                                     const badge = getStatusBadge(garde.status);
                                     
                                     return (
@@ -274,7 +267,7 @@ const ManageGarde = () => {
                                             className={isSelected ? 'selected' : ''}
                                             onClick={() => handleRowClick(garde)}
                                         >
-                                            <td>{gardeId}</td>
+                                            <td><small className="text-muted">{gardeId?.slice(-6)}</small></td>
                                             <td><strong>{garde.owner || 'N/A'}</strong></td>
                                             <td>{formatDate(garde.dateGarde)}</td>
                                             <td>
@@ -283,8 +276,18 @@ const ManageGarde = () => {
                                                 </span>
                                             </td>
                                             <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
-                                                <button className="action-btn edit" onClick={() => handleRowClick(garde)}>✏️ Edit</button>
-                                                <button className="action-btn delete" onClick={() => handleDelete(garde)}>🗑️ Delete</button>
+                                                <button 
+                                                    className="action-btn view" 
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        handleViewDetails(garde);
+                                                    }}
+                                                    title="View"
+                                                >
+                                                    👁️
+                                                </button>
+                                                <button className="action-btn edit" onClick={() => handleRowClick(garde)}>✏️</button>
+                                                <button className="action-btn delete" onClick={() => handleDelete(garde)}>🗑️</button>
                                             </td>
                                         </tr>
                                     );
@@ -294,48 +297,48 @@ const ManageGarde = () => {
                     )}
                 </div>
 
-                {/* Edit Form */}
                 {selectedGarde && (
-                    <div className="divider"><span>✏️ Edit Mode</span></div>
-                )}
+                    <>
+                        <div className="divider"><span>✏️ Edit Mode</span></div>
+                        <form onSubmit={handleSubmit} className="edit-form">
+                            <h3>📋 Edit Garde Information</h3>
+                            
+                            <input 
+                                type="text" 
+                                name="owner" 
+                                placeholder="👤 Owner / Assigned To" 
+                                value={formData.owner} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
+                            <input 
+                                type="date" 
+                                name="dateGarde" 
+                                value={formData.dateGarde} 
+                                onChange={handleInputChange} 
+                                required 
+                            />
+                            
+                            <select 
+                                name="status" 
+                                value={formData.status} 
+                                onChange={handleInputChange} 
+                                required 
+                                className="form-select"
+                            >
+                                {statusOptions.map(opt => (
+                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                ))}
+                            </select>
 
-                {selectedGarde && (
-                    <form onSubmit={handleSubmit} className="edit-form">
-                        <h3>📋 Edit Garde Information</h3>
-                        
-                        <input 
-                            type="text" 
-                            name="owner" 
-                            placeholder="👤 Owner / Assigned To" 
-                            value={formData.owner} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-                        <input 
-                            type="date" 
-                            name="dateGarde" 
-                            value={formData.dateGarde} 
-                            onChange={handleInputChange} 
-                            required 
-                        />
-                        
-                        <select 
-                            name="status" 
-                            value={formData.status} 
-                            onChange={handleInputChange} 
-                            required 
-                            className="form-select"
-                        >
-                            {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-                        </select>
-
-                        <div className="form-actions">
-                            <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                            <button type="submit" className="main-btn" disabled={loading}>
-                                {loading ? '⏳ Updating...' : '💾 Update'}
-                            </button>
-                        </div>
-                    </form>
+                            <div className="form-actions">
+                                <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
+                                <button type="submit" className="main-btn" disabled={loading}>
+                                    {loading ? '⏳ Updating...' : '💾 Update'}
+                                </button>
+                            </div>
+                        </form>
+                    </>
                 )}
 
                 <div className="warning-box">
@@ -346,7 +349,6 @@ const ManageGarde = () => {
                 <button className="refresh-btn" onClick={fetchGardes}>🔄 Refresh List</button>
             </div>
 
-            {/* ============ MODAL DIALOG ============ */}
             {modal.show && (
                 <div className="modal-overlay" onClick={closeModal}>
                     <div className="modal-dialog" onClick={e => e.stopPropagation()}>

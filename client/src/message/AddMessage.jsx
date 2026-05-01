@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import './AddMessage.css';
 
+const API_BASE = 'http://localhost:5000/api';
+
 const AddMessage = () => {
     const [formData, setFormData] = useState({
         senderId: '',
@@ -15,10 +17,7 @@ const AddMessage = () => {
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
-        setFormData(prev => ({ 
-            ...prev, 
-            [name]: type === 'checkbox' ? checked : value 
-        }));
+        setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
     };
 
     const handleSubmit = async (e) => {
@@ -26,20 +25,16 @@ const AddMessage = () => {
         setLoading(true);
         setStatus({ type: '', message: '' });
 
-        if (!formData.senderId || !formData.receiverId || !formData.content) {
+        const { senderId, receiverId, content } = formData;
+
+        if (!senderId || !receiverId || !content) {
             setStatus({ type: 'error', message: '⚠️ Please fill in all required fields' });
             setLoading(false);
             return;
         }
 
         try {
-            await axios.post('/api/message', {
-                senderId: formData.senderId,
-                receiverId: formData.receiverId,
-                content: formData.content,
-                timestamp: formData.timestamp,
-                isRead: formData.isRead
-            });
+            await axios.post(`${API_BASE}/message/add`, formData);
             setStatus({ type: 'success', message: '✅ Message sent successfully!' });
             setFormData({
                 senderId: '',
@@ -49,7 +44,7 @@ const AddMessage = () => {
                 isRead: false
             });
         } catch (error) {
-            setStatus({ type: 'error', message: '❌ Failed to send: ' + error.message });
+            setStatus({ type: 'error', message: '❌ Failed to send: ' + (error.response?.data?.message || error.message) });
         } finally {
             setLoading(false);
         }
@@ -58,56 +53,19 @@ const AddMessage = () => {
     return (
         <div className="login-page">
             <div className="login-card">
-                <div className="logo-text">
-                    💬 <span>Add</span> Message
-                </div>
+                <div className="logo-text">💬 <span>Add</span> Message</div>
                 <p className="tagline">Internal Messaging System</p>
 
-                {status.message && (
-                    <div className={`status-message ${status.type}`}>{status.message}</div>
-                )}
+                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <input 
-                        type="text" 
-                        name="senderId" 
-                        placeholder="👤 Sender ID" 
-                        value={formData.senderId} 
-                        onChange={handleChange} 
-                        required 
-                    />
-                    <input 
-                        type="text" 
-                        name="receiverId" 
-                        placeholder="🎯 Receiver ID" 
-                        value={formData.receiverId} 
-                        onChange={handleChange} 
-                        required 
-                    />
-                    <textarea 
-                        name="content" 
-                        placeholder="✍️ Message content..." 
-                        value={formData.content} 
-                        onChange={handleChange} 
-                        required 
-                        rows="4"
-                        className="form-textarea"
-                    />
-                    <input 
-                        type="datetime-local" 
-                        name="timestamp" 
-                        value={formData.timestamp} 
-                        onChange={handleChange} 
-                        className="form-datetime"
-                    />
+                    <input type="text" name="senderId" placeholder="👤 Sender ID" value={formData.senderId} onChange={handleChange} required />
+                    <input type="text" name="receiverId" placeholder="🎯 Receiver ID" value={formData.receiverId} onChange={handleChange} required />
+                    <textarea name="content" placeholder="✍️ Message content..." value={formData.content} onChange={handleChange} required rows="4" className="form-textarea" />
+                    <input type="datetime-local" name="timestamp" value={formData.timestamp} onChange={handleChange} className="form-datetime" />
                     
                     <label className="checkbox-label">
-                        <input 
-                            type="checkbox" 
-                            name="isRead" 
-                            checked={formData.isRead} 
-                            onChange={handleChange} 
-                        />
+                        <input type="checkbox" name="isRead" checked={formData.isRead} onChange={handleChange} />
                         <span>👁️ Mark as Read</span>
                     </label>
 
