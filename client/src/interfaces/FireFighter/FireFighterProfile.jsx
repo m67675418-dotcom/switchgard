@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./FirefighterProfile.css";
 
-export default function FirefighterProfile({ firefighterId, onNavigate }) {
+export default function FirefighterProfile({ firefighterId, onNavigate, onUpdateUser }) {
   const [firefighter, setFirefighter] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -41,11 +41,8 @@ export default function FirefighterProfile({ firefighterId, onNavigate }) {
       setMsg({ type: "success", text: "Firefighter updated successfully ✅" });
       setFirefighter({ ...firefighter, ...form });
       setEditing(false);
-
-      // ✅ نحدّث الـ localStorage باش يتحدّث في كل الصفحات
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem('user', JSON.stringify({ ...currentUser, ...form }));
-
+      // ✅ يحدّث الـ header فوراً
+      onUpdateUser?.(form);
     } catch {
       setMsg({ type: "error", text: "Update failed ❌" });
     } finally {

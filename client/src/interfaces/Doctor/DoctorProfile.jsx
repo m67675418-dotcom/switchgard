@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./DoctorProfile.css";
 
-export default function DoctorProfile({ doctorId, onNavigate }) {
+export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
   const [doctor, setDoctor] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -34,7 +34,7 @@ export default function DoctorProfile({ doctorId, onNavigate }) {
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/updateDoctor/${doctorId}`, {
+      await fetch(`http://localhost:5000/api/doctor/${doctorId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -42,11 +42,8 @@ export default function DoctorProfile({ doctorId, onNavigate }) {
       setMsg({ type: "success", text: "Doctor updated successfully ✅" });
       setDoctor({ ...doctor, ...form });
       setEditing(false);
-
-      // ✅ نحدّث الـ localStorage باش يتحدّث في كل الصفحات
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem('user', JSON.stringify({ ...currentUser, ...form }));
-
+      // ✅ يحدّث الـ header فوراً
+      onUpdateUser?.(form);
     } catch {
       setMsg({ type: "error", text: "Update failed ❌" });
     } finally {
@@ -59,7 +56,7 @@ export default function DoctorProfile({ doctorId, onNavigate }) {
     if (!window.confirm("Are you sure you want to delete this doctor?")) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/DeleteDoctor/${doctorId}`, { method: "DELETE" });
+      await fetch(`http://localhost:5000/api/doctor/${doctorId}`, { method: "DELETE" });
       onNavigate?.("home");
     } catch {
       setMsg({ type: "error", text: "Delete failed ❌" });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import "./PharmacistProfile.css";
 
-export default function PharmacistProfile({ pharmacistId, onNavigate }) {
+export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUser }) {
   const [pharmacist, setPharmacist] = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -34,7 +34,8 @@ export default function PharmacistProfile({ pharmacistId, onNavigate }) {
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/updatePharmacist/${pharmacistId}`, {
+      // ✅ الـ route الصحيح
+      await fetch(`http://localhost:5000/api/pharmacist/${pharmacistId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -43,9 +44,8 @@ export default function PharmacistProfile({ pharmacistId, onNavigate }) {
       setPharmacist({ ...pharmacist, ...form });
       setEditing(false);
 
-      // ✅ نحدّث الـ localStorage باش يتحدّث في كل الصفحات
-      const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
-      localStorage.setItem('user', JSON.stringify({ ...currentUser, ...form }));
+      // ✅ نحدّث الـ state في App.js مباشرة — الـ header يتحدّث فوراً
+      onUpdateUser?.(form);
 
     } catch {
       setMsg({ type: "error", text: "Update failed ❌" });
@@ -59,7 +59,7 @@ export default function PharmacistProfile({ pharmacistId, onNavigate }) {
     if (!window.confirm("Are you sure you want to delete this pharmacist?")) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/deletepharmacist/${pharmacistId}`, { method: "DELETE" });
+      await fetch(`http://localhost:5000/api/pharmacist/${pharmacistId}`, { method: "DELETE" });
       onNavigate("home");
     } catch {
       setMsg({ type: "error", text: "Delete failed ❌" });

@@ -2,20 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 
-// 🔐 Auth Components
 import Login from './login/Login';
 import Signup from './auth/Signup';
 
-// 👨‍⚕️ Doctor Interfaces
 import DoctorHome from './interfaces/Doctor/DoctorHome';
 import DoctorGard from './interfaces/Doctor/DoctorGard';
 import DoctorMessage from './interfaces/Doctor/DoctorMessage';
 import DoctorProfile from './interfaces/Doctor/DoctorProfile';
 
-// 🛡️ Admin Dashboard
 import AdminDashboard from './Admin/AdminDashboard';
 
-// 📂 Admin Management Components
 import AddDoctor from './Doctor/AddDoctor';
 import ManageDoctor from './Doctor/ManageDoctor';
 import GetSingleDoctor from './Doctor/GetSingleDoctor';
@@ -30,25 +26,21 @@ import AddFireFighter from './FireFighter/AddFireFighter';
 import ManageFireFighter from './FireFighter/ManageFireFighter';
 import GetSingleFireFighter from './FireFighter/GetSingleFireFighter';
 
-// 👩‍⚕️ Nurse Interfaces
 import NurseHome from './interfaces/Nurse/NurseHome';
 import NurseGarde from './interfaces/Nurse/NurseGarde';
 import NurseMessage from './interfaces/Nurse/NurseMessage';
 import NurseProfile from './interfaces/Nurse/NurseProfile';
 
-// 🚒 FireFighter Interfaces
 import FirefighterHome from './interfaces/FireFighter/FirefighterHome';
 import FirefighterGarde from './interfaces/FireFighter/FirefighterGarde';
 import FirefighterMessage from './interfaces/FireFighter/FirefighterMessage';
 import FirefighterProfile from './interfaces/FireFighter/FirefighterProfile';
 
-// 💊 Pharmacist Interfaces
 import PharmacistHome from './interfaces/Pharmacist/PharmacistHome';
 import PharmacistGarde from './interfaces/Pharmacist/PharmacistGarde';
 import PharmacistMessage from './interfaces/Pharmacist/PharmacistMessage';
 import PharmacistProfile from './interfaces/Pharmacist/PharmacistProfile';
 
-// ✅ Guards, Transactions, Emails
 import AddGarde from './garde/AddGarde';
 import ManageGarde from './garde/ManageGarde';
 import GetSingleGarde from './garde/GetSingleGarde';
@@ -106,6 +98,13 @@ function App() {
     window.location.href = '/';
   };
 
+  // ✅ دالة تحديث الـ currentUser في الـ state والـ localStorage معاً
+  const handleUpdateUser = (updatedFields) => {
+    const updated = { ...currentUser, ...updatedFields };
+    setCurrentUser(updated);
+    localStorage.setItem('user', JSON.stringify(updated));
+  };
+
   // ============================================
   // 👑 ADMIN VIEW
   // ============================================
@@ -131,15 +130,11 @@ function App() {
         </div>
       );
     }
-
     if (activeModule === 'nurses') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#5cf1db', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -149,15 +144,11 @@ function App() {
         </div>
       );
     }
-
     if (activeModule === 'pharmacists') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#26dc4e', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -167,15 +158,11 @@ function App() {
         </div>
       );
     }
-
     if (activeModule === 'firefighters') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#e21212', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -185,15 +172,11 @@ function App() {
         </div>
       );
     }
-
     if (activeModule === 'messages') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#4d3838', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
@@ -203,62 +186,44 @@ function App() {
         </div>
       );
     }
-
     if (activeModule === 'guards') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#6d6262', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '20px' }}>🛡️ Manage Guards</h2>
-            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-              <AddGarde /><ManageGarde onSelectGarde={setSelectedGardeId} /><GetSingleGarde gardeId={selectedGardeId} />
-            </section>
+            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}><AddGarde /><ManageGarde onSelectGarde={setSelectedGardeId} /><GetSingleGarde gardeId={selectedGardeId} /></section>
           </div>
         </div>
       );
     }
-
     if (activeModule === 'transactions') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#f0ed26', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '20px' }}>💰 Manage Transactions</h2>
-            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-              <AddTransaction /><ManageTransactions onSelectTransaction={setSelectedTransactionId} /><GetSingleTransaction transactionId={selectedTransactionId} />
-            </section>
+            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}><AddTransaction /><ManageTransactions onSelectTransaction={setSelectedTransactionId} /><GetSingleTransaction transactionId={selectedTransactionId} /></section>
           </div>
         </div>
       );
     }
-
     if (activeModule === 'emails') {
       return (
         <div className="admin-wrapper">
           <div className="logout-bar" style={{ padding: '15px 30px', background: '#1e3a8a', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <div>
-              <button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button>
-              <span>🛡️ Admin: {currentUser?.email}</span>
-            </div>
+            <div><button onClick={goBack} style={{ marginRight: '15px', background: 'rgba(255,255,255,0.2)', border: 'none', color: 'white', padding: '5px 15px', borderRadius: '5px', cursor: 'pointer' }}>← Back to Menu</button><span>🛡️ Admin: {currentUser?.email}</span></div>
             <button onClick={handleLogout} style={{ background: '#312b2b', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
           </div>
           <div style={{ padding: '30px', maxWidth: '1200px', margin: '0 auto' }}>
             <h2 style={{ marginBottom: '20px' }}>📧 Manage Emails</h2>
-            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}>
-              <SendEmail onEmailSent={setSelectedEmailId} /><GetSingleEmail emailId={selectedEmailId} />
-            </section>
+            <section style={{ background: 'white', padding: '30px', borderRadius: '15px', boxShadow: '0 4px 15px rgba(0,0,0,0.1)' }}><SendEmail onEmailSent={setSelectedEmailId} /><GetSingleEmail emailId={selectedEmailId} /></section>
           </div>
         </div>
       );
@@ -307,13 +272,20 @@ function App() {
     return (
       <div className="doctor-interface-wrapper">
         <div className="user-header" style={{ padding: '15px 30px', background: '#1e5ce2', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          {/* ✅ يقرأ من currentUser مباشرة — يتحدّث بعد الـ update */}
           <span>👨‍⚕️ Welcome, {currentUser?.fullName || 'Doctor'}</span>
           <button onClick={handleLogout} style={{ background: '#0c26d0', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
         </div>
         {view === 'home'    && <DoctorHome    onNavigate={setView} />}
         {view === 'garde'   && <DoctorGard    onNavigate={setView} />}
         {view === 'message' && <DoctorMessage onNavigate={setView} />}
-        {view === 'profile' && <DoctorProfile doctorId={currentUser?.id} onNavigate={setView} />}
+        {view === 'profile' && (
+          <DoctorProfile
+            doctorId={currentUser?.id}
+            onNavigate={setView}
+            onUpdateUser={handleUpdateUser}  // ✅
+          />
+        )}
         <div className="bottom-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', display: 'flex', justifyContent: 'space-around', padding: '15px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', zIndex: 1000 }}>
           <button onClick={() => setView('home')}    style={{ background: view === 'home'    ? '#3b82f6' : 'transparent', color: view === 'home'    ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🏠 Home</button>
           <button onClick={() => setView('garde')}   style={{ background: view === 'garde'   ? '#3b82f6' : 'transparent', color: view === 'garde'   ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🛡️ Garde</button>
@@ -325,14 +297,12 @@ function App() {
   };
 
   // ============================================
-  // 👩‍⚕️ NURSE VIEW — ✅ المشكلة مصلحة هنا
+  // 👩‍⚕️ NURSE VIEW
   // ============================================
   const NurseView = () => {
     const [view, setView] = useState('home');
-    // ✅ نحفظ الـ id اللي جاء من NurseHome لما تضغط على ممرضة
-    const [selectedNurseId, setSelectedNurseId] = useState(currentUser?._id || null);
+    const [selectedNurseId, setSelectedNurseId] = useState(currentUser?.id || null);
 
-    // ✅ هذه الدالة تستقبل (view, nurseId?) — تحل مشكلة الـ profile
     const handleNavigate = (newView, nurseId = null) => {
       if (nurseId) setSelectedNurseId(nurseId);
       setView(newView);
@@ -341,10 +311,7 @@ function App() {
     const navStyle = (v) => ({
       background: view === v ? '#50b59a' : 'transparent',
       color: view === v ? 'white' : '#374151',
-      border: 'none',
-      padding: '10px 20px',
-      borderRadius: '8px',
-      cursor: 'pointer',
+      border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer',
     });
 
     return (
@@ -353,18 +320,16 @@ function App() {
           <span>👩‍⚕️ Welcome, {currentUser?.userId || 'Nurse'}</span>
           <button onClick={handleLogout} style={{ background: '#096842', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer' }}>Logout 🚪</button>
         </div>
-
-        {view === 'home'     && <NurseHome     onNavigate={handleNavigate} currentUser={currentUser} />}
-        {view === 'garde'    && <NurseGarde    onNavigate={handleNavigate} currentUser={currentUser} />}
-        {view === 'messages' && <NurseMessage  onNavigate={handleNavigate} currentUser={currentUser} />}
-        {/* ✅ نستعمل selectedNurseId — يكون إما id الممرضة المختارة أو currentUser._id */}
+        {view === 'home'     && <NurseHome    onNavigate={handleNavigate} currentUser={currentUser} />}
+        {view === 'garde'    && <NurseGarde   onNavigate={handleNavigate} currentUser={currentUser} />}
+        {view === 'messages' && <NurseMessage onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'profile'  && (
           <NurseProfile
-            nurseId={selectedNurseId || currentUser?._id}
+            nurseId={selectedNurseId || currentUser?.id}
             onNavigate={handleNavigate}
+            onUpdateUser={handleUpdateUser}  // ✅
           />
         )}
-
         <div className="bottom-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', display: 'flex', justifyContent: 'space-around', padding: '15px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', zIndex: 1000 }}>
           <button onClick={() => handleNavigate('home')}     style={navStyle('home')}>🏠 Home</button>
           <button onClick={() => handleNavigate('garde')}    style={navStyle('garde')}>🛡️ Garde</button>
@@ -389,7 +354,13 @@ function App() {
         {view === 'home'     && <PharmacistHome    onNavigate={setView} currentUser={currentUser} />}
         {view === 'garde'    && <PharmacistGarde   onNavigate={setView} currentUser={currentUser} />}
         {view === 'messages' && <PharmacistMessage onNavigate={setView} currentUser={currentUser} />}
-        {view === 'profile'  && <PharmacistProfile pharmacistId={currentUser?.id} onNavigate={setView} />}
+        {view === 'profile'  && (
+          <PharmacistProfile
+            pharmacistId={currentUser?.id}
+            onNavigate={setView}
+            onUpdateUser={handleUpdateUser}  // ✅
+          />
+        )}
         <div className="bottom-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', display: 'flex', justifyContent: 'space-around', padding: '15px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', zIndex: 1000 }}>
           <button onClick={() => setView('home')}     style={{ background: view === 'home'     ? '#059669' : 'transparent', color: view === 'home'     ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🏠 Home</button>
           <button onClick={() => setView('garde')}    style={{ background: view === 'garde'    ? '#059669' : 'transparent', color: view === 'garde'    ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🛡️ Garde</button>
@@ -414,7 +385,13 @@ function App() {
         {view === 'home'     && <FirefighterHome    onNavigate={setView} currentUser={currentUser} />}
         {view === 'garde'    && <FirefighterGarde   onNavigate={setView} currentUser={currentUser} />}
         {view === 'messages' && <FirefighterMessage onNavigate={setView} currentUser={currentUser} />}
-        {view === 'profile'  && <FirefighterProfile firefighterId={currentUser?.id} onNavigate={setView} />}
+        {view === 'profile'  && (
+          <FirefighterProfile
+            firefighterId={currentUser?.id}
+            onNavigate={setView}
+            onUpdateUser={handleUpdateUser}  // ✅
+          />
+        )}
         <div className="bottom-nav" style={{ position: 'fixed', bottom: 0, left: 0, right: 0, background: 'white', display: 'flex', justifyContent: 'space-around', padding: '15px', boxShadow: '0 -2px 10px rgba(0,0,0,0.1)', zIndex: 1000 }}>
           <button onClick={() => setView('home')}     style={{ background: view === 'home'     ? '#ef4444' : 'transparent', color: view === 'home'     ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🏠 Home</button>
           <button onClick={() => setView('garde')}    style={{ background: view === 'garde'    ? '#ef4444' : 'transparent', color: view === 'garde'    ? 'white' : '#374151', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer' }}>🛡️ Garde</button>
