@@ -1,0 +1,67 @@
+/* NurseGarde.css - Theme Vert */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 20px; border-radius: 10px; z-index: 1000; }
+.toastSuccess { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+.toastError { background: #fee2e2; color: #50b59a; border: 1px solid #fca5a5; }
+
+.header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; background: white; padding: 15px 20px; border-radius: 15px; }
+.backBtn { background: #dcfce7; border: none; width: 40px; height: 40px; border-radius: 20px; font-size: 20px; cursor: pointer; color: #10b981; }
+.headerTitle { font-size: 20px; color: #1f2937; font-weight: bold; }
+.addBtn { background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; width: 40px; height: 40px; border-radius: 20px; font-size: 20px; color: white; cursor: pointer; }
+
+.statsRow { display: flex; gap: 15px; margin-bottom: 25px; }
+.statCard { flex: 1; background: white; border-radius: 15px; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.statVal { font-size: 28px; font-weight: bold; display: block; }
+.statLabel { font-size: 12px; color: #6b7280; margin-top: 5px; display: block; }
+
+.gardForm { background: white; border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+.formTitle { color: #10b981; font-weight: bold; margin-bottom: 15px; font-size: 16px; }
+.formGrid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+.formGroup { display: flex; flex-direction: column; gap: 5px; }
+.formGroup label { font-size: 12px; color: #6b7280; font-weight: 600; }
+.formGroup input, .formGroup select { padding: 10px; border: 1px solid #e5e7eb; border-radius: 10px; outline: none; font-size: 14px; }
+.formGroup input:focus, .formGroup select:focus { border-color: #10b981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+.saveBtn { width: 100%; padding: 12px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: all 0.3s; }
+.saveBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(16,185,129,0.3); }
+.saveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.tabs { display: flex; gap: 10px; margin-bottom: 20px; background: white; padding: 5px; border-radius: 25px; }
+.tabBtn { flex: 1; padding: 10px; background: transparent; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; color: #6b7280; transition: all 0.3s; }
+.tabActive { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+
+.list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 80px; }
+.gardCard { display: flex; align-items: center; gap: 12px; background: white; border-radius: 15px; padding: 15px; transition: all 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.gardCard:hover { transform: translateX(5px); box-shadow: 0 5px 15px rgba(16,185,129,0.15); }
+.cardLeft { flex-shrink: 0; }
+.shiftBadge { font-size: 32px; }
+.cardMiddle { flex: 1; }
+.cardName { font-weight: bold; color: #1f2937; margin-bottom: 4px; font-size: 15px; }
+.cardDate { font-size: 12px; color: #6b7280; margin-bottom: 2px; }
+.cardLoc { font-size: 12px; color: #9ca3af; }
+.cardRight { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.shiftLabel { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.statusActive { background: #d1fae5; color: #059669; }
+.statusInactive { background: #fee2e2; color: #50b59a; }
+.deleteBtn { background: none; border: none; font-size: 18px; cursor: pointer; padding: 4px; border-radius: 8px; transition: background 0.2s; }
+.deleteBtn:hover { background: #fee2e2; }
+
+.empty { text-align: center; padding: 50px; background: white; border-radius: 15px; }
+.empty span { font-size: 48px; display: block; margin-bottom: 10px; }
+.empty p { color: #6b7280; }
+.loadingWrap { display: flex; flex-direction: column; gap: 12px; }
+.skeleton { height: 80px; background: white; border-radius: 15px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+.bottomNav { display: flex; justify-content: space-around; padding: 12px; background: white; position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; border-top: 1px solid #e5e7eb; border-radius: 20px 20px 0 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
+.navBtn { background: none; border: none; font-size: 24px; padding: 8px; cursor: pointer; border-radius: 12px; transition: all 0.3s; }
+.navBtn:hover { background: #f3f4f6; }
+.navActive { background: #dcfce7; color: #10b981; }

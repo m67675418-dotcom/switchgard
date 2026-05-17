@@ -1,33 +1,341 @@
-.nurse-profile-container {
-  min-height: 100vh; background: #fcfcfc; padding-bottom: 90px; padding-top: 20px;
+/* ============================================
+   NurseProfile.css — RTL Arabic Design
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700&display=swap');
+
+/* ── صفحة الحاوي ── */
+.np-page {
+  font-family: 'Cairo', sans-serif;
+  direction: rtl;
+  min-height: 100vh;
+  background: #f5f6fa;
+  padding: 1rem 1rem 5rem;
+  max-width: 480px;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
-.profile-header {
-  display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 30px;
+/* ── زر الرجوع ── */
+.np-back-btn {
+  background: none;
+  border: none;
+  font-family: 'Cairo', sans-serif;
+  font-size: 15px;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
 }
-.profile-header h3 { margin: 0; color: #1e3a8a; font-weight: 700; }
-.icon-btn { cursor: pointer; color: #26c6da; font-size: 1.2rem; transition: 0.2s; }
-.icon-btn:hover { color: #00acc1; }
+.np-back-btn:hover { color: #111827; }
 
-.profile-info-section { text-align: center; margin-bottom: 30px; }
-
-.avatar-circle {
-  width: 100px; height: 100px; background: #26c6da; border-radius: 50%; margin: 0 auto 15px;
-  display: flex; align-items: center; justify-content: center; font-size: 50px; color: white;
-  box-shadow: 0 4px 15px rgba(38, 198, 218, 0.3);
+/* ── بطاقة الهوية ── */
+.np-hero-card {
+  background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 60%, #3b82f6 100%);
+  border-radius: 20px;
+  padding: 1.5rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.30);
 }
 
-.user-name { margin: 0 0 5px; color: #1e3a8a; font-size: 1.5rem; }
-.user-role { margin: 0; color: #6b7280; font-size: 1rem; }
-
-.info-card {
-  background: white; border-radius: 20px; padding: 20px; margin: 0 20px;
-  box-shadow: 0 4px 12px rgba(38, 198, 218, 0.08); border: 1px solid #eef;
+.np-hero-card::before {
+  content: '';
+  position: absolute;
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  left: -40px;
+  top: -40px;
 }
 
-.info-row {
-  display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #f0f7f8;
+.np-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.20);
+  border: 2px solid rgba(255,255,255,0.40);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  flex-shrink: 0;
+  backdrop-filter: blur(4px);
 }
-.info-row:last-child { border-bottom: none; }
-.info-icon { color: #26c6da; font-size: 1.2rem; background: #e0f7fa; padding: 10px; border-radius: 12px; }
-.info-row p { margin: 0; color: #333; font-weight: 500; }
+
+.np-hero-info {
+  flex: 1;
+}
+
+.np-hero-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 4px;
+  letter-spacing: -0.3px;
+}
+
+.np-hero-badge {
+  font-size: 12px;
+  color: rgba(255,255,255,0.80);
+  background: rgba(255,255,255,0.15);
+  border-radius: 30px;
+  padding: 3px 12px;
+}
+
+.np-status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #4ade80;
+  border: 2px solid rgba(255,255,255,0.60);
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.25);
+}
+
+/* ── بطاقة المعلومات ── */
+.np-info-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 0.5rem 1rem;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+}
+
+.np-info-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f3f8;
+}
+.np-info-row:last-child { border-bottom: none; }
+
+.np-info-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #eff6ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.np-info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.np-info-label {
+  font-size: 11px;
+  color: #9ca3af;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.np-info-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* ── أزرار الإجراءات ── */
+.np-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.np-btn {
+  flex: 1;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 13px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.np-btn:active { transform: scale(0.97); }
+
+.np-btn.edit {
+  background: #2563eb;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+.np-btn.edit:hover { box-shadow: 0 6px 18px rgba(37, 99, 235, 0.38); }
+
+.np-btn.delete {
+  background: #fff1f2;
+  color: #e11d48;
+  box-shadow: 0 2px 8px rgba(225, 29, 72, 0.10);
+}
+.np-btn.delete:hover { background: #ffe4e6; }
+.np-btn.delete:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ── بطاقة التعديل ── */
+.np-edit-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  animation: slideIn 0.2s ease;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.np-edit-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0 0 1.25rem;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f3f8;
+}
+
+.np-form-group {
+  margin-bottom: 14px;
+}
+
+.np-form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 6px;
+  letter-spacing: 0.3px;
+}
+
+.np-form-group input {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  color: #1f2937;
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  direction: rtl;
+}
+.np-form-group input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+  background: #fff;
+}
+
+/* ── أزرار التعديل ── */
+.np-edit-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.np-btn.save {
+  flex: 1;
+  background: #2563eb;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+}
+.np-btn.save:hover { box-shadow: 0 6px 18px rgba(37, 99, 235, 0.38); }
+.np-btn.save:disabled { opacity: 0.65; cursor: not-allowed; }
+
+.np-btn.cancel {
+  flex: none;
+  padding: 13px 20px;
+  background: #f3f4f6;
+  color: #6b7280;
+  box-shadow: none;
+}
+.np-btn.cancel:hover { background: #e5e7eb; }
+
+/* ── رسالة التنبيه (Toast) ── */
+.np-toast {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideIn 0.2s ease;
+}
+.np-toast.success {
+  background: #f0fdf4;
+  color: #15803d;
+  border: 1px solid #bbf7d0;
+}
+.np-toast.error {
+  background: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+/* ── Skeleton Loading ── */
+.np-skeleton-hero,
+.np-skeleton-card {
+  border-radius: 16px;
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+  margin-bottom: 14px;
+}
+.np-skeleton-hero { height: 110px; border-radius: 20px; }
+.np-skeleton-card  { height: 200px; }
+.np-skeleton-card.short { height: 60px; }
+
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── صفحة الخطأ ── */
+.np-error-box {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  margin-top: 2rem;
+}
+.np-error-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+.np-error-box p {
+  font-size: 15px;
+  color: #6b7280;
+  margin: 0 0 1.25rem;
+}
+
+.np-btn-back {
+  font-family: 'Cairo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 11px 24px;
+  cursor: pointer;
+}

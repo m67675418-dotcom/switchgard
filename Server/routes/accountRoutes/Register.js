@@ -1,103 +1,140 @@
 const express = require('express');
 const router = express.Router();
-
-// ✅ تأكد من مسارات الموديلات الصحيحة عندك
-const Account = require('../../models/accountModel'); 
+const Account = require('../../models/accountModel');
 const Doctor = require('../../models/DoctorModel');
 const Nurse = require('../../models/nurseModel');
 const Pharmacist = require('../../models/pharmacistModel');
-const FireFighter = require('../../models/FireFighters'); // تأكد من اسم الملف
+const FireFighter = require('../../models/FireFighters');
 
 router.post('/', async (req, res) => {
     try {
         const { email, password, role, ...otherData } = req.body;
 
-        console.log('📝 بيانات التسجيل:', { email, role, otherData });
+        console.log('📝 [1] بيانات التسجيل:', { email, role });
 
+        // التحقق من البيانات
         if (!email || !password || !role) {
-            return res.status(400).json({ message: 'البيانات ناقصة' });
+            console.log('❌ [2] بيانات ناقصة');
+            return res.status(400).json({ 
+                success: false, 
+                message: '⚠️ يرجى ملء جميع الحقول المطلوبة' 
+            });
         }
 
-        // 1. إنشاء حساب المستخدم الأساسي
+        // التحقق من أن الإيميل غير مستخدم
+        console.log('🔍 [3] التحقق من الإيميل:', email.toLowerCase());
+        const existingAccount = await Account.findOne({ email: email.toLowerCase() });
+        
+        if (existingAccount) {
+            console.log('❌ [4] الإيميل مستخدم بالفعل');
+            return res.status(409).json({ 
+                success: false, 
+                message: '⚠️ هذا الإيميل مستخدم بالفعل، جربي إيميل آخر' 
+            });
+        }
+
+        // إنشاء الحساب
+        console.log('✅ [5] إنشاء حساب جديد...');
         const newAccount = new Account({
             email: email.toLowerCase(),
-            password, // سيتم تشفيره تلقائياً بواسطة الموديل
+            password,
             role
         });
 
         await newAccount.save();
-        console.log('✅ تم إنشاء الحساب:', newAccount._id);
+        console.log('✅ [6] تم إنشاء الحساب:', newAccount._id);
 
-        // 2. إنشاء البيانات الخاصة حسب الدور
+        // إنشاء البيانات الخاصة حسب الدور
         try {
+            let newRecord;
+            
             switch (role.toLowerCase()) {
-                case 'pharmacist':
-                    await new Pharmacist({
-                        userId: newAccount._id,
-                        gmail: email.toLowerCase(),
-                        nomPharmacie: otherData.nomPharmacie,
-                        adressePharmacie: otherData.adressePharmacie,
-                        numAgrement: otherData.numAgrement,
-                        password: password
-                    }).save();
-                    break;
-
-                case 'firefighter':
-                    await new FireFighter({
-                        userId: newAccount._id,
-                        gmail: email.toLowerCase(),
-                        matricule: otherData.matricule,
-                        grade: otherData.grade,
-                        uniteIntervention: otherData.uniteIntervention,
-                        password: password
-                    }).save();
-                    break;
-
                 case 'doctor':
-                    await new Doctor({
+                    newRecord = new Doctor({
                         userId: newAccount._id,
                         email: email.toLowerCase(),
                         fullName: otherData.fullName,
                         specialty: otherData.specialty,
                         numOrdre: otherData.numOrdre,
                         location: otherData.location,
-                        password: password
-                    }).save();
+                        password
+                    });
                     break;
 
                 case 'nurse':
-                    await new Nurse({
+                    newRecord = new Nurse({
                         userId: newAccount._id,
                         gmail: email.toLowerCase(),
                         diplome: otherData.diplome,
                         service: otherData.service,
                         equipe: otherData.equipe,
-                        password: password
-                    }).save();
+                        password
+                    });
                     break;
-                
+
+                case 'pharmacist':
+                    newRecord = new Pharmacist({
+                        userId: newAccount._id,
+                        gmail: email.toLowerCase(),
+                        nomPharmacie: otherData.nomPharmacie,
+                        adressePharmacie: otherData.adressePharmacie,
+                        numAgrement: otherData.numAgrement,
+                        password
+                    });
+                    break;
+
+                case 'firefighter':
+                    newRecord = new FireFighter({
+                        userId: newAccount._id,
+                        gmail: email.toLowerCase(),
+                        matricule: otherData.matricule,
+                        grade: otherData.grade,
+                        uniteIntervention: otherData.uniteIntervention,
+                        password
+                    });
+                    break;
+
                 default:
-                    // إذا كان الدور غير معروف، نحذف الحساب الذي أنشأناه
                     await Account.findByIdAndDelete(newAccount._id);
-                    return res.status(400).json({ message: 'دور غير مدعوم' });
+                    return res.status(400).json({ 
+                        success: false, 
+                        message: '⚠️ دور غير صالح' 
+                    });
             }
+
+            if (newRecord) {
+                await newRecord.save();
+                console.log('✅ [7] تم حفظ بيانات الدور:', role);
+            }
+
+            console.log('✅ [8] التسجيل نجح!');
+            res.status(201).json({ 
+                success: true, 
+                message: '✅ تم إنشاء الحساب بنجاح!',
+                user: {
+                    id: newAccount._id,
+                    email: newAccount.email,
+                    role: newAccount.role
+                }
+            });
+
         } catch (modelError) {
-            console.error('❌ خطأ في حفظ بيانات الدور:', modelError);
-            // في حالة الفشل، نحذف الحساب الأساسي لعدم ترك بيانات معلقة
+            console.error('❌ [9] خطأ في حفظ بيانات الدور:', modelError.message);
+            // حذف الحساب في حالة الفشل
             await Account.findByIdAndDelete(newAccount._id);
             throw modelError;
         }
 
-        res.status(201).json({ 
-            message: 'تم التسجيل بنجاح!',
-            success: true 
-        });
-
     } catch (error) {
-        console.error('❌ خطأ فادح في السيرفر:', error);
+        console.error('❌ [ERR] خطأ فادح في السيرفر:', error);
+        console.error('❌ [ERR] التفاصيل:', error.message);
+        console.error('❌ [ERR] Stack:', error.stack);
+        
         res.status(500).json({ 
-            message: 'خطأ في السيرفر', 
-            error: error.message 
+            success: false, 
+            message: 'خطأ في السيرفر',
+            error: error.message,
+            details: process.env.NODE_ENV === 'development' ? error.stack : undefined
         });
     }
 });

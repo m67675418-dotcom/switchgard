@@ -1,21 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import logo from '../assets/logo.png'; // ✅ اللوغو
 import './Login.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
 const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
-  
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    role: ''
-  });
-  
+
+  const [formData, setFormData] = useState({ email: '', password: '', role: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]     = useState('');
 
   const roles = [
     { id: 'doctor',      label: 'Doctor',      emoji: '👨‍⚕️' },
@@ -25,10 +21,7 @@ const Login = ({ onLoginSuccess }) => {
     { id: 'admin',       label: 'Admin',       emoji: '🛡️'  },
   ];
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
-
+  const handleChange     = (e)      => setFormData({ ...formData, [e.target.name]: e.target.value });
   const handleRoleChange = (roleId) => {
     setFormData({ ...formData, role: formData.role === roleId ? '' : roleId });
     setError('');
@@ -36,68 +29,57 @@ const Login = ({ onLoginSuccess }) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    
-    if (!formData.email || !formData.password) {
-      setError('⚠️ Please enter email and password');
-      return;
-    }
 
-    if (!formData.role) {
-      setError('⚠️ Please select your role');
-      return;
-    }
+    if (!formData.email || !formData.password) { setError('⚠️ Please enter email and password'); return; }
+    if (!formData.role)                         { setError('⚠️ Please select your role');         return; }
 
     setLoading(true);
     setError('');
 
     try {
       console.log('📤 Sending login request...', formData);
-      
+
       const response = await axios.post(`${API_BASE}/account/login`, {
-        email: formData.email,
+        email:    formData.email,
         password: formData.password,
-        role: formData.role
+        role:     formData.role,
       });
 
       console.log('📥 Response:', response.data);
 
       if (response.data.success || response.data.token) {
         const userData = response.data.user || response.data.userData;
-        
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(userData));
-        
         console.log('✅ Login successful!', userData);
-        
-        if (onLoginSuccess) {
-          onLoginSuccess(userData);
-        }
+        if (onLoginSuccess) onLoginSuccess(userData);
 
-        setTimeout(() => {
-          navigate('/dashboard');
-        }, 500);
+        const role = userData?.role || formData.role;
+        switch (role) {
+          case 'admin':       navigate('/admin/dashboard');       break;
+          case 'doctor':      navigate('/doctor/dashboard');      break;
+          case 'nurse':       navigate('/nurse/dashboard');       break;
+          case 'pharmacist':  navigate('/pharmacist/dashboard');  break;
+          case 'firefighter': navigate('/firefighter/dashboard'); break;
+          default:            navigate('/dashboard');             break;
+        }
       }
     } catch (err) {
       console.error('❌ Login error:', err);
-      
-      // For demo purposes - allow login without backend
-      const fakeUser = {
-        _id: 'demo-user-' + Date.now(),
-        email: formData.email,
-        role: formData.role,
-        fullName: formData.email.split('@')[0],
-      };
-      
-      localStorage.setItem('token', 'demo-token-123');
-      localStorage.setItem('user', JSON.stringify(fakeUser));
-      
-      if (onLoginSuccess) {
-        onLoginSuccess(fakeUser);
+      const status  = err?.response?.status;
+      const message = err?.response?.data?.message || '';
+
+      if (status === 403) {
+        const match       = message.match(/'([^']+)'/);
+        const actualRole  = match ? match[1] : '';
+        setError(`❌ Wrong role! This account is registered as "${actualRole}"`);
+      } else if (status === 401) {
+        setError('❌ Invalid email or password');
+      } else if (status === 400) {
+        setError('⚠️ Please fill all fields');
+      } else {
+        setError('❌ Server error, please try again');
       }
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 500);
     } finally {
       setLoading(false);
     }
@@ -106,31 +88,18 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <div className="login-page">
       <div className="login-card">
+
         <div className="logo-container">
-          <div className="logo-placeholder">🔐</div>
-          <h2 className="brand-title"><span>Switch</span>Guard</h2>
+          {/* ✅ اللوغو بدل الـ emoji */}
+          <img src={logo} alt="SwitchGard Logo" className="login-logo" />
           <p className="tagline">Let's get started!</p>
         </div>
 
         {error && <div className="status-message error">{error}</div>}
 
         <form onSubmit={handleLogin}>
-          <input
-            type="email"
-            name="email"
-            placeholder="📧 Email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <input
-            type="password"
-            name="password"
-            placeholder="🔐 Password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <input type="email"    name="email"    placeholder="📧 Email"    value={formData.email}    onChange={handleChange} required />
+          <input type="password" name="password" placeholder="🔐 Password" value={formData.password} onChange={handleChange} required />
 
           <div className="role-section">
             <p className="role-title">🎯 Select your role:</p>

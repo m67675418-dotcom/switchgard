@@ -18,58 +18,29 @@
 }
 
 @keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
-/* Logo Container */
+/* ✅ اللوغو */
 .logo-container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-.logo-placeholder {
-  font-size: 80px;
-  animation: logoFloat 2s ease-in-out infinite;
-}
-
-@keyframes logoFloat {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.brand-text {
-  text-align: center;
-}
-
-.brand-title {
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin: 0;
-  color: #1d3557;
-}
-
-.brand-title span {
-  color: #e63946;
+.login-logo {
+  width: 400px;
+  height: 400px;
+  object-fit: contain;
 }
 
 .tagline {
   color: #888;
-  margin-top: 8px;
   font-size: 0.95rem;
+  margin: 0;
 }
 
 /* Form Styles */
@@ -85,18 +56,16 @@
   border-radius: 10px;
   font-size: 1rem;
   transition: all 0.3s;
+  outline: none;
 }
 
 .login-card input:focus {
-  outline: none;
   border-color: #667eea;
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
 /* Role Section */
-.role-section {
-  margin: 10px 0;
-}
+.role-section { margin: 10px 0; }
 
 .role-title {
   font-size: 0.95rem;
@@ -122,10 +91,7 @@
   background: #f8f9fa;
 }
 
-.role-checkbox-item:hover {
-  border-color: #667eea;
-  background: #f0f4ff;
-}
+.role-checkbox-item:hover { border-color: #667eea; background: #f0f4ff; }
 
 .role-checkbox-item.selected {
   border-color: #667eea;
@@ -133,9 +99,7 @@
   color: white;
 }
 
-.role-checkbox-item.selected .role-checkbox-label {
-  color: white;
-}
+.role-checkbox-item.selected .role-checkbox-label { color: white; }
 
 .role-checkbox-item input[type="checkbox"] {
   margin-right: 10px;
@@ -151,9 +115,7 @@
   font-size: 0.9rem;
 }
 
-.role-emoji {
-  font-size: 1.2rem;
-}
+.role-emoji { font-size: 1.2rem; }
 
 /* Button */
 .main-btn {
@@ -174,10 +136,7 @@
   box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
 }
 
-.main-btn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
+.main-btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Status Message */
 .status-message {
@@ -187,24 +146,11 @@
   text-align: center;
   font-weight: 500;
 }
-
-.status-message.error {
-  background: #fee;
-  color: #c33;
-  border: 1px solid #fcc;
-}
-
-.status-message.success {
-  background: #efe;
-  color: #3c3;
-  border: 1px solid #cfc;
-}
+.status-message.error   { background: #fee; color: #c33; border: 1px solid #fcc; }
+.status-message.success { background: #efe; color: #3c3; border: 1px solid #cfc; }
 
 /* Auth Links */
-.auth-links {
-  margin-top: 20px;
-  text-align: center;
-}
+.auth-links { margin-top: 20px; text-align: center; }
 
 .signup-link {
   color: #667eea;
@@ -213,26 +159,11 @@
   font-size: 14px;
   transition: 0.3s;
 }
-
-.signup-link:hover {
-  text-decoration: underline;
-}
+.signup-link:hover { text-decoration: underline; }
 
 /* Responsive */
 @media (max-width: 480px) {
-  .login-card {
-    padding: 30px 20px;
-  }
-  
-  .brand-title {
-    font-size: 2rem;
-  }
-  
-  .logo-placeholder {
-    font-size: 60px;
-  }
-  
-  .role-checkboxes-grid {
-    grid-template-columns: 1fr;
-  }
+  .login-card { padding: 30px 20px; }
+  .login-logo { width: 120px; height: 120px; }
+  .role-checkboxes-grid { grid-template-columns: 1fr; }
 }

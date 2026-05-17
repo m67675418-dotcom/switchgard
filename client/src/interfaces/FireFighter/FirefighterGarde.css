@@ -1,0 +1,152 @@
+/* FirefighterGarde.css - Style rouge */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 10px;
+  z-index: 1000;
+}
+.toastSuccess { background: #10b981; color: white; }
+.toastError { background: #ef4444; color: white; }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 15px;
+}
+.backBtn {
+  background: #f3f4f6;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 20px;
+  cursor: pointer;
+}
+.headerTitle { font-size: 20px; color: #1f2937; }
+.addBtn {
+  background: #ef4444;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  font-size: 20px;
+  color: white;
+  cursor: pointer;
+}
+.addBtn:hover { background: #ef4444; }
+
+.statsRow { display: flex; gap: 15px; margin-bottom: 25px; }
+.statCard {
+  flex: 1;
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+  text-align: center;
+}
+.statVal { font-size: 28px; font-weight: bold; display: block; }
+.statLabel { font-size: 12px; color: #6b7280; margin-top: 5px; }
+
+.gardForm {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.formTitle { color: #1f2937; margin-bottom: 15px; }
+.formGrid { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+.formGroup { display: flex; flex-direction: column; gap: 5px; }
+.formGroup label { font-size: 12px; color: #6b7280; }
+.formGroup input, .formGroup select {
+  padding: 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+}
+.saveBtn {
+  width: 100%;
+  padding: 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.saveBtn:hover { background: #ef4444; }
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: white;
+  padding: 5px;
+  border-radius: 25px;
+}
+.tabBtn {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #6b7280;
+}
+.tabActive { background: #ef4444; color: white; }
+
+.list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 80px; }
+.gardCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: white;
+  border-radius: 15px;
+  padding: 15px;
+}
+.cardLeft { flex-shrink: 0; }
+.shiftBadge { font-size: 32px; }
+.cardMiddle { flex: 1; }
+.cardName { font-weight: bold; color: #1f2937; margin-bottom: 4px; }
+.cardDate { font-size: 12px; color: #6b7280; }
+.cardRight { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+.shiftLabel { padding: 4px 10px; border-radius: 20px; font-size: 11px; }
+.statusActive { background: #d1fae5; color: #059669; }
+.statusInactive { background: #fee2e2; color: #3b82f6; }
+.deleteBtn { background: none; border: none; font-size: 18px; cursor: pointer; }
+
+.empty { text-align: center; padding: 50px; background: white; border-radius: 15px; }
+.empty span { font-size: 48px; }
+.skeleton { height: 80px; background: white; border-radius: 15px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+.bottomNav {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  background: white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+.navBtn { background: none; border: none; font-size: 24px; padding: 8px; cursor: pointer; border-radius: 12px; }
+.navBtn:hover { background: #f3f4f6; }
+.navActive { background: #f3f4f6; color: #ef4444; }

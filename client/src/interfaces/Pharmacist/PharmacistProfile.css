@@ -1,32 +1,81 @@
-.pharmacist-profile-container {
-  min-height: 100vh; background: #f0fdf4; padding-bottom: 90px; padding-top: 20px;
+/* PharmacistProfile.css - Style Vert Foncé */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #627be8 0%, #5f5fd9 100%);
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.profile-header {
-  display: flex; justify-content: space-between; align-items: center; padding: 0 20px; margin-bottom: 30px;
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 10px;
+  z-index: 1000;
 }
-.profile-header h3 { margin: 0; color: #065f46; font-weight: 700; }
-.icon-btn { cursor: pointer; color: #10b981; font-size: 1.2rem; }
+.toastSuccess { background: #10b981; color: white; }
+.toastError { background: #ef4444; color: white; }
 
-.profile-info-section { text-align: center; margin-bottom: 30px; }
-
-.avatar-circle {
-  width: 100px; height: 100px; background: #10b981; border-radius: 50%; margin: 0 auto 15px;
-  display: flex; align-items: center; justify-content: center; font-size: 50px; color: white;
-  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+.hero {
+  background: linear-gradient(135deg, #3b82f6 0%, #3e3a7b 100%);
+  border-radius: 20px;
+  padding: 40px 20px 30px;
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
 }
 
-.user-name { margin: 0 0 5px; color: #065f46; font-size: 1.5rem; }
-.user-role { margin: 0; color: #6b7280; font-size: 1rem; }
-
-.info-card {
-  background: white; border-radius: 20px; padding: 20px; margin: 0 20px;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.08); border: 1px solid #d1fae5;
+.backBtn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
 }
+.avatar { width: 100px; height: 100px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 48px; margin: 0 auto; }
+.heroName { color: white; font-size: 22px; margin-top: 15px; }
+.heroSpec { color: rgba(255,255,255,0.9); }
 
-.info-row {
-  display: flex; align-items: center; gap: 15px; padding: 15px 0; border-bottom: 1px solid #d1fae5;
-}
-.info-row:last-child { border-bottom: none; }
-.info-icon { color: #10b981; font-size: 1.2rem; }
-.info-row p { margin: 0; color: #333; font-weight: 500; }
+.infoSection { background: white; border-radius: 20px; padding: 20px; margin-bottom: 80px; }
+.infoRow { display: flex; align-items: center; gap: 15px; padding: 12px 0; border-bottom: 1px solid #e5e7eb; }
+.infoIcon { font-size: 24px; width: 40px; }
+.infoLabel { font-size: 12px; color: #6b7280; }
+.infoVal { font-size: 15px; font-weight: 600; }
+
+.actions { display: flex; gap: 15px; margin-top: 20px; }
+.btnEdit, .btnDelete { flex: 1; padding: 12px; border-radius: 10px; font-weight: bold; cursor: pointer; }
+.btnEdit { background: #059669; color: white; }
+.btnEdit:hover { background: #047857; transform: translateY(-2px); }
+.btnDelete { background: #fee2e2; color: #dc2626; }
+
+.editForm { background: white; border-radius: 20px; padding: 20px; margin-bottom: 80px; }
+.editTitle { font-size: 18px; color: #1f2937; margin-bottom: 20px; text-align: center; }
+.formGroup { margin-bottom: 15px; }
+.formGroup label { display: block; font-size: 12px; color: #1f2937; margin-bottom: 5px; font-weight: 600; }
+.formGroup input, .formGroup select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px; }
+.formGroup input:focus, .formGroup select:focus { border-color: #059669; outline: none; }
+
+.editActions { display: flex; gap: 15px; margin-top: 20px; }
+.btnSave { flex: 1; padding: 12px; background: #059669; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+.btnSave:hover { background: #047857; transform: translateY(-2px); }
+.btnCancel { flex: 1; padding: 12px; background: #f3f4f6; color: #1f2937; border: none; border-radius: 10px; cursor: pointer; }
+
+.bottomNav { display: flex; justify-content: space-around; padding: 12px; background: white; position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; }
+.navBtn { background: none; border: none; font-size: 24px; padding: 8px; cursor: pointer; border-radius: 12px; }
+.navBtn:hover { background: #f3f4f6; }
+.navActive { background: #f3f4f6; color: #059669; }
+
+.errorBox { text-align: center; padding: 40px; background: white; border-radius: 20px; }
+.skeletonHeader { height: 200px; background: #f3f4f6; border-radius: 20px; animation: pulse 1.5s infinite; }
+.skeletonCard { height: 300px; background: #f3f4f6; border-radius: 20px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }

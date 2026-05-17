@@ -1,38 +1,56 @@
+// 📁 ضع هذا الملف فـ Server/ وشغله مرة وحدة فقط
+// الأمر: node createAdmin.js
+
 const mongoose = require('mongoose');
-const Account = require('../models/accountModel');
+const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
-const createAdmin = async () => {
-  try {
-    // ✅ اتصال صحيح
-    await mongoose.connect('mongodb://127.0.0.1:27017/User');
-    console.log('✅ Connected to MongoDB');
+const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/User';
 
-    // حذف Admin قديم
-    await Account.deleteOne({ email: 'admin@switchguard.com' });
-    console.log('🗑️ Old admin deleted');
+const accountSchema = new mongoose.Schema({
+    email: { type: String, required: true, unique: true, lowercase: true },
+    password: { type: String, required: true, select: false },
+    role: { type: String, default: 'user' },
+    isActive: { type: Boolean, default: true }
+}, { timestamps: true });
 
-    // إنشاء Admin جديد
-    const admin = new Account({
-      email: 'admin@switchguard.com',
-      password: 'admin123',
-      role: 'admin',
-      isActive: true
-    });
+const Account = mongoose.models.Account || mongoose.model('Account', accountSchema);
 
-    await admin.save();
-    console.log('✅ Admin created successfully!');
-    console.log('🔑 Login credentials:');
-    console.log('   Email: admin@switchguard.com');
-    console.log('   Password: admin123');
-    console.log('   Role: admin');
+async function createAdmin() {
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log('✅ MongoDB Connected');
 
-    mongoose.connection.close();
-    console.log('🔌 Disconnected from MongoDB');
-    
-  } catch (err) {
-    console.error('❌ Error:', err.message);
-    mongoose.connection.close();
-  }
-};
+        // تحقق إذا admin موجود
+        const existing = await Account.findOne({ email: 'admin@switchguard.com' });
+        if (existing) {
+            console.log('⚠️ Admin already exists!');
+            process.exit(0);
+        }
+
+        // تشفير الباسوورد
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash('admin123', salt);
+
+        // إنشاء الـ admin
+        const admin = new Account({
+            email: 'admin@switchguard.com',
+            password: hashedPassword,
+            role: 'admin',
+            isActive: true
+        });
+
+        await admin.save();
+        console.log('✅ Admin created successfully!');
+        console.log('📧 Email: admin@switchguard.com');
+        console.log('🔐 Password: admin123');
+
+    } catch (error) {
+        console.error('❌ Error:', error.message);
+    } finally {
+        mongoose.connection.close();
+        process.exit(0);
+    }
+}
 
 createAdmin();

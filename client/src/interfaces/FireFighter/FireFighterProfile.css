@@ -1,52 +1,170 @@
-/* FireFighterProfile.css */
-.ff-profile-container {
-    min-height: 100vh;
-    background: #fff5f5;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    padding-bottom: 90px;
+/* FirefighterProfile.css - Style Rouge */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #627be8 0%, #5f5fd9 100%);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
 }
 
-.profile-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 30px; padding: 0 10px;
+.toast {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideDown 0.3s ease;
 }
 
-.profile-header h3 {
-    margin: 0; color: #ef4444; font-size: 1.4rem; font-weight: 700;
+.toastSuccess { background: #dcfce7; color: #16a34a; border: 1px solid #86efac; }
+.toastError { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translate(-50%, -20px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
 
-.icon-btn {
-    cursor: pointer; font-size: 1.2rem; transition: transform 0.2s; color: #64748b;
-}
-.icon-btn:hover { transform: scale(1.1); color: #ef4444; }
-
-.profile-image-section { text-align: center; margin-bottom: 30px; }
-
-.avatar-circle {
-    width: 110px; height: 110px;
-    background: linear-gradient(135deg, #ef4444, #dc2626);
-    border-radius: 50%; margin: 0 auto; display: flex; align-items: center;
-    justify-content: center; font-size: 50px; color: white;
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3); border: 4px solid #fff;
+/* Hero Section - ROUGE */
+.hero {
+  background: linear-gradient(135deg, #3b82f6 0%, #3e3a7b 100%);
+  border-radius: 20px;
+  padding: 40px 20px 30px;
+  text-align: center;
+  margin-bottom: 25px;
+  position: relative;
 }
 
-.user-name { margin: 15px 0 5px; font-size: 1.4rem; color: #1e293b; font-weight: 700; }
-.user-role { margin: 0; color: #64748b; font-size: 1rem; font-weight: 500; }
-
-.info-card {
-    background: white; border-radius: 20px; padding: 25px 20px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06); margin: 0 auto; max-width: 600px;
+.backBtn {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
 }
 
-.info-row {
-    display: flex; align-items: center; gap: 15px; padding: 15px 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-.info-row:last-child { border-bottom: none; }
+.backBtn:hover { background: rgba(255, 255, 255, 0.3); }
 
-.info-row-icon {
-    color: #ef4444; font-size: 1.2rem; width: 30px; text-align: center;
-    background: #fee2e2; padding: 8px; border-radius: 10px;
+.avatarWrap { position: relative; display: inline-block; margin-bottom: 15px; }
+.avatar {
+  width: 100px;
+  height: 100px;
+  background: #fbbf24;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: #1e3a8a;
+  border: 3px solid white;
+}
+.heroName { color: white; font-size: 22px; margin-bottom: 5px; }
+.heroSpec { color: rgba(255, 255, 255, 0.9); font-size: 14px; }
+
+.infoSection {
+  background: white;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
-.info-row p { margin: 0; color: #334155; font-size: 1rem; font-weight: 500; }
+.infoRow {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px 0;
+  border-bottom: 1px solid #e5e7eb;
+}
+.infoRow:last-child { border-bottom: none; }
+.infoIcon { font-size: 24px; width: 40px; }
+.infoText { flex: 1; }
+.infoLabel { display: block; font-size: 12px; color: #6b7280; margin-bottom: 3px; }
+.infoVal { font-size: 15px; color: #1f2937; font-weight: 600; }
+
+.actions { display: flex; gap: 15px; margin-bottom: 80px; }
+
+.btnEdit {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #ef4444;
+  color: white;
+}
+.btnEdit:hover { background: #dc2626; transform: translateY(-2px); }
+
+.btnDelete {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  cursor: pointer;
+  background: #fee2e2;
+  color: #dc2626;
+}
+.btnDelete:hover { background: #fecaca; transform: translateY(-2px); }
+
+.bottomNav {
+  display: flex;
+  justify-content: space-around;
+  padding: 12px;
+  background: white;
+  border-top: 1px solid #e5e7eb;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.navBtn { background: none; border: none; font-size: 24px; padding: 8px; cursor: pointer; border-radius: 12px; }
+.navBtn:hover { background: #f3f4f6; }
+.navActive { background: #f3f4f6; color: #ef4444; }
+
+.editForm { background: white; border-radius: 20px; padding: 20px; margin-bottom: 80px; }
+.editTitle { color: #000000; font-weight: bold; font-size: 18px; margin-bottom: 20px; text-align: center; }
+.formGroup { margin-bottom: 15px; }
+.formGroup label { color: #000000; font-weight: 700; font-size: 14px; display: block; margin-bottom: 8px; }
+.formGroup input, .formGroup select {
+  width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 10px;
+  font-size: 14px; color: #000000; background: white;
+}
+.formGroup input:focus, .formGroup select:focus { border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1); }
+
+.editActions { display: flex; gap: 15px; margin-top: 20px; }
+.btnSave { flex: 1; padding: 12px; background: #cb3a3a; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+.btnSave:hover { background: #bd3636; transform: translateY(-2px); }
+.btnCancel { flex: 1; padding: 12px; background: #f3f4f6; color: #1f2937; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+
+.errorBox { text-align: center; padding: 40px; background: white; border-radius: 20px; }
+.errorBox span { font-size: 48px; }
+.btnBack { padding: 12px 24px; background: #ef4444; color: white; border: none; border-radius: 10px; cursor: pointer; }
+
+.skeletonHeader { height: 200px; background: #f3f4f6; border-radius: 20px; animation: pulse 1.5s infinite; }
+.skeletonCard { height: 300px; background: #f3f4f6; border-radius: 20px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+@media (max-width: 480px) {
+  .container { padding: 15px; }
+  .hero { padding: 30px 15px; }
+  .avatar { width: 80px; height: 80px; font-size: 40px; }
+  .actions { flex-direction: column; }
+  .editActions { flex-direction: column; }
+}

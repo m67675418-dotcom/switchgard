@@ -1,0 +1,81 @@
+/* FirefighterHome.css - Style identique avec couleur rouge */
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  font-family: 'Segoe UI', sans-serif;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  background: white;
+  padding: 15px 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.greeting { color: #6b7280; font-size: 14px; margin-bottom: 5px; }
+.title { font-size: 20px; color: #1f2937; font-weight: bold; }
+.profileBtn { width: 45px; height: 45px; background: #f3f4f6; border: none; border-radius: 25px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.profileBtn:hover { background: #e5e7eb; transform: translateY(-2px); }
+
+.searchBox { position: relative; margin-bottom: 20px; background: white; border-radius: 12px; padding: 5px 15px; display: flex; align-items: center; gap: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.searchIcon { font-size: 18px; color: #9ca3af; }
+.searchInput { flex: 1; padding: 12px 0; border: none; background: transparent; outline: none; font-size: 14px; }
+.searchInput::placeholder { color: #9ca3af; }
+
+.catScroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; scrollbar-width: thin; }
+.catChip { display: flex; align-items: center; gap: 8px; padding: 10px 18px; background: white; border: none; border-radius: 25px; cursor: pointer; transition: all 0.3s; white-space: nowrap; font-size: 14px; color: #4b5563; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.catChip:hover { background: #f3f4f6; transform: translateY(-2px); }
+.catActive { background: #ef4444; color: white; }
+.catActive .catLabel { color: white; }
+
+.shortcuts { display: flex; gap: 15px; margin-bottom: 25px; }
+.shortcutBtn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 15px; background: white; border: none; border-radius: 15px; cursor: pointer; transition: all 0.3s; font-size: 14px; color: #4b5563; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.shortcutBtn:hover { background: #f3f4f6; transform: translateY(-3px); box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+.shortcutBtn span:first-child { font-size: 28px; }
+
+.sectionTitle { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: white; padding: 12px 20px; border-radius: 12px; }
+.sectionTitle h3 { font-size: 16px; color: #1f2937; margin: 0; }
+.count { background: #ef4444; color: white; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+
+.list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 80px; }
+.card { display: flex; align-items: center; gap: 12px; background: white; border: none; border-radius: 15px; padding: 15px; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.card:hover { background: #fef2f2; transform: translateX(5px); }
+.cardAvatar { font-size: 45px; }
+.cardInfo { flex: 1; }
+.cardName { font-weight: bold; color: #1f2937; margin-bottom: 4px; font-size: 15px; }
+.cardSpec { font-size: 12px; color: #6b7280; }
+.cardLoc { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+.cardRight { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badgeRed { background: #fee2e2; color: #dc2626; }
+.arrow { font-size: 20px; color: #9ca3af; }
+
+.loadingWrap { display: flex; flex-direction: column; gap: 12px; }
+.skeleton { height: 80px; background: white; border-radius: 15px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.6;} }
+.empty { text-align: center; padding: 50px; background: white; border-radius: 15px; margin: 20px 0; }
+.empty span { font-size: 48px; }
+.empty p { color: #6b7280; }
+
+.bottomNav { display: flex; justify-content: space-around; padding: 12px; background: white; border-top: 1px solid #e5e7eb; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; max-width: 500px; margin: 0 auto; }
+.navBtn { background: none; border: none; font-size: 24px; padding: 8px; cursor: pointer; border-radius: 12px; }
+.navBtn:hover { background: #f3f4f6; }
+.navActive { background: #f3f4f6; color: #ef4444; }
+
+@media (max-width: 480px) {
+  .container { padding: 15px; }
+  .catChip { padding: 8px 14px; font-size: 12px; }
+  .shortcutBtn { padding: 12px; }
+  .cardAvatar { font-size: 35px; }
+  .bottomNav { padding: 8px; }
+  .navBtn { font-size: 20px; }
+}

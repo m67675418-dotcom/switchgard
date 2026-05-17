@@ -3,10 +3,10 @@ const bcrypt = require('bcryptjs');
 
 const doctorSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
-  email: { type: String, required: true, unique: true, lowercase: true },
+  email: { type: String, required: true, lowercase: true },
   password: { type: String, required: true, select: false },
   specialty: { type: String, required: true },
-  numOrdre: { type: String, required: true, unique: true },
+  numOrdre: { type: String, required: true },
   location: { type: String, required: true },
   isAvailable: { type: Boolean, default: true },
   role: { type: String, default: 'doctor' }
