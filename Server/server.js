@@ -17,6 +17,9 @@ const io = new Server(server, {
   }
 });
 
+// ✅ Make io available globally (for use in routes)
+global.io = io;
+
 // ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -131,6 +134,7 @@ const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`🔌 Socket.io is active on port ${PORT}`);
+  console.log(`🌐 global.io is available for routes`);
 });
 
 module.exports = { app, io };

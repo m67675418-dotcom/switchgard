@@ -1,6 +1,4 @@
 // GardeDetailModal.jsx - Shared across Doctor, Nurse, Firefighter, Pharmacist
-// Usage: <GardeDetailModal garde={selectedGarde} currentUser={currentUser} role="doctor" onClose={()=>setSelected(null)} onDemande={handleDemande} />
-
 import { useState, useEffect } from "react";
 import "./GardeDetailModal.css";
 
@@ -16,7 +14,7 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
   const [loadingProfile, setLoadingProfile] = useState(false);
   const [demandeSent, setDemandeSent] = useState(false);
   const [sending, setSending] = useState(false);
-  const [tab, setTab] = useState("info"); // "info" | "cv"
+  const [tab, setTab] = useState("info");
 
   const cfg = ROLE_CONFIG[role] || ROLE_CONFIG.doctor;
 
@@ -25,11 +23,15 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
     catch { return d; }
   };
 
+  // ✅ Get current user ID (handle both _id and id)
+  const getCurrentUserId = () => {
+    return currentUser?._id || currentUser?.id || currentUser?.userId || null;
+  };
+
   // Fetch owner profile when modal opens
   useEffect(() => {
     if (!garde?.ownerId && !garde?.owner) return;
     setLoadingProfile(true);
-    // Try to fetch by ownerId first, fallback: search by name
     const id = garde.ownerId;
     if (!id) { setLoadingProfile(false); return; }
     fetch(`http://localhost:5000/api/${cfg.api}/${id}`)
@@ -38,40 +40,92 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
       .catch(() => setLoadingProfile(false));
   }, [garde, cfg.api]);
 
-  // Check if current user already sent a demande for this garde
+  // ✅ Check if current user already sent a demande for this garde
   useEffect(() => {
-    if (!garde?._id || !currentUser?._id) return;
-    fetch(`http://localhost:5000/api/demande/check?gardeId=${garde._id}&demandeurId=${currentUser._id}`)
+    const currentUserId = getCurrentUserId();
+    if (!garde?._id || !currentUserId) return;
+    fetch(`http://localhost:5000/api/demande/check?gardeId=${garde._id}&demandeurId=${currentUserId}`)
       .then(r => r.json())
       .then(data => { if (data.exists) setDemandeSent(true); })
       .catch(() => {});
-  }, [garde, currentUser]);
+  }, [garde, currentUser]); // ✅ Fixed: use currentUser instead of getCurrentUserId
 
+  // ✅ Handle Demande - FIXED VERSION
   const handleDemande = async () => {
-    if (!currentUser?._id) return;
+    console.log('📤 === Starting Demande ===');
+    console.log('currentUser:', currentUser);
+    console.log('garde:', garde);
+    
+    // ✅ Get current user ID (handle both _id and id)
+    const currentUserId = getCurrentUserId();
+    
+    if (!currentUserId) {
+      console.error('❌ No user ID found in currentUser!');
+      alert('❌ Error: User ID not found. Please login again.');
+      return;
+    }
+
+    if (!garde?._id) {
+      console.error('❌ No garde ID found!');
+      alert('❌ Error: Garde ID not found.');
+      return;
+    }
+
+    if (!garde?.ownerId) {
+      console.error('❌ No garde ownerId found!');
+      alert('❌ Error: Garde owner not found.');
+      return;
+    }
+
+    // Check if user is trying to demande their own garde
+    if (currentUserId === garde.ownerId) {
+      console.log('⚠️ User trying to demande own garde');
+      alert('❌ You cannot demande your own garde!');
+      return;
+    }
+
     setSending(true);
     try {
-       const res = await fetch("http://localhost:5000/api/demande", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          gardeId:      garde._id,
-          demandeurId:  currentUser._id,
-          proprietaireId: garde.ownerId,
-          role,
-          gardeDate:    garde.dateGarde,
-          gardeOwner:   garde.owner,
-        }),
+      const demandeData = {
+        gardeId: garde._id,
+        gardeDate: garde.dateGarde,
+        gardeOwner: garde.owner,
+        proprietaireId: garde.ownerId,
+        demandeurId: currentUserId,
+        demandeurName: currentUser.fullName || currentUser.displayName || currentUser.email || 'User',
+        role: currentUser.role || role,
+        type: 'echange',
+      };
+
+      console.log('📤 Sending demande data:', demandeData);
+
+      const res = await fetch('http://localhost:5000/api/demande', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(demandeData),
       });
+
+      const data = await res.json();
+      console.log('📥 Response:', data);
+
       if (res.ok) {
         setDemandeSent(true);
+        alert('✅ Demande envoyée avec succès!');
         onDemande?.(garde);
+      } else {
+        console.error('❌ Server error:', data);
+        alert('❌ ' + (data.message || 'Error sending demande'));
       }
-    } catch (e) { console.error(e); }
-    finally { setSending(false); }
+    } catch (error) {
+      console.error('❌ Network error:', error);
+      alert('❌ Network error: ' + error.message);
+    } finally {
+      setSending(false);
+    }
   };
 
-  const isOwner = currentUser?._id === garde?.ownerId || currentUser?.name === garde?.owner;
+  const currentUserId = getCurrentUserId();
+  const isOwner = currentUserId === garde?.ownerId || currentUser?.name === garde?.owner;
 
   if (!garde) return null;
 
@@ -106,13 +160,11 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
 
           {tab === "info" && (
             <div className="gdm-info-tab">
-              {/* Status banner */}
               <div className={`gdm-status-banner ${garde.status === "Active" ? "gdm-status-active" : "gdm-status-inactive"}`}>
                 <span>{garde.status === "Active" ? "✅" : "❌"}</span>
                 <span>Status: <strong>{garde.status}</strong></span>
               </div>
 
-              {/* Info rows */}
               <div className="gdm-info-list">
                 {[
                   { icon: "👤", label: "Owner",    val: garde.owner },
@@ -141,7 +193,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
                 </div>
               ) : ownerProfile ? (
                 <>
-                  {/* Profile hero */}
                   <div className="gdm-cv-hero" style={{ background: `linear-gradient(135deg, ${cfg.color}22, ${cfg.color}11)`, borderColor: `${cfg.color}33` }}>
                     <span className="gdm-cv-avatar">{cfg.avatar}</span>
                     <div>
@@ -151,7 +202,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
                       <p className="gdm-cv-role">{cfg.label}</p>
                     </div>
                   </div>
-                  {/* Profile fields */}
                   <div className="gdm-info-list">
                     {buildProfileFields(ownerProfile, role).map(({ icon, label, val }) => (
                       <div key={label} className="gdm-info-row">

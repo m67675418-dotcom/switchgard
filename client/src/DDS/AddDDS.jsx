@@ -1,65 +1,132 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './AddDDS.css';
 
 const AddDDS = () => {
-  const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    fullName: '',
+    position: ''
+  });
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setMessage('');
+
+    if (formData.password !== formData.confirmPassword) {
+      setMessage('❌ Passwords do not match');
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      const res = await axios.post('http://localhost:5000/api/dds/add', formData);
+      await axios.post('http://localhost:5000/api/account/register', {
+        email: formData.email,
+        password: formData.password,
+        role: 'dds',
+        fullName: formData.fullName,
+        position: formData.position || 'Director'
+      });
+
       setMessage('✅ DDS created successfully!');
-      setFormData({ email: '', password: '', fullName: '' });
+      setFormData({
+        email: '',
+        password: '',
+        confirmPassword: '',
+        fullName: '',
+        position: ''
+      });
     } catch (error) {
       setMessage('❌ ' + (error.response?.data?.message || 'Error creating DDS'));
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-      <h2 style={{ color: '#6b21a8', marginBottom: '20px' }}>Add New DDS</h2>
-      {message && <div style={{ padding: '12px', marginBottom: '16px', borderRadius: '6px', background: message.includes('✅') ? '#d1fae5' : '#fee2e2', color: message.includes('✅') ? '#065f46' : '#991b1b' }}>{message}</div>}
+    <div className="add-dds">
+      <h2>👔 Add New DDS Director</h2>
       
-      <form onSubmit={handleSubmit} style={{ background: 'white', padding: '24px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Full Name</label>
-          <input 
-            type="text" 
+      {message && (
+        <div className={`message ${message.includes('✅') ? 'success' : 'error'}`}>
+          {message}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="dds-form">
+        <div className="form-group">
+          <label>Full Name *</label>
+          <input
+            type="text"
+            name="fullName"
             value={formData.fullName}
-            onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+            onChange={handleChange}
             required
-            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}
+            placeholder="Enter full name"
           />
         </div>
-        
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Email</label>
-          <input 
-            type="email" 
+
+        <div className="form-group">
+          <label>Email *</label>
+          <input
+            type="email"
+            name="email"
             value={formData.email}
-            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            onChange={handleChange}
             required
-            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}
+            placeholder="email@example.com"
           />
         </div>
-        
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{ display: 'block', marginBottom: '8px', fontWeight: '600' }}>Password</label>
-          <input 
-            type="password" 
+
+        <div className="form-group">
+          <label>Position</label>
+          <input
+            type="text"
+            name="position"
+            value={formData.position}
+            onChange={handleChange}
+            placeholder="Director of Health"
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Password *</label>
+          <input
+            type="password"
+            name="password"
             value={formData.password}
-            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+            onChange={handleChange}
             required
-            style={{ width: '100%', padding: '10px', borderRadius: '6px', border: '1px solid #e2e8f0' }}
+            placeholder="Minimum 6 characters"
           />
         </div>
-        
-        <button 
-          type="submit"
-          style={{ width: '100%', padding: '12px', background: '#6b21a8', color: 'white', border: 'none', borderRadius: '6px', fontWeight: '600', cursor: 'pointer' }}
-        >
-          Create DDS
+
+        <div className="form-group">
+          <label>Confirm Password *</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
+            placeholder="Re-enter password"
+          />
+        </div>
+
+        <button type="submit" className="btn-submit" disabled={loading}>
+          {loading ? '⏳ Creating...' : '✅ Create DDS Account'}
         </button>
       </form>
     </div>

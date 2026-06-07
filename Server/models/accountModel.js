@@ -17,7 +17,7 @@ const accountSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'doctor', 'nurse', 'pharmacist', 'firefighter', 'user'],
+    enum: ['admin', 'doctor', 'nurse', 'pharmacist', 'firefighter', 'dds', 'user'], // ✅ Added 'dds'
     default: 'user'
   },
   isActive: {

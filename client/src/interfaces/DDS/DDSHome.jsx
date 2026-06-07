@@ -1,41 +1,99 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const DDSHome = ({ currentUser, onNavigate }) => {
-  return (
-    <div style={{ padding: '40px', maxWidth: '1200px', margin: '0 auto' }}>
-      <h1 style={{ color: '#6b21a8', marginBottom: '20px' }}>👔 DDS Dashboard</h1>
-      <p style={{ fontSize: '16px', color: '#64748b', marginBottom: '30px' }}>
-        Welcome {currentUser?.fullName || 'Director'}
-      </p>
+  const [demandes, setDemandes] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchPendingDemandes();
+  }, []);
+
+  const fetchPendingDemandes = async () => {
+    try {
+      console.log('📡 Fetching pending demandes for DDS...');
+      const res = await axios.get('http://localhost:5000/api/demande');
       
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-        <div 
-          onClick={() => onNavigate('demandes')}
-          style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'pointer', border: '2px solid #e2e8f0' }}
-        >
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>📋</div>
-          <h3 style={{ margin: '0 0 8px', color: '#6b21a8' }}>Pending Requests</h3>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Review and approve garde exchanges</p>
-        </div>
+      console.log('📥 All demandes:', res.data);
+      
+      // ✅ Filter only pending demandes for director
+      const pending = res.data.filter(d => 
+        d.directorStatus === 'pending' || !d.directorStatus
+      );
+      
+      console.log('✅ Pending demandes:', pending);
+      setDemandes(pending);
+    } catch (error) {
+      console.error('❌ Error fetching demandes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-        <div 
-          onClick={() => onNavigate('garde')}
-          style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'pointer', border: '2px solid #e2e8f0' }}
-        >
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>🛡️</div>
-          <h3 style={{ margin: '0 0 8px', color: '#6b21a8' }}>All Gardes</h3>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>View all gardes in the system</p>
-        </div>
+  const handleApprove = async (demandeId) => {
+    if (!window.confirm('الموافقة على هذا الطلب؟')) return;
+    
+    try {
+      const res = await axios.put(`http://localhost:5000/api/demande/${demandeId}/director-approve`);
+      console.log('✅ Approved:', res.data);
+      alert('✅ تمت الموافقة!');
+      fetchPendingDemandes();
+    } catch (error) {
+      console.error('❌ Error:', error);
+      alert('❌ خطأ في الموافقة: ' + error.message);
+    }
+  };
 
-        <div 
-          onClick={() => onNavigate('messages')}
-          style={{ background: 'white', padding: '30px', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', cursor: 'pointer', border: '2px solid #e2e8f0' }}
-        >
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>💬</div>
-          <h3 style={{ margin: '0 0 8px', color: '#6b21a8' }}>Messages</h3>
-          <p style={{ margin: 0, color: '#64748b', fontSize: '14px' }}>Communicate with staff</p>
+  const handleReject = async (demandeId) => {
+    if (!window.confirm('رفض هذا الطلب؟')) return;
+    
+    try {
+      await axios.put(`http://localhost:5000/api/demande/${demandeId}/director-reject`);
+      alert('❌ تم رفض الطلب');
+      fetchPendingDemandes();
+    } catch (error) {
+      alert('❌ خطأ في الرفض');
+    }
+  };
+
+  return (
+    <div className="dds-home">
+      <h1>👔 DDS Dashboard - الطلبات المعلقة</h1>
+      
+      {loading ? (
+        <p>⏳ جاري التحميل...</p>
+      ) : demandes.length === 0 ? (
+        <div className="empty-state">
+          <p>✅ لا توجد طلبات معلقة</p>
+          <p style={{fontSize: '14px', color: '#64748b'}}>
+            الطلبات ستظهر هنا بعد موافقة المستخدمين عليها
+          </p>
         </div>
-      </div>
+      ) : (
+        <div className="demandes-list">
+          {demandes.map((demande) => (
+            <div key={demande._id} className="demande-card">
+              <h3>📋 طلب {demande.type === 'vente' ? 'بيع' : 'تبادل'}</h3>
+              
+              <div className="demande-info">
+                <p><strong>المالك الحالي:</strong> {demande.gardeOwner}</p>
+                <p><strong>طالب التبديل:</strong> {demande.demandeurName}</p>
+                <p><strong>التاريخ:</strong> {new Date(demande.gardeDate).toLocaleDateString()}</p>
+                <p><strong>الحالة:</strong> {demande.status}</p>
+              </div>
+
+              <div className="actions">
+                <button className="btn-approve" onClick={() => handleApprove(demande._id)}>
+                  ✅ موافقة
+                </button>
+                <button className="btn-reject" onClick={() => handleReject(demande._id)}>
+                  ❌ رفض
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

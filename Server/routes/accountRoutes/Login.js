@@ -6,6 +6,7 @@ const Doctor     = require('../../models/DoctorModel');
 const Nurse      = require('../../models/nurseModel');
 const Pharmacist = require('../../models/pharmacistModel');
 const FireFighter = require('../../models/FireFighters');
+const DDS        = require('../../models/DDS'); // ✅ NEW
 const Account    = require('../../models/accountModel');
 
 router.post('/', async (req, res) => {
@@ -26,10 +27,9 @@ router.post('/', async (req, res) => {
         if (role.toLowerCase() === 'admin') {
             console.log('🔍 [3] Searching for admin account...');
 
-            // نبحث في Account ونتحقق من الـ role مباشرة
             const adminUser = await Account.findOne({
                 email: email.toLowerCase(),
-                role: 'admin'           // ← هذا يمنع أي account غير admin من الدخول
+                role: 'admin'
             }).select('+password');
 
             if (!adminUser) {
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // ✅ باقي الأدوار
+        // ✅ باقي الأدوار (بما فيها DDS)
         let Model;
         let emailField = 'email';
 
@@ -93,6 +93,10 @@ router.post('/', async (req, res) => {
             case 'firefighter':
                 Model = FireFighter;
                 emailField = 'gmail';
+                break;
+            case 'dds': // ✅ NEW - DDS Support
+                Model = DDS;
+                emailField = 'email';
                 break;
             default:
                 return res.status(400).json({
@@ -145,7 +149,8 @@ router.post('/', async (req, res) => {
                 ...(role === 'doctor'      && { fullName: user.fullName, specialty: user.specialty }),
                 ...(role === 'nurse'       && { userId: user.userId, diplome: user.diplome, service: user.service, equipe: user.equipe }),
                 ...(role === 'pharmacist'  && { nomPharmacie: user.nomPharmacie }),
-                ...(role === 'firefighter' && { matricule: user.matricule, grade: user.grade })
+                ...(role === 'firefighter' && { matricule: user.matricule, grade: user.grade }),
+                ...(role === 'dds'         && { fullName: user.fullName, position: user.position }) // ✅ NEW
             }
         });
 

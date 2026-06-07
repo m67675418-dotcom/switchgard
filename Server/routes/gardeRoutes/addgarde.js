@@ -1,29 +1,33 @@
-// routes/gardeRoutes/addgarde.js - ✅ Updated: saves ownerId and role
 const express = require('express');
-const router  = express.Router();
-const Garde   = require('../../models/Garde');
+const router = express.Router();
+const Garde = require('../../models/Garde');
 
-// POST /api/garde/add
 router.post('/', async (req, res) => {
   try {
-    const { owner, ownerId, dateGarde, status, role } = req.body;
+    const { owner, dateGarde, status, ownerId, role } = req.body;
 
-    if (!dateGarde) {
-      return res.status(400).json({ message: 'dateGarde is required' });
+    // ✅ تأكد من وجود ownerId
+    if (!ownerId) {
+      return res.status(400).json({ 
+        message: '❌ ownerId is required',
+        received: req.body 
+      });
     }
 
-    const garde = new Garde({
-      owner:     owner || '',
-      ownerId:   ownerId || null,   // ✅ save the user's _id
-      dateGarde: new Date(dateGarde),
-      status:    status || 'Active',
-      role:      role || 'doctor',  // ✅ save the role
+    const newGarde = new Garde({
+      owner: owner || 'Unknown',
+      ownerId: ownerId,  // ✅ مهم جداً
+      dateGarde,
+      status: status || 'Active',
+      role: role || 'doctor',
     });
 
-    const saved = await garde.save();
-    res.status(201).json({ message: '✅ Garde added', garde: saved });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    await newGarde.save();
+    res.status(201).json({ message: '✅ Garde created', garde: newGarde });
+
+  } catch (error) {
+    console.error('❌ Error creating garde:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 });
 

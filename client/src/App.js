@@ -10,8 +10,6 @@ import DoctorGard    from './interfaces/Doctor/DoctorGard';
 import DoctorMessage from './interfaces/Doctor/DoctorMessage';
 import DoctorProfile from './interfaces/Doctor/DoctorProfile';
 
-import AdminDashboard from './Admin/AdminDashboard';
-
 import AddDoctor       from './Doctor/AddDoctor';
 import ManageDoctor    from './Doctor/ManageDoctor';
 import GetSingleDoctor from './Doctor/GetSingleDoctor';
@@ -72,6 +70,9 @@ import AddDDS from './DDS/AddDDS';
 import ManageDDS from './DDS/ManageDDS';
 import GetSingleDDS from './DDS/GetSingleDDS';
 
+// ✅ NEW: Notification Bell
+import NotificationBell from './interfaces/components/NotificationBell';
+
 function App() {
   const [isLoggedIn, setIsLoggedIn]         = useState(false);
   const [currentUser, setCurrentUser]       = useState(null);
@@ -80,8 +81,6 @@ function App() {
   const [selectedDoctorId, setSelectedDoctorId]           = useState(null);
   const [selectedMessageId, setSelectedMessageId]         = useState(null);
   const [selectedGardeId, setSelectedGardeId]             = useState(null);
-  const [selectedNurseId, setSelectedNurseId]             = useState(null);
-  const [selectedPharmacistId, setSelectedPharmacistId]   = useState(null);
   const [selectedFireFighterId, setSelectedFireFighterId] = useState(null);
   const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   const [selectedEmailId, setSelectedEmailId]             = useState(null);
@@ -142,6 +141,9 @@ function App() {
       background: btnBg, color: 'white', border: 'none', padding: '7px 16px',
       borderRadius: '6px', cursor: 'pointer', fontWeight: '600', fontSize: '13px',
     },
+    bellWrapper: {
+      display: 'flex', alignItems: 'center', gap: '16px'
+    }
   });
 
   // ============================================================
@@ -158,7 +160,10 @@ function App() {
           {extraLeft}
           <span>🛡️ Admin: {currentUser?.email}</span>
         </div>
-        <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+        <div style={s.bellWrapper}>
+          <NotificationBell currentUser={currentUser} />
+          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+        </div>
       </div>
     );
 
@@ -170,8 +175,8 @@ function App() {
 
     const moduleContent = {
       doctors:      { title: '👨‍⚕️ Manage Doctors',     children: <><AddDoctor /><ManageDoctor onSelectDoctor={setSelectedDoctorId} /><GetSingleDoctor doctorId={selectedDoctorId} /></> },
-      nurses:       { title: '👩‍⚕️ Manage Nurses',      children: <><AddNurse /><ManageNurse onSelectNurse={setSelectedNurseId} /></> },
-      pharmacists:  { title: '💊 Manage Pharmacists',  children: <><AddPharmacist /><ManagePharmacist onSelectPharmacist={setSelectedPharmacistId} /></> },
+      nurses:       { title: '👩‍⚕️ Manage Nurses',      children: <><AddNurse /><ManageNurse /></> },
+      pharmacists:  { title: '💊 Manage Pharmacists',  children: <><AddPharmacist /><ManagePharmacist /></> },
       firefighters: { title: '🚒 Manage Firefighters', children: <><AddFireFighter /><ManageFireFighter onSelectFireFighter={setSelectedFireFighterId} /><GetSingleFireFighter fireFighterId={selectedFireFighterId} /></> },
       dds:          { title: '👔 Manage DDS',          children: <><AddDDS /><ManageDDS onSelectDDS={setSelectedDDSId} /><GetSingleDDS ddsId={selectedDDSId} /></> },
       messages:     { title: '💬 Manage Messages',     children: <><AddMessage /><ManageMessage onSelectMessage={setSelectedMessageId} /><GetSingleMessage messageId={selectedMessageId} /></> },
@@ -250,7 +255,10 @@ function App() {
       <div className="doctor-interface-wrapper">
         <div style={s.bar}>
           <span>👨‍⚕️ Welcome, {currentUser?.fullName || 'Doctor'}</span>
-          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          <div style={s.bellWrapper}>
+            <NotificationBell currentUser={currentUser} />
+            <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          </div>
         </div>
         {view === 'home'      && <DoctorHome     onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'garde'     && <DoctorGard     onNavigate={handleNavigate} currentUser={currentUser} />}
@@ -280,7 +288,10 @@ function App() {
       <div className="nurse-interface-wrapper">
         <div style={s.bar}>
           <span>👩‍⚕️ Welcome, {currentUser?.userId || 'Nurse'}</span>
-          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          <div style={s.bellWrapper}>
+            <NotificationBell currentUser={currentUser} />
+            <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          </div>
         </div>
         {view === 'home'      && <NurseHome    onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'garde'     && <NurseGarde   onNavigate={handleNavigate} currentUser={currentUser} />}
@@ -306,7 +317,10 @@ function App() {
       <div className="pharmacist-interface-wrapper">
         <div style={s.bar}>
           <span>💊 Welcome, {currentUser?.nomPharmacie || 'Pharmacist'}</span>
-          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          <div style={s.bellWrapper}>
+            <NotificationBell currentUser={currentUser} />
+            <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          </div>
         </div>
         {view === 'home'      && <PharmacistHome    onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'garde'     && <PharmacistGarde   onNavigate={handleNavigate} currentUser={currentUser} />}
@@ -332,7 +346,10 @@ function App() {
       <div className="firefighter-interface-wrapper">
         <div style={s.bar}>
           <span>🚒 Welcome, {currentUser?.matricule || currentUser?.userId || 'Firefighter'}</span>
-          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          <div style={s.bellWrapper}>
+            <NotificationBell currentUser={currentUser} />
+            <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          </div>
         </div>
         {view === 'home'      && <FirefighterHome    onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'garde'     && <FirefighterGarde   onNavigate={handleNavigate} currentUser={currentUser} />}
@@ -362,7 +379,10 @@ function App() {
       <div className="dds-interface-wrapper">
         <div style={s.bar}>
           <span>👔 Welcome, {currentUser?.fullName || 'DDS'}</span>
-          <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          <div style={s.bellWrapper}>
+            <NotificationBell currentUser={currentUser} />
+            <button style={s.btn} onClick={handleLogout}>Logout 🚪</button>
+          </div>
         </div>
         {view === 'home'      && <DDSHome    onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'garde'     && <DDSGarde   onNavigate={handleNavigate} currentUser={currentUser} />}

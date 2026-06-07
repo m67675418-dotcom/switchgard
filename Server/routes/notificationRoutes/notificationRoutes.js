@@ -1,50 +1,55 @@
-// routes/notificationRoutes/notificationRoutes.js
-// Mount: app.use("/api/notification", require("./routes/notificationRoutes/notificationRoutes"));
+const express = require('express');
+const router = express.Router();
+const Notification = require('../../models/Notification');
 
-const express      = require("express");
-const router       = express.Router();
-const Notification = require("../../models/Notification");
-
-// GET /api/notification/user/:userId — get all notifs for a user (newest first)
-router.get("/user/:userId", async (req, res) => {
+// جلب كل الإشعارات ديال مستخدم
+router.get('/user/:userId', async (req, res) => {
   try {
-    const notifs = await Notification.find({ userId: req.params.userId })
-      .sort({ createdAt: -1 })
-      .limit(50)
-      .lean();
-    res.json(notifs);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const notifications = await Notification.find({ userId: req.params.userId })
+      .sort({ createdAt: -1 });
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Error', error: error.message });
   }
 });
 
-// PATCH /api/notification/:id/read — mark single notif as read
-router.patch("/:id/read", async (req, res) => {
+// جلب الإشعارات غير المقروءة
+router.get('/user/:userId/unread', async (req, res) => {
   try {
-    await Notification.findByIdAndUpdate(req.params.id, { read: true });
-    res.json({ message: "Marked as read" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const notifications = await Notification.find({ 
+      userId: req.params.userId, 
+      read: false 
+    }).sort({ createdAt: -1 });
+    res.json(notifications);
+  } catch (error) {
+    res.status(500).json({ message: 'Error', error: error.message });
   }
 });
 
-// PATCH /api/notification/user/:userId/readAll — mark all as read
-router.patch("/user/:userId/readAll", async (req, res) => {
+// تعليم الإشعار كمقروء
+router.put('/:id/read', async (req, res) => {
   try {
-    await Notification.updateMany({ userId: req.params.userId, read: false }, { read: true });
-    res.json({ message: "All marked as read" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    const notification = await Notification.findByIdAndUpdate(
+      req.params.id,
+      { read: true },
+      { new: true }
+    );
+    res.json(notification);
+  } catch (error) {
+    res.status(500).json({ message: 'Error', error: error.message });
   }
 });
 
-// DELETE /api/notification/:id
-router.delete("/:id", async (req, res) => {
+// تعليم كل الإشعارات كمقروءة
+router.put('/user/:userId/read-all', async (req, res) => {
   try {
-    await Notification.findByIdAndDelete(req.params.id);
-    res.json({ message: "Deleted" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
+    await Notification.updateMany(
+      { userId: req.params.userId, read: false },
+      { read: true }
+    );
+    res.json({ message: 'All notifications marked as read' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error', error: error.message });
   }
 });
 

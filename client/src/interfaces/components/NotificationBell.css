@@ -1,194 +1,173 @@
-
-/* NotificationBell.css */
-
-.nb-wrap {
+.notification-bell {
   position: relative;
-  display: inline-block;
 }
 
-.nb-bell {
+.bell-icon {
+  font-size: 28px;
+  cursor: pointer;
   position: relative;
-  width: 42px;
-  height: 42px;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
+  padding: 8px;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background 0.3s;
 }
 
-.nb-bell:hover {
-  background: var(--nb-color, #2563eb)11;
-  border-color: var(--nb-color, #2563eb);
+.bell-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.nb-badge {
+.badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  min-width: 18px;
-  height: 18px;
-  border-radius: 9px;
-  color: white;
-  font-size: 10px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 4px;
-  border: 2px solid white;
-  animation: nbPop 0.3s ease;
-}
-
-@keyframes nbPop {
-  0%   { transform: scale(0); }
-  70%  { transform: scale(1.2); }
-  100% { transform: scale(1); }
-}
-
-/* ── DROPDOWN ── */
-.nb-dropdown {
-  position: absolute;
-  top: calc(100% + 10px);
+  top: 0;
   right: 0;
-  width: 340px;
-  background: white;
-  border-radius: 18px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.14);
-  border: 1.5px solid #e2e8f0;
-  z-index: 500;
-  overflow: hidden;
-  animation: nbSlide 0.2s ease;
-}
-
-@keyframes nbSlide {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-.nb-drop-header {
+  background: #ef4444;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  border-bottom: 1.5px solid #f1f5f9;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  border: 2px solid white;
 }
 
-.nb-drop-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f172a;
-}
-
-.nb-mark-all {
-  font-size: 12px;
-  font-weight: 600;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 6px;
-  transition: all 0.15s;
-}
-
-.nb-mark-all:hover { opacity: 0.7; }
-
-/* ── LIST ── */
-.nb-list {
-  max-height: 360px;
+.notification-dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  width: 420px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  z-index: 1000;
+  max-height: 550px;
   overflow-y: auto;
 }
 
-.nb-item {
-  width: 100%;
+.dropdown-header {
+  padding: 16px;
+  border-bottom: 1px solid #e2e8f0;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 12px 18px;
+  justify-content: space-between;
+  align-items: center;
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.dropdown-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #1e293b;
+}
+
+.mark-all-read {
   background: none;
   border: none;
-  text-align: left;
+  color: #2563eb;
   cursor: pointer;
-  transition: background 0.15s;
-  border-bottom: 1px solid #f8fafc;
-  position: relative;
-}
-
-.nb-item:hover { background: #f8fafc; }
-
-.nb-unread { background: var(--nb-color, #2563eb)08 !important; }
-.nb-unread:hover { background: var(--nb-color, #2563eb)12 !important; }
-
-.nb-item-icon {
-  font-size: 22px;
-  width: 38px;
-  height: 38px;
-  background: #f8fafc;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.nb-item-body { flex: 1; min-width: 0; }
-
-.nb-item-msg {
   font-size: 13px;
-  color: #0f172a;
-  font-weight: 500;
-  margin: 0 0 4px;
-  line-height: 1.4;
-  white-space: normal;
-  word-break: break-word;
+  font-weight: 600;
 }
 
-.nb-item-time {
-  font-size: 11px;
-  color: #94a3b8;
-  font-weight: 500;
+.mark-all-read:hover {
+  text-decoration: underline;
 }
 
-.nb-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+.dropdown-body {
+  max-height: 450px;
+  overflow-y: auto;
+}
+
+.notification-item {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  gap: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notification-item:hover {
+  background: #f8fafc;
+}
+
+.notification-item.unread {
+  background: #eff6ff;
+  border-left: 3px solid #2563eb;
+}
+
+.notif-icon {
+  font-size: 24px;
   flex-shrink: 0;
-  margin-top: 6px;
 }
 
-/* ── LOADING ── */
-.nb-loading { padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-
-.nb-skeleton {
-  height: 54px;
-  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
-  background-size: 200% 100%;
-  border-radius: 10px;
-  animation: nbShimmer 1.4s infinite;
+.notif-content {
+  flex: 1;
+  min-width: 0;
 }
 
-@keyframes nbShimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+.notif-message {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: #1e293b;
+  line-height: 1.4;
 }
 
-/* ── EMPTY ── */
-.nb-empty {
-  padding: 40px 20px;
+.notif-time {
+  font-size: 11px;
+  color: #64748b;
+}
+
+.no-notifications {
   text-align: center;
-  color: #94a3b8;
+  padding: 40px;
+  color: #64748b;
+  margin: 0;
 }
 
-.nb-empty span { font-size: 36px; display: block; margin-bottom: 8px; }
-.nb-empty p    { font-size: 14px; margin: 0; }
+.notif-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid #e2e8f0;
+}
 
-/* ── RESPONSIVE ── */
-@media (max-width: 400px) {
-  .nb-dropdown { width: calc(100vw - 32px); right: -100px; }
+.btn-accept-small,
+.btn-reject-small {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  flex: 1;
+}
+
+.btn-accept-small {
+  background: #10b981;
+  color: white;
+}
+
+.btn-accept-small:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+.btn-reject-small {
+  background: #ef4444;
+  color: white;
+}
+
+.btn-reject-small:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
 }

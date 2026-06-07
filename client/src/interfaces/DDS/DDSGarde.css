@@ -1,56 +1,117 @@
 .dds-garde {
-  padding: 40px;
-  max-width: 1200px;
+  padding: 30px;
+  max-width: 1400px;
   margin: 0 auto;
 }
 
-.dds-garde h1 {
-  color: #6b21a8;
+/* ✅ Back Button Style */
+.back-button {
+  padding: 10px 20px;
+  background: #6b21a8;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
   margin-bottom: 20px;
+  transition: all 0.3s ease;
 }
 
-.dds-table-container {
+.back-button:hover {
+  background: #581c87;
+  transform: translateX(-4px);
+}
+
+.dds-garde-header {
+  margin-bottom: 30px;
+}
+
+.dds-garde-header h1 {
+  font-size: 28px;
+  color: #1e293b;
+  margin-bottom: 8px;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.filter-tabs button {
+  padding: 10px 20px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-tabs button.active {
+  background: #6b21a8;
+  color: white;
+  border-color: #6b21a8;
+}
+
+.gardes-table-container {
   background: white;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.dds-table {
+.gardes-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.dds-table thead {
+.gardes-table th {
   background: #f1f5f9;
-}
-
-.dds-table th {
-  padding: 12px;
+  padding: 14px;
   text-align: left;
-  border-bottom: 2px solid #e2e8f0;
-  color: #1e293b;
   font-weight: 600;
+  color: #1e293b;
 }
 
-.dds-table td {
-  padding: 12px;
+.gardes-table td {
+  padding: 14px;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.dds-status {
-  padding: 4px 12px;
-  border-radius: 12px;
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.dds-status.active {
-  background: #10b981;
-  color: white;
+.status-badge.active {
+  background: #d1fae5;
+  color: #065f46;
 }
 
-.dds-status.inactive {
-  background: #64748b;
-  color: white;
+.status-badge.inactive {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 80px 20px;
+  background: white;
+  border-radius: 12px;
+}
+
+.empty-state span {
+  font-size: 64px;
+  display: block;
+  margin-bottom: 16px;
+}
+
+.loading {
+  text-align: center;
+  padding: 60px;
+  font-size: 18px;
+  color: #64748b;
 }

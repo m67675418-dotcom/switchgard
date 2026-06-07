@@ -1,148 +1,144 @@
-// NotificationBell.jsx - Shared notification bell for all role Home pages
-// Usage: <NotificationBell userId={currentUser._id} role="doctor" onNavigate={onNavigate} />
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import './NotificationBell.css';
 
-import { useState, useEffect, useRef } from "react";
-import "./NotificationBell.css";
-
-const ROLE_COLOR = {
-  doctor:      "#2563eb",
-  nurse:       "#10b981",
-  firefighter: "#ef4444",
-  pharmacist:  "#7c3aed",
-};
-
-export default function NotificationBell({ userId, role = "doctor", onNavigate }) {
-  const [notifs, setNotifs]   = useState([]);
-  const [open, setOpen]       = useState(false);
-  const [loading, setLoading] = useState(false);
-  const dropRef               = useRef(null);
-  const color                 = ROLE_COLOR[role] || "#2563eb";
-
-  const unread = notifs.filter(n => !n.read).length;
-
-  const fetchNotifs = () => {
-    if (!userId) return;
-    setLoading(true);
-    fetch(`http://localhost:5000/api/notification/user/${userId}`)
-      .then(r => r.json())
-      .then(data => { setNotifs(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => setLoading(false));
-  };
+const NotificationBell = ({ currentUser }) => {
+  const [notifications, setNotifications] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
-    fetchNotifs();
-    const interval = setInterval(fetchNotifs, 15000); // Poll every 15s
-    return () => clearInterval(interval);
-  }, [userId]);
+    if (currentUser?._id || currentUser?.id) {
+      fetchNotifications();
+      const interval = setInterval(fetchNotifications, 5000);
+      return () => clearInterval(interval);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentUser]);
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handler = e => { if (dropRef.current && !dropRef.current.contains(e.target)) setOpen(false); };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const markRead = async (id) => {
+  const fetchNotifications = async () => {
     try {
-      await fetch(`http://localhost:5000/api/notification/${id}/read`, { method: "PATCH" });
-      setNotifs(p => p.map(n => n._id === id ? { ...n, read: true } : n));
-    } catch {}
+      const userId = currentUser._id || currentUser.id;
+      const res = await axios.get(`http://localhost:5000/api/notification/user/${userId}`);
+      setNotifications(res.data || []);
+      setUnreadCount(res.data.filter(n => !n.read).length);
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
   };
 
-  const markAllRead = async () => {
+  const handleMarkAsRead = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/notification/user/${userId}/readAll`, { method: "PATCH" });
-      setNotifs(p => p.map(n => ({ ...n, read: true })));
-    } catch {}
+      await axios.put(`http://localhost:5000/api/notification/${id}/read`);
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
-  const handleNotifClick = async (notif) => {
-    await markRead(notif._id);
-    setOpen(false);
-    // Navigate based on type
-    if (notif.type === "demande_received")  onNavigate?.("demandes");
-    if (notif.type === "demande_accepted")  onNavigate?.("garde");
-    if (notif.type === "demande_rejected")  onNavigate?.("garde");
-    if (notif.type === "director_review")   onNavigate?.("garde");
-    if (notif.type === "final_approved")    onNavigate?.("garde");
-    if (notif.type === "final_rejected")    onNavigate?.("garde");
+  const handleMarkAllAsRead = async () => {
+    try {
+      const userId = currentUser._id || currentUser.id;
+      await axios.put(`http://localhost:5000/api/notification/user/${userId}/read-all`);
+      fetchNotifications();
+    } catch (error) {
+      console.error('Error:', error);
+    }
   };
 
-  const notifIcon = (type) => {
-    const icons = {
-      demande_received: "📤",
-      demande_accepted: "✅",
-      demande_rejected: "❌",
-      director_review:  "👔",
-      final_approved:   "🎉",
-      final_rejected:   "⛔",
-      message:          "💬",
-    };
-    return icons[type] || "🔔";
+  const handleAcceptDemande = async (demandeId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('✅ Accepter cette demande?')) return;
+    
+    try {
+      await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
+      alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
+      fetchNotifications();
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      alert('❌ Erreur: ' + (error.response?.data?.message || error.message));
+    }
   };
 
-  const timeAgo = (date) => {
-    const diff = Date.now() - new Date(date).getTime();
-    const m = Math.floor(diff / 60000);
-    if (m < 1)  return "Just now";
-    if (m < 60) return `${m}m ago`;
-    const h = Math.floor(m / 60);
-    if (h < 24) return `${h}h ago`;
-    return `${Math.floor(h / 24)}d ago`;
+  const handleRejectDemande = async (demandeId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('❌ Rejeter cette demande?')) return;
+    
+    try {
+      await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
+      alert('❌ Demande rejetée');
+      fetchNotifications();
+      setTimeout(() => window.location.reload(), 500);
+    } catch (error) {
+      alert('❌ Erreur');
+    }
+  };
+
+  const getIcon = (type) => {
+    switch (type) {
+      case 'demande_received': return '📩';
+      case 'demande_accepted': return '✅';
+      case 'demande_rejected': return '❌';
+      case 'director_review': return '📋';
+      case 'final_approved': return '🎉';
+      case 'final_rejected': return '😔';
+      default: return '🔔';
+    }
   };
 
   return (
-    <div className="nb-wrap" ref={dropRef}>
-      <button
-        className="nb-bell"
-        style={{ "--nb-color": color }}
-        onClick={() => { setOpen(!open); if (!open) fetchNotifs(); }}
-        aria-label="Notifications"
-      >
+    <div className="notification-bell">
+      <div className="bell-icon" onClick={() => setShowDropdown(!showDropdown)}>
         🔔
-        {unread > 0 && (
-          <span className="nb-badge" style={{ background: color }}>
-            {unread > 9 ? "9+" : unread}
-          </span>
-        )}
-      </button>
+        {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+      </div>
 
-      {open && (
-        <div className="nb-dropdown">
-          <div className="nb-drop-header">
-            <span className="nb-drop-title">🔔 Notifications</span>
-            {unread > 0 && (
-              <button className="nb-mark-all" style={{ color }} onClick={markAllRead}>
-                Mark all read
+      {showDropdown && (
+        <div className="notification-dropdown">
+          <div className="dropdown-header">
+            <h3>Notifications ({notifications.length})</h3>
+            {unreadCount > 0 && (
+              <button onClick={handleMarkAllAsRead} className="mark-all-read">
+                Tout marquer lu
               </button>
             )}
           </div>
-
-          <div className="nb-list">
-            {loading ? (
-              <div className="nb-loading">
-                {[1,2,3].map(i => <div key={i} className="nb-skeleton" />)}
-              </div>
-            ) : notifs.length === 0 ? (
-              <div className="nb-empty">
-                <span>🔕</span>
-                <p>No notifications yet</p>
-              </div>
+          
+          <div className="dropdown-body">
+            {notifications.length === 0 ? (
+              <p className="no-notifications">Aucune notification</p>
             ) : (
-              notifs.slice(0, 20).map(n => (
-                <button
-                  key={n._id}
-                  className={`nb-item ${!n.read ? "nb-unread" : ""}`}
-                  style={{ "--nb-color": color }}
-                  onClick={() => handleNotifClick(n)}
+              notifications.map((notif) => (
+                <div 
+                  key={notif._id} 
+                  className={`notification-item ${!notif.read ? 'unread' : ''}`}
+                  onClick={() => handleMarkAsRead(notif._id)}
                 >
-                  <span className="nb-item-icon">{notifIcon(n.type)}</span>
-                  <div className="nb-item-body">
-                    <p className="nb-item-msg">{n.message}</p>
-                    <span className="nb-item-time">{timeAgo(n.createdAt)}</span>
+                  <span className="notif-icon">{getIcon(notif.type)}</span>
+                  <div className="notif-content">
+                    <p className="notif-message">{notif.message}</p>
+                    <span className="notif-time">
+                      {new Date(notif.createdAt).toLocaleString()}
+                    </span>
+                    
+                    {notif.type === 'demande_received' && notif.demandeId && (
+                      <div className="notif-actions">
+                        <button 
+                          className="btn-accept-small"
+                          onClick={(e) => handleAcceptDemande(notif.demandeId, e)}
+                        >
+                          ✅ Accepter
+                        </button>
+                        <button 
+                          className="btn-reject-small"
+                          onClick={(e) => handleRejectDemande(notif.demandeId, e)}
+                        >
+                          ❌ Rejeter
+                        </button>
+                      </div>
+                    )}
                   </div>
-                  {!n.read && <span className="nb-dot" style={{ background: color }} />}
-                </button>
+                </div>
               ))
             )}
           </div>
@@ -150,4 +146,6 @@ export default function NotificationBell({ userId, role = "doctor", onNavigate }
       )}
     </div>
   );
-}
+};
+
+export default NotificationBell;
