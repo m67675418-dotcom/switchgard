@@ -1,0 +1,15 @@
+.dds-message {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dds-message h1 {
+  color: #6b21a8;
+  margin-bottom: 20px;
+}
+
+.dds-message p {
+  color: #64748b;
+  font-size: 16px;
+}

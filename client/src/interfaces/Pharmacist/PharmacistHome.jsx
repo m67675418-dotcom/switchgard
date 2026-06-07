@@ -1,126 +1,82 @@
+// PharmacistHome.jsx - ✅ Updated: NotificationBell added
 import { useState, useEffect } from "react";
 import "./PharmacistHome.css";
-
-const shiftTypes = ["All", "Day", "Night"];
+import NotificationBell from "../components/NotificationBell";
 
 export default function PharmacistHome({ onNavigate, currentUser }) {
-  const [pharmacists, setPharmacists] = useState([]);
-  const [search, setSearch] = useState("");
-  const [activeShift, setActiveShift] = useState("All");
+  const [items, setItems]     = useState([]);
+  const [search, setSearch]   = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/pharmacist/getAll")
-      .then((r) => r.json())
-      .then((data) => {
-        setPharmacists(Array.isArray(data) ? data : []);
-        setLoading(false);
-      })
+      .then(r => r.json())
+      .then(data => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
-  const filtered = pharmacists.filter((p) => {
-    const matchSearch =
-      p.nomPharmacie?.toLowerCase().includes(search.toLowerCase()) ||
-      p.gmail?.toLowerCase().includes(search.toLowerCase()) ||
-      p.adressePharmacie?.toLowerCase().includes(search.toLowerCase());
-    const matchShift =
-      activeShift === "All" ||
-      (activeShift === "Night" && p.isNightShift) ||
-      (activeShift === "Day" && !p.isNightShift);
-    return matchSearch && matchShift;
-  });
-
   return (
     <div className="container">
-      <div className="header">
-        <div>
-          <p className="greeting">Welcome 👋</p>
-          <h2 className="title">Available Pharmacies</h2>
+      <div className="searchBox" style={{ position: "relative" }}>
+        {/* ✅ NotificationBell */}
+        <div style={{ position: "absolute", top: 16, right: 16 }}>
+          <NotificationBell
+            userId={currentUser?._id || currentUser?.id}
+            role="pharmacist"
+            onNavigate={onNavigate}
+          />
         </div>
-        <button className="profileBtn" onClick={() => onNavigate("profile")}>
-          👤
-        </button>
-      </div>
-
-      <div className="searchBox">
-        <span className="searchIcon">🔍</span>
-        <input
-          className="searchInput"
-          placeholder="Search by name, email or address..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-
-      <div className="catScroll">
-        {shiftTypes.map((s) => (
-          <button
-            key={s}
-            className={`catChip ${activeShift === s ? "catActive" : ""}`}
-            onClick={() => setActiveShift(s)}
-          >
-            <span className="catIcon">{s === "All" ? "💊" : s === "Night" ? "🌙" : "☀️"}</span>
-            <span className="catLabel">{s}</span>
-          </button>
-        ))}
-      </div>
-
-      <div className="shortcuts">
-        <button className="shortcutBtn" onClick={() => onNavigate("messages")}>
-          <span>💬</span>
-          <span>Messages</span>
-        </button>
-        <button className="shortcutBtn" onClick={() => onNavigate("garde")}>
-          <span>🛡️</span>
-          <span>Shifts</span>
-        </button>
-      </div>
-
-      <div className="sectionTitle">
-        <h3>Pharmacies List</h3>
-        <span className="count">{filtered.length}</span>
-      </div>
-
-      {loading ? (
-        <div className="loadingWrap">
-          {[1, 2, 3].map((i) => <div key={i} className="skeleton" />)}
+        <h1>💊 Pharmacists</h1>
+        <p>Find pharmacists near you</p>
+        <div className="searchInner">
+          <span className="searchIcon">🔍</span>
+          <input className="searchInput" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
-      ) : filtered.length === 0 ? (
-        <div className="empty">
-          <span>💊</span>
-          <p>No pharmacies found</p>
+      </div>
+
+      <div className="mainContent">
+        <div className="shortcuts">
+          <button className="shortcutBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
+          <button className="shortcutBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
+          {/* ✅ Demandes shortcut */}
+          <button className="shortcutBtn" onClick={() => onNavigate?.("demandes")}><span>📤</span><span>Demandes</span></button>
         </div>
-      ) : (
-        <div className="list">
-          {filtered.map((p) => (
-            <div
-              key={p._id}
-              className="card"
-              onClick={() => onNavigate("profile", p._id)}
-            >
-              <div className="cardAvatar">💊</div>
-              <div className="cardInfo">
-                <h4 className="cardName">{p.nomPharmacie || "Pharmacist"}</h4>
-                <p className="cardSpec">{p.adressePharmacie?.substring(0, 30)}</p>
-                <p className="cardLoc">📋 {p.numAgrement || "N/A"}</p>
+
+        <div className="sectionTitle">
+          <h3>Pharmacists List</h3>
+          <span className="count">{items.length}</span>
+        </div>
+
+        {loading ? (
+          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
+        ) : items.length === 0 ? (
+          <div className="empty"><span>💊</span><p>No pharmacists found</p></div>
+        ) : (
+          <div className="list">
+            {items.map((item, idx) => (
+              <div key={item._id || idx} className="card" onClick={() => onNavigate?.("profile", item._id)}>
+                <div className="cardAvatar">💊</div>
+                <div className="cardInfo">
+                  <h4 className="cardName">{item.nomPharmacie || item.fullName || "N/A"}</h4>
+                  <p className="cardSpec">{item.gmail || ""}</p>
+                  <p className="cardLoc">📍 {item.adressePharmacie || "Not specified"}</p>
+                </div>
+                <div className="cardRight">
+                  <span className="badge badgeGreen">Pharmacist</span>
+                  <span className="arrow">›</span>
+                </div>
               </div>
-              <div className="cardRight">
-                <span className={`badge ${p.isNightShift ? "badgeNight" : "badgeDay"}`}>
-                  {p.isNightShift ? "🌙 Night" : "☀️ Day"}
-                </span>
-                <span className="arrow">›</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="bottomNav">
-        <button className="navBtn navActive" onClick={() => onNavigate("home")}>🏠</button>
-        <button className="navBtn" onClick={() => onNavigate("messages")}>💬</button>
-        <button className="navBtn" onClick={() => onNavigate("garde")}>🛡️</button>
-        <button className="navBtn" onClick={() => onNavigate("profile")}>👤</button>
+        <button className="navBtn navActive"><span>🏠</span><span>Home</span></button>
+        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
+        <button className="navBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
+        <button className="navBtn" onClick={() => onNavigate?.("map")}><span>🗺️</span><span>Map</span></button>
+        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
     </div>
   );

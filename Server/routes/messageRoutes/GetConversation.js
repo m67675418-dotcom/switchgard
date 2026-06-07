@@ -1,46 +1,51 @@
-// 📁 routes/messageRoutes/GetConversation.js
+// routes/messageRoutes/GetConversation.js
 const express = require('express');
-const router = express.Router(); // ← هذا السطر هو اللي كان ناقص!
+const router = express.Router();
 const Message = require('../../models/Message');
-const { protect } = require('../../middleware/authMiddleware');
 
-// 🔍 GET /api/message/conversation/:otherUserId
-router.get('/conversation/:otherUserId', protect, async (req, res) => {
+// GET /api/message/conversation/:userId1/:userId2
+router.get('/:userId1/:userId2', async (req, res) => {
   try {
-    const { otherUserId } = req.params;
-    const currentUserId = req.user._id.toString();
-
-    // 1️⃣ جلب كل الرسائل بين المستخدمین
+    const { userId1, userId2 } = req.params;
     const messages = await Message.find({
       $or: [
-        { senderId: currentUserId, receiverId: otherUserId },
-        { senderId: otherUserId, receiverId: currentUserId }
+        { senderId: userId1, receiverId: userId2 },
+        { senderId: userId2, receiverId: userId1 }
       ]
     }).sort({ timestamp: 1 });
 
-    // 2️⃣ تعليم الرسائل كمقروءة
     await Message.updateMany(
-      { 
-        senderId: otherUserId, 
-        receiverId: currentUserId, 
-        isRead: false 
-      },
+      { senderId: userId2, receiverId: userId1, isRead: false },
       { isRead: true }
     );
 
-    // 3️⃣ إرسال الرد
-    res.json({ 
-      success: true, 
-      count: messages.length, 
-      messages 
+    res.json({ success: true, count: messages.length, messages });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// GET /api/message/conversation/contacts/:userId
+// يجيب كل الناس اللي هكيت معهم
+router.get('/contacts/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const messages = await Message.find({
+      $or: [{ senderId: userId }, { receiverId: userId }]
+    }).sort({ timestamp: -1 });
+
+    // نجمع الـ contacts الفريدين
+    const contactMap = {};
+    messages.forEach((m) => {
+      const otherId = m.senderId === userId ? m.receiverId : m.senderId;
+      if (!contactMap[otherId]) {
+        contactMap[otherId] = { contactId: otherId, lastMsg: m };
+      }
     });
 
+    res.json({ success: true, contacts: Object.values(contactMap) });
   } catch (error) {
-    console.error('❌ Error fetching conversation:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
-    });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 

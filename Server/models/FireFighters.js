@@ -1,42 +1,27 @@
-// 📁 Server/models/FireFighters.js
+// FireFighters.js - updated with lat/lng
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const bcrypt   = require('bcryptjs');
 
 const FireFighterSchema = new mongoose.Schema({
-    userId: { type: String },
-    gmail: { type: String, required: true, lowercase: true },
-    matricule: { type: String, required: true },
-    password: { type: String, required: false, select: false },
-    grade: { type: String },
-    uniteIntervention: { type: String } 
-}, {
-    collection: "FireFighter",
-    timestamps: true
-});
+  userId:            { type: String },
+  gmail:             { type: String, required: true, lowercase: true },
+  matricule:         { type: String, required: true },
+  password:          { type: String, required: false, select: false },
+  grade:             { type: String },
+  uniteIntervention: { type: String },
+  location:          { type: String },   // ✅ اسم المدينة
+  lat:               { type: Number },   // ✅ خط العرض
+  lng:               { type: Number },   // ✅ خط الطول
+}, { collection: "FireFighter", timestamps: true });
 
-// ✅ الصحيح: async بلا next
 FireFighterSchema.pre('save', async function() {
-    if (!this.isModified('password')) {
-        return;
-    }
-    
-    try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
-    } catch (error) {
-        console.error('❌ Error hashing password:', error);
-        throw error;
-    }
+  if (!this.isModified('password')) return;
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
 FireFighterSchema.methods.comparePassword = async function(candidatePassword) {
-    try {
-        return await bcrypt.compare(candidatePassword, this.password);
-    } catch (error) {
-        console.error('❌ Error comparing passwords:', error);
-        return false;
-    }
+  return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// ✅ حماية ضد OverwriteModelError (هذا هو المهم!)
 module.exports = mongoose.models.FireFighter || mongoose.model('FireFighter', FireFighterSchema);

@@ -1,0 +1,51 @@
+.manage-dds {
+  padding: 20px;
+}
+
+.manage-dds h2 {
+  color: #6b21a8;
+  margin-bottom: 20px;
+}
+
+.manage-dds-table {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.manage-dds-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.manage-dds-table thead {
+  background: #f1f5f9;
+}
+
+.manage-dds-table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.manage-dds-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.manage-dds-delete {
+  padding: 6px 12px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.3s ease;
+}
+
+.manage-dds-delete:hover {
+  background: #dc2626;
+}

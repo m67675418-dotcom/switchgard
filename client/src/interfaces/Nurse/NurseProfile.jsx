@@ -1,14 +1,15 @@
+// NurseProfile.jsx - Fixed Full Width + Bottom Nav
 import { useState, useEffect } from "react";
 import "./NurseProfile.css";
 
 export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
-  const [nurse, setNurse] = useState(null);
+  const [nurse, setNurse]     = useState(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState({});
-  const [saving, setSaving] = useState(false);
+  const [form, setForm]       = useState({});
+  const [saving, setSaving]   = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [msg, setMsg] = useState(null);
+  const [msg, setMsg]         = useState(null);
 
   useEffect(() => {
     if (!nurseId) { setLoading(false); return; }
@@ -18,13 +19,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
       .then((data) => {
         const n = data.nurse || data;
         setNurse(n);
-        setForm({
-          userId:  n.userId  || "",
-          gmail:   n.gmail   || "",
-          diplome: n.diplome || "",
-          service: n.service || "",
-          equipe:  n.equipe  || "",
-        });
+        setForm({ userId: n.userId||'', gmail: n.gmail||'', diplome: n.diplome||'', service: n.service||'', equipe: n.equipe||'' });
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -34,130 +29,142 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
     setSaving(true);
     try {
       await fetch(`http://localhost:5000/api/nurse/${nurseId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
       });
-      setMsg({ type: "success", text: "Nurse updated successfully ✅" });
-      setNurse({ ...nurse, ...form });
-      setEditing(false);
+      setMsg({ type: 'success', text: 'Updated successfully ✅' });
+      setNurse({ ...nurse, ...form }); setEditing(false);
       onUpdateUser?.(form);
-    } catch {
-      setMsg({ type: "error", text: "Update failed ❌" });
-    } finally {
-      setSaving(false);
-      setTimeout(() => setMsg(null), 3000);
-    }
+    } catch { setMsg({ type: 'error', text: 'Update failed ❌' }); }
+    finally { setSaving(false); setTimeout(() => setMsg(null), 3000); }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this nurse?")) return;
+    if (!window.confirm('Delete this nurse?')) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/api/nurse/${nurseId}`, { method: "DELETE" });
-      onNavigate?.("home");
-    } catch {
-      setMsg({ type: "error", text: "Delete failed ❌" });
-      setDeleting(false);
-    }
+      await fetch(`http://localhost:5000/api/nurse/${nurseId}`, { method: 'DELETE' });
+      onNavigate?.('home');
+    } catch { setMsg({ type: 'error', text: 'Delete failed ❌' }); setDeleting(false); }
   };
 
+  // Loading skeleton
   if (loading) return (
     <div className="np-page">
       <div className="np-skeleton-hero" />
-      <div className="np-skeleton-card" />
-      <div className="np-skeleton-card short" />
+      <div className="np-main"><div className="np-skeleton-card" /></div>
+      <div className="np-bottom-nav" />
     </div>
   );
 
+  // Not found
   if (!nurse) return (
     <div className="np-page">
-      <div className="np-error-box">
-        <span className="np-error-icon">⚠️</span>
-        <p>Nurse not found</p>
-        <button className="np-btn-back" onClick={() => onNavigate?.("home")}>
-          Go Back
-        </button>
+      <div className="np-main">
+        <div className="np-error-box">
+          <span className="np-error-icon">⚠️</span>
+          <p>Nurse not found</p>
+          <button className="np-btn-back" onClick={() => onNavigate?.('home')}>← Go Back</button>
+        </div>
+      </div>
+      <div className="np-bottom-nav">
+        <button className="np-nav-btn" onClick={() => onNavigate?.('home')}><span>🏠</span><span>Home</span></button>
+        <button className="np-nav-btn" onClick={() => onNavigate?.('messages')}><span>💬</span><span>Messages</span></button>
+        <button className="np-nav-btn" onClick={() => onNavigate?.('garde')}><span>🛡️</span><span>Shifts</span></button>
+        <button className="np-nav-btn np-nav-active"><span>👤</span><span>Profile</span></button>
       </div>
     </div>
   );
 
   const fields = [
-    { icon: "✉️", label: "Email",   val: nurse.gmail },
-    { icon: "🎓", label: "Diploma", val: nurse.diplome },
-    { icon: "🏥", label: "Service", val: nurse.service || "Not specified" },
-    { icon: "👥", label: "Team",    val: nurse.equipe  || "Not specified" },
+    { icon: '✉️', label: 'Email',   val: nurse.gmail },
+    { icon: '🎓', label: 'Diploma', val: nurse.diplome },
+    { icon: '🏥', label: 'Service', val: nurse.service || 'Not specified' },
+    { icon: '👥', label: 'Team',    val: nurse.equipe  || 'Not specified' },
   ];
 
   const editFields = [
-    { key: "userId",  label: "User ID",  type: "text"  },
-    { key: "gmail",   label: "Email",    type: "email" },
-    { key: "diplome", label: "Diploma",  type: "text"  },
-    { key: "service", label: "Service",  type: "text"  },
-    { key: "equipe",  label: "Team",     type: "text"  },
+    { key: 'userId',  label: 'User ID', type: 'text'  },
+    { key: 'gmail',   label: 'Email',   type: 'email' },
+    { key: 'diplome', label: 'Diploma', type: 'text'  },
+    { key: 'service', label: 'Service', type: 'text'  },
+    { key: 'equipe',  label: 'Team',    type: 'text'  },
   ];
 
   return (
     <div className="np-page">
-      {msg && (
-        <div className={`np-toast ${msg.type === "success" ? "success" : "error"}`}>
-          {msg.text}
-        </div>
-      )}
 
-      <button className="np-back-btn" onClick={() => onNavigate?.("home")}>‹ Back</button>
-
-      <div className="np-hero-card">
+      {/* ── HERO ── */}
+      <div className="np-hero">
+        <button className="np-back-btn" onClick={() => onNavigate?.('home')}>← Back</button>
         <div className="np-avatar">👩‍⚕️</div>
         <div className="np-hero-info">
-          <h2 className="np-hero-name">{nurse.userId || "Nurse"}</h2>
-          <span className="np-hero-badge">{nurse.diplome || "Nurse"}</span>
+          <h2 className="np-hero-name">{nurse.userId || 'Nurse'}</h2>
+          <span className="np-hero-badge">{nurse.diplome || 'Nurse'}</span>
         </div>
         <span className="np-status-dot" title="Active" />
       </div>
 
-      {!editing ? (
-        <>
-          <div className="np-info-card">
-            {fields.map(({ icon, label, val }) => (
-              <div key={label} className="np-info-row">
-                <span className="np-info-icon">{icon}</span>
-                <div className="np-info-text">
-                  <span className="np-info-label">{label}</span>
-                  <span className="np-info-val">{val}</span>
+      {/* ── MAIN CONTENT ── */}
+      <div className="np-main">
+        {msg && <div className={`np-toast ${msg.type}`}>{msg.text}</div>}
+
+        {!editing ? (
+          <>
+            <div className="np-info-card">
+              {fields.map(({ icon, label, val }) => (
+                <div key={label} className="np-info-row">
+                  <span className="np-info-icon">{icon}</span>
+                  <div className="np-info-text">
+                    <span className="np-info-label">{label}</span>
+                    <span className="np-info-val">{val}</span>
+                  </div>
                 </div>
+              ))}
+            </div>
+            <div className="np-actions">
+              <button className="np-btn edit" onClick={() => setEditing(true)}>✏️ Edit Profile</button>
+              <button className="np-btn delete" onClick={handleDelete} disabled={deleting}>
+                {deleting ? 'Deleting...' : '🗑️ Delete'}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div className="np-edit-card">
+            <h3 className="np-edit-title">Edit Nurse Info</h3>
+            {editFields.map(({ key, label, type }) => (
+              <div key={key} className="np-form-group">
+                <label>{label}</label>
+                <input type={type} value={form[key]}
+                  onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+                  placeholder={label} />
               </div>
             ))}
-          </div>
-          <div className="np-actions">
-            <button className="np-btn edit" onClick={() => setEditing(true)}>✏️ Edit</button>
-            <button className="np-btn delete" onClick={handleDelete} disabled={deleting}>
-              {deleting ? "Deleting..." : "🗑️ Delete"}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className="np-edit-card">
-          <h3 className="np-edit-title">Edit Nurse Info</h3>
-          {editFields.map(({ key, label, type }) => (
-            <div key={key} className="np-form-group">
-              <label>{label}</label>
-              <input
-                type={type}
-                value={form[key]}
-                onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                placeholder={label}
-              />
+            <div className="np-edit-actions">
+              <button className="np-btn save" onClick={handleUpdate} disabled={saving}>
+                {saving ? 'Saving...' : '💾 Save Changes'}
+              </button>
+              <button className="np-btn cancel" onClick={() => setEditing(false)}>Cancel</button>
             </div>
-          ))}
-          <div className="np-edit-actions">
-            <button className="np-btn save" onClick={handleUpdate} disabled={saving}>
-              {saving ? "Saving..." : "💾 Save Changes"}
-            </button>
-            <button className="np-btn cancel" onClick={() => setEditing(false)}>Cancel</button>
           </div>
-        </div>
-      )}
+        )}
+      </div>
+
+      {/* ── BOTTOM NAV ── */}
+      <div className="np-bottom-nav">
+        <button className="np-nav-btn" onClick={() => onNavigate?.('home')}>
+          <span>🏠</span><span>Home</span>
+        </button>
+        <button className="np-nav-btn" onClick={() => onNavigate?.('messages')}>
+          <span>💬</span><span>Messages</span>
+        </button>
+        <button className="np-nav-btn" onClick={() => onNavigate?.('garde')}>
+          <span>🛡️</span><span>Shifts</span>
+        </button>
+        <button className="np-nav-btn np-nav-active">
+          <span>👤</span><span>Profile</span>
+        </button>
+      </div>
+
     </div>
   );
 }

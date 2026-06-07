@@ -1,35 +1,44 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import logo from '../assets/logo.png'; // ✅ اللوغو
+import logo from '../assets/logo.png';
 import './Login.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
+// Map each role to its API endpoint
+const ROLE_API = {
+  doctor:      'doctor',
+  nurse:       'nurse',
+  pharmacist:  'pharmacist',
+  firefighter: 'firefighter',
+  dds:         'dds', // ✅ NEW
+};
+
+// Extract the display name from any user object
+const extractName = (u) =>
+  u?.fullName || u?.nomPharmacie || u?.nom || u?.name || u?.username || u?.email || '';
+
 const Login = ({ onLoginSuccess }) => {
   const navigate = useNavigate();
-
   const [formData, setFormData] = useState({ email: '', password: '', role: '' });
-  const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState('');
+  const [loading, setLoading]   = useState(false);
+  const [error, setError]       = useState('');
 
   const roles = [
     { id: 'doctor',      label: 'Doctor',      emoji: '👨‍⚕️' },
     { id: 'nurse',       label: 'Nurse',       emoji: '👩‍⚕️' },
     { id: 'pharmacist',  label: 'Pharmacist',  emoji: '💊'  },
     { id: 'firefighter', label: 'Firefighter', emoji: '🚒'  },
+    { id: 'dds',         label: 'DDS',         emoji: '👔'  }, // ✅ NEW
     { id: 'admin',       label: 'Admin',       emoji: '🛡️'  },
   ];
 
   const handleChange     = (e)      => setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleRoleChange = (roleId) => {
-    setFormData({ ...formData, role: formData.role === roleId ? '' : roleId });
-    setError('');
-  };
+  const handleRoleChange = (roleId) => { setFormData({ ...formData, role: formData.role === roleId ? '' : roleId }); setError(''); };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     if (!formData.email || !formData.password) { setError('⚠️ Please enter email and password'); return; }
     if (!formData.role)                         { setError('⚠️ Please select your role');         return; }
 
@@ -37,42 +46,58 @@ const Login = ({ onLoginSuccess }) => {
     setError('');
 
     try {
-      console.log('📤 Sending login request...', formData);
-
       const response = await axios.post(`${API_BASE}/account/login`, {
         email:    formData.email,
         password: formData.password,
         role:     formData.role,
       });
 
-      console.log('📥 Response:', response.data);
-
       if (response.data.success || response.data.token) {
-        const userData = response.data.user || response.data.userData;
+        let userData = response.data.user || response.data.userData || {};
+
+        // ── Enrich userData with fullName from role API if missing ──
+        if (!extractName(userData) && ROLE_API[formData.role]) {
+          try {
+            const profileRes = await axios.get(
+              `${API_BASE}/${ROLE_API[formData.role]}/getAll`,
+              { headers: { Authorization: `Bearer ${response.data.token}` } }
+            );
+            const all = Array.isArray(profileRes.data) ? profileRes.data : [];
+            const match = all.find(p => p.email === formData.email || p._id === userData.id || p._id === userData._id);
+            if (match) {
+              userData = {
+                ...userData,
+                fullName:      match.fullName      || userData.fullName,
+                nomPharmacie:  match.nomPharmacie  || userData.nomPharmacie,
+                specialty:     match.specialty     || userData.specialty,
+                location:      match.location      || userData.location,
+                position:      match.position      || userData.position, // ✅ DDS
+                profileId:     match._id,
+              };
+            }
+          } catch { /* silently ignore enrichment failure */ }
+        }
+
+        // Always ensure displayName is set
+        userData = {
+          ...userData,
+          displayName: extractName(userData) || formData.email,
+          role: userData?.role || formData.role,
+        };
+
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(userData));
-        console.log('✅ Login successful!', userData);
+
         if (onLoginSuccess) onLoginSuccess(userData);
 
-        const role = userData?.role || formData.role;
-        switch (role) {
-          case 'admin':       navigate('/admin/dashboard');       break;
-          case 'doctor':      navigate('/doctor/dashboard');      break;
-          case 'nurse':       navigate('/nurse/dashboard');       break;
-          case 'pharmacist':  navigate('/pharmacist/dashboard');  break;
-          case 'firefighter': navigate('/firefighter/dashboard'); break;
-          default:            navigate('/dashboard');             break;
-        }
+        navigate('/dashboard');
       }
     } catch (err) {
-      console.error('❌ Login error:', err);
       const status  = err?.response?.status;
       const message = err?.response?.data?.message || '';
-
       if (status === 403) {
-        const match       = message.match(/'([^']+)'/);
-        const actualRole  = match ? match[1] : '';
-        setError(`❌ Wrong role! This account is registered as "${actualRole}"`);
+        const match = message.match(/'([^']+)'/);
+        setError(`❌ Wrong role! This account is registered as "${match ? match[1] : '?'}"`);
       } else if (status === 401) {
         setError('❌ Invalid email or password');
       } else if (status === 400) {
@@ -88,9 +113,7 @@ const Login = ({ onLoginSuccess }) => {
   return (
     <div className="login-page">
       <div className="login-card">
-
         <div className="logo-container">
-          {/* ✅ اللوغو بدل الـ emoji */}
           <img src={logo} alt="SwitchGard Logo" className="login-logo" />
           <p className="tagline">Let's get started!</p>
         </div>
@@ -105,15 +128,8 @@ const Login = ({ onLoginSuccess }) => {
             <p className="role-title">🎯 Select your role:</p>
             <div className="role-checkboxes-grid">
               {roles.map(role => (
-                <label
-                  key={role.id}
-                  className={`role-checkbox-item ${formData.role === role.id ? 'selected' : ''}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.role === role.id}
-                    onChange={() => handleRoleChange(role.id)}
-                  />
+                <label key={role.id} className={`role-checkbox-item ${formData.role === role.id ? 'selected' : ''}`}>
+                  <input type="checkbox" checked={formData.role === role.id} onChange={() => handleRoleChange(role.id)} />
                   <span className="role-checkbox-label">
                     <span className="role-emoji">{role.emoji}</span>
                     <span>{role.label}</span>
@@ -129,9 +145,7 @@ const Login = ({ onLoginSuccess }) => {
         </form>
 
         <div className="auth-links">
-          <Link to="/signup" className="signup-link">
-            📝 Don't have an account? Sign up
-          </Link>
+          <Link to="/signup" className="signup-link">📝 Don't have an account? Sign up</Link>
         </div>
       </div>
     </div>

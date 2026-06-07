@@ -1,50 +1,30 @@
+// routes/gardeRoutes/addgarde.js - ✅ Updated: saves ownerId and role
 const express = require('express');
-const router = express.Router();
-const Garde = require('../../models/Garde');
+const router  = express.Router();
+const Garde   = require('../../models/Garde');
 
-// ✅ المسار: POST /api/garde/add
+// POST /api/garde/add
 router.post('/', async (req, res) => {
-    try {
-        const { id, owner, dateGarde, status } = req.body;
+  try {
+    const { owner, ownerId, dateGarde, status, role } = req.body;
 
-        console.log('📝 Received garde data:', { owner, dateGarde });
-
-        if (!owner || !dateGarde) {
-            return res.status(400).json({ 
-                success: false, 
-                message: '⚠️ Please fill in all required fields' 
-            });
-        }
-
-        const garde = new Garde({
-            id: id || `GARDE-${Date.now()}`,
-            owner,
-            dateGarde,
-            status: status || 'disponible'
-        });
-
-        await garde.save();
-        
-        console.log('✅ Garde added successfully');
-        
-        res.status(201).json({ 
-            success: true, 
-            message: 'Garde added successfully',
-            garde: {
-                id: garde._id,
-                gardeId: garde.id,
-                owner: garde.owner
-            }
-        });
-
-    } catch (error) {
-        console.error('❌ Error adding garde:', error);
-        res.status(500).json({ 
-            success: false, 
-            message: 'Server error', 
-            error: error.message 
-        });
+    if (!dateGarde) {
+      return res.status(400).json({ message: 'dateGarde is required' });
     }
+
+    const garde = new Garde({
+      owner:     owner || '',
+      ownerId:   ownerId || null,   // ✅ save the user's _id
+      dateGarde: new Date(dateGarde),
+      status:    status || 'Active',
+      role:      role || 'doctor',  // ✅ save the role
+    });
+
+    const saved = await garde.save();
+    res.status(201).json({ message: '✅ Garde added', garde: saved });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

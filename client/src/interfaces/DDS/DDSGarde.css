@@ -1,0 +1,56 @@
+.dds-garde {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dds-garde h1 {
+  color: #6b21a8;
+  margin-bottom: 20px;
+}
+
+.dds-table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dds-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dds-table thead {
+  background: #f1f5f9;
+}
+
+.dds-table th {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 2px solid #e2e8f0;
+  color: #1e293b;
+  font-weight: 600;
+}
+
+.dds-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.dds-status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dds-status.active {
+  background: #10b981;
+  color: white;
+}
+
+.dds-status.inactive {
+  background: #64748b;
+  color: white;
+}

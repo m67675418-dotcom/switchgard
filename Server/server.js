@@ -2,20 +2,53 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const http = require('http');
+const { Server } = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+
+// ✅ Socket.io Setup
+const io = new Server(server, {
+  cors: { 
+    origin: "http://localhost:3000", 
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true
+  }
+});
 
 // ✅ Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true
+}));
 
 // ✅ Database Connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/User')
   .then(() => console.log('✅ MongoDB Connected Successfully'))
   .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// ✅ Account Routes (Auth)
+// ✅ Socket.io Connection Handler
+io.on('connection', (socket) => {
+  console.log('✅ مستخدم متصل:', socket.id);
+  
+  socket.on('join_room', (userId) => {
+    socket.join(userId);
+    console.log(`🔗 المستخدم ${userId} انضم إلى غرفته`);
+  });
+
+  socket.on('send_message', (data) => {
+    socket.to(data.receiverId).emit('receive_message', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('❌ مستخدم غير متصل');
+  });
+});
+
+// ✅ Account Routes
 app.use('/api/account/login', require('./routes/accountRoutes/Login'));
 app.use('/api/account/register', require('./routes/accountRoutes/Register'));
 app.use('/api/account/profile', require('./routes/accountRoutes/getProfile'));
@@ -26,12 +59,14 @@ app.use('/api/doctor/getAll', require('./routes/DoctorRoutes/getDoctors'));
 app.use('/api/doctor', require('./routes/DoctorRoutes/GetSingleDoctor'));
 app.use('/api/doctor', require('./routes/DoctorRoutes/deleteDoctor'));
 app.use('/api/doctor', require('./routes/DoctorRoutes/updateDoctor'));
+
 // ✅ Nurse Routes
 app.use('/api/nurse/add', require('./routes/nurseRoutes/addNurse'));
 app.use('/api/nurse/getAll', require('./routes/nurseRoutes/getnurse'));
 app.use('/api/nurse', require('./routes/nurseRoutes/GetSingleNurse'));
 app.use('/api/nurse', require('./routes/nurseRoutes/updateNurse'));
 app.use('/api/nurse', require('./routes/nurseRoutes/deleteNurse'));
+
 // ✅ Pharmacist Routes
 app.use('/api/pharmacist/add', require('./routes/pharmacistRoutes/addpharmacist'));
 app.use('/api/pharmacist/getAll', require('./routes/pharmacistRoutes/getpharmacist'));
@@ -45,6 +80,13 @@ app.use('/api/firefighter/getAll', require('./routes/FireFightersRoutes/getFireF
 app.use('/api/firefighter', require('./routes/FireFightersRoutes/GetSingleFireFighter'));
 app.use('/api/firefighter', require('./routes/FireFightersRoutes/updateFireFighter'));
 app.use('/api/firefighter', require('./routes/FireFightersRoutes/deleteFireFighters'));
+
+// ✅ DDS Routes
+app.use('/api/dds/add', require('./routes/DDSRoutes/addDDS'));
+app.use('/api/dds/getAll', require('./routes/DDSRoutes/getDDS'));
+app.use('/api/dds', require('./routes/DDSRoutes/GetSingleDDS'));
+app.use('/api/dds', require('./routes/DDSRoutes/updateDDS'));
+app.use('/api/dds', require('./routes/DDSRoutes/deleteDDS'));
 
 // ✅ Garde Routes
 app.use('/api/garde/add', require('./routes/gardeRoutes/addgarde'));
@@ -61,7 +103,6 @@ app.use('/api/message', require('./routes/messageRoutes/GetSingleMessage'));
 app.use('/api/message', require('./routes/messageRoutes/updateMessage'));
 app.use('/api/message', require('./routes/messageRoutes/deletemessage'));
 
-
 // ✅ Transaction Routes
 app.use('/api/transaction/add', require('./routes/TransactionRoutes/addtransaction'));
 app.use('/api/transaction/getAll', require('./routes/TransactionRoutes/gettransaction'));
@@ -74,6 +115,11 @@ app.use('/api/email/send', require('./routes/emailHandlers/emailMain'));
 app.use('/api/email', require('./routes/emailHandlers/GetSingleEmail'));
 app.use('/api/email', require('./routes/emailHandlers/DeleteEmail'));
 app.use('/api/email', require('./routes/emailHandlers/UpdateEmail'));
+
+// ✅ Demande & Notification Routes
+app.use("/api/demande", require("./routes/demandeRoutes/demandeRoutes"));
+app.use("/api/notification", require("./routes/notificationRoutes/notificationRoutes"));
+
 // ✅ Admin Protected Routes
 const { protect, authorize } = require('./middleware/authMiddleware');
 app.get('/api/admin/dashboard', protect, authorize('admin'), (req, res) => {
@@ -82,8 +128,9 @@ app.get('/api/admin/dashboard', protect, authorize('admin'), (req, res) => {
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+  console.log(`🔌 Socket.io is active on port ${PORT}`);
 });
 
-module.exports = app;
+module.exports = { app, io };

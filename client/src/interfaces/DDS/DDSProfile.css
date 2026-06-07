@@ -1,0 +1,37 @@
+.dds-profile {
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.dds-profile h1 {
+  color: #6b21a8;
+  margin-bottom: 20px;
+}
+
+.dds-profile-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.dds-form-group {
+  margin-bottom: 20px;
+}
+
+.dds-form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.dds-form-group input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 14px;
+}
