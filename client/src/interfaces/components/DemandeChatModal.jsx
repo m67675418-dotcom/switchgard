@@ -4,18 +4,27 @@ import './DemandeChatModal.css';
 
 const API = 'http://localhost:5000/api';
 
+// ✅ Get display name - same as ChatMessage
+const getMe = (u) =>
+  u?.fullName ||
+  u?.nomPharmacie ||
+  u?.userId ||
+  u?.matricule ||
+  u?.displayName ||
+  u?.email ||
+  "user";
+
 const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  const currentUserId = currentUser._id || currentUser.id;
-  const otherUserId = demande.proprietaireId === currentUserId 
-    ? demande.demandeurId 
-    : demande.proprietaireId;
-
-  const otherUserName = demande.proprietaireId === currentUserId
+  // ✅ Use same logic as ChatMessage
+  const me = getMe(currentUser);
+  
+  // ✅ Determine other party name
+  const otherUserName = demande.proprietaireId === (currentUser._id || currentUser.id)
     ? demande.demandeurName
     : demande.gardeOwner;
 
@@ -32,10 +41,17 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
 
   const fetchMessages = async () => {
     try {
-      const res = await axios.get(`${API}/message/conversation`, {
-        params: { userId1: currentUserId, userId2: otherUserId }
-      });
-      setMessages(res.data || []);
+      // ✅ Fetch all messages and filter
+      const res = await axios.get(`${API}/message/getAll`);
+      const allMessages = res.data || [];
+      
+      // ✅ Filter messages between me and other user
+      const filtered = allMessages.filter(m =>
+        (m.senderId === me && m.receiverId === otherUserName) ||
+        (m.receiverId === me && m.senderId === otherUserName)
+      );
+      
+      setMessages(filtered);
     } catch (error) {
       console.error('Error fetching messages:', error);
     }
@@ -51,9 +67,10 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
 
     setLoading(true);
     try {
+      // ✅ Send message with correct IDs (names, not IDs)
       await axios.post(`${API}/message/add`, {
-        senderId: currentUserId,
-        receiverId: otherUserId,
+        senderId: me,
+        receiverId: otherUserName,
         content: newMessage
       });
       setNewMessage('');
@@ -78,9 +95,14 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
     }
   };
 
+  const formatTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  };
+
   const isMyMessage = (msg) => {
-    const senderId = msg.senderId || msg.sender;
-    return senderId === currentUserId;
+    return msg.senderId === me;
   };
 
   return (
@@ -118,10 +140,7 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
                   {msg.content}
                 </div>
                 <span className="dcm-message-time">
-                  {new Date(msg.timestamp || msg.createdAt).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}
+                  {formatTime(msg.timestamp || msg.createdAt)}
                 </span>
               </div>
             ))

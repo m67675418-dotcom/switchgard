@@ -157,9 +157,16 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
                   
                   {demande.status === 'accepted' && demande.directorStatus !== 'approved' && (
                     <button className="btn-chat" onClick={() => handleOpenChat(demande)}>
-                      💬 Ouvrir la conversation
+                      💬 Ouvrir la conversation avec {otherParty}
                     </button>
                   )}
+
+                  <button 
+                    className="btn-messages"
+                    onClick={() => onNavigate?.('message')}
+                  >
+                    📨 Voir tous les messages
+                  </button>
 
                   {demande.directorStatus === 'pending' && (
                     <div className="waiting-director">

@@ -145,7 +145,8 @@
 
 .btn-accept, 
 .btn-reject, 
-.btn-chat {
+.btn-chat,
+.btn-messages {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -185,12 +186,24 @@
   background: linear-gradient(135deg, #6b21a8 0%, #8b5cf6 100%);
   color: white;
   flex: 1;
-  min-width: 180px;
+  min-width: 200px;
 }
 
 .btn-chat:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(107, 33, 168, 0.3);
+}
+
+.btn-messages {
+  background: #2563eb;
+  color: white;
+  flex: 1;
+  min-width: 180px;
+}
+
+.btn-messages:hover {
+  background: #1d4ed8;
+  transform: translateY(-2px);
 }
 
 .waiting-director, 
@@ -247,7 +260,7 @@
     flex-direction: column;
   }
   
-  .btn-accept, .btn-reject, .btn-chat {
+  .btn-accept, .btn-reject, .btn-chat, .btn-messages {
     width: 100%;
   }
 }
