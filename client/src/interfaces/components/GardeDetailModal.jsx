@@ -23,12 +23,10 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
     catch { return d; }
   };
 
-  // ✅ Get current user ID (handle both _id and id)
   const getCurrentUserId = () => {
     return currentUser?._id || currentUser?.id || currentUser?.userId || null;
   };
 
-  // Fetch owner profile when modal opens
   useEffect(() => {
     if (!garde?.ownerId && !garde?.owner) return;
     setLoadingProfile(true);
@@ -40,7 +38,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
       .catch(() => setLoadingProfile(false));
   }, [garde, cfg.api]);
 
-  // ✅ Check if current user already sent a demande for this garde
   useEffect(() => {
     const currentUserId = getCurrentUserId();
     if (!garde?._id || !currentUserId) return;
@@ -48,38 +45,29 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
       .then(r => r.json())
       .then(data => { if (data.exists) setDemandeSent(true); })
       .catch(() => {});
-  }, [garde, currentUser]); // ✅ Fixed: use currentUser instead of getCurrentUserId
+  }, [garde, currentUser]);
 
-  // ✅ Handle Demande - FIXED VERSION
   const handleDemande = async () => {
     console.log('📤 === Starting Demande ===');
-    console.log('currentUser:', currentUser);
-    console.log('garde:', garde);
     
-    // ✅ Get current user ID (handle both _id and id)
     const currentUserId = getCurrentUserId();
     
     if (!currentUserId) {
-      console.error('❌ No user ID found in currentUser!');
       alert('❌ Error: User ID not found. Please login again.');
       return;
     }
 
     if (!garde?._id) {
-      console.error('❌ No garde ID found!');
       alert('❌ Error: Garde ID not found.');
       return;
     }
 
     if (!garde?.ownerId) {
-      console.error('❌ No garde ownerId found!');
       alert('❌ Error: Garde owner not found.');
       return;
     }
 
-    // Check if user is trying to demande their own garde
     if (currentUserId === garde.ownerId) {
-      console.log('⚠️ User trying to demande own garde');
       alert('❌ You cannot demande your own garde!');
       return;
     }
@@ -97,8 +85,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
         type: 'echange',
       };
 
-      console.log('📤 Sending demande data:', demandeData);
-
       const res = await fetch('http://localhost:5000/api/demande', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -106,18 +92,15 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
       });
 
       const data = await res.json();
-      console.log('📥 Response:', data);
 
       if (res.ok) {
         setDemandeSent(true);
         alert('✅ Demande envoyée avec succès!');
         onDemande?.(garde);
       } else {
-        console.error('❌ Server error:', data);
         alert('❌ ' + (data.message || 'Error sending demande'));
       }
     } catch (error) {
-      console.error('❌ Network error:', error);
       alert('❌ Network error: ' + error.message);
     } finally {
       setSending(false);
@@ -133,7 +116,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
     <div className="gdm-overlay" onClick={e => e.target === e.currentTarget && onClose()}>
       <div className="gdm-modal" style={{ "--role-color": cfg.color, "--role-light": cfg.light }}>
 
-        {/* ── HEADER ── */}
         <div className="gdm-header" style={{ background: `linear-gradient(135deg, ${cfg.color}dd, ${cfg.color})` }}>
           <div className="gdm-header-left">
             <span className="gdm-big-icon">🛡️</span>
@@ -145,7 +127,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
           <button className="gdm-close" onClick={onClose}>✕</button>
         </div>
 
-        {/* ── TABS ── */}
         <div className="gdm-tabs">
           <button className={`gdm-tab ${tab === "info" ? "gdm-tab-active" : ""}`} onClick={() => setTab("info")}>
             📋 Garde Info
@@ -155,7 +136,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
           </button>
         </div>
 
-        {/* ── BODY ── */}
         <div className="gdm-body">
 
           {tab === "info" && (
@@ -170,7 +150,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
                   { icon: "👤", label: "Owner",    val: garde.owner },
                   { icon: "📅", label: "Date",     val: fmt(garde.dateGarde) },
                   { icon: "🏷️", label: "Role",     val: cfg.label },
-                  { icon: "🆔", label: "Garde ID", val: garde._id },
                   garde.note && { icon: "📝", label: "Note", val: garde.note },
                 ].filter(Boolean).map(({ icon, label, val }) => (
                   <div key={label} className="gdm-info-row">
@@ -225,7 +204,6 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
           )}
         </div>
 
-        {/* ── FOOTER / ACTION ── */}
         {!isOwner && (
           <div className="gdm-footer">
             {demandeSent ? (
@@ -272,14 +250,12 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
   );
 }
 
-// Build profile fields based on role
 function buildProfileFields(profile, role) {
   switch (role) {
     case "doctor":
       return [
         { icon: "📧", label: "Email",        val: profile.email },
         { icon: "🩺", label: "Specialty",    val: profile.specialty },
-        { icon: "🔢", label: "Num Ordre",    val: profile.numOrdre },
         { icon: "📍", label: "Location",     val: profile.location },
         { icon: "✅", label: "Availability", val: profile.isAvailable ? "Available" : "Busy" },
       ];
@@ -293,7 +269,6 @@ function buildProfileFields(profile, role) {
     case "firefighter":
       return [
         { icon: "✉️", label: "Email",      val: profile.gmail },
-        { icon: "🔢", label: "Matricule",  val: profile.matricule },
         { icon: "⭐", label: "Grade",      val: profile.grade },
         { icon: "🚒", label: "Unit",       val: profile.uniteIntervention },
       ];
@@ -302,7 +277,6 @@ function buildProfileFields(profile, role) {
         { icon: "✉️", label: "Email",            val: profile.gmail },
         { icon: "🏪", label: "Pharmacy Name",    val: profile.nomPharmacie },
         { icon: "📍", label: "Pharmacy Address", val: profile.adressePharmacie },
-        { icon: "📋", label: "Agrement Number",  val: profile.numAgrement },
       ];
     default:
       return [];

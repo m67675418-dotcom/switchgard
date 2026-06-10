@@ -32,7 +32,7 @@ import NurseProfile from './interfaces/Nurse/NurseProfile';
 import FirefighterHome    from './interfaces/FireFighter/FirefighterHome';
 import FirefighterGarde   from './interfaces/FireFighter/FirefighterGarde';
 import FirefighterMessage from './interfaces/FireFighter/FirefighterMessage';
-import FirefighterProfile from './interfaces/FireFighter/FirefighterProfile';
+import FireFighterProfile from './interfaces/FireFighter/FireFighterProfile';
 
 import PharmacistHome    from './interfaces/Pharmacist/PharmacistHome';
 import PharmacistGarde   from './interfaces/Pharmacist/PharmacistGarde';
@@ -355,7 +355,7 @@ function App() {
         {view === 'garde'     && <FirefighterGarde   onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'messages'  && <FirefighterMessage onNavigate={handleNavigate} currentUser={currentUser} />}
         {view === 'map'       && <MapPage            onNavigate={handleNavigate} currentUser={currentUser} role="firefighter" />}
-        {view === 'profile'   && <FirefighterProfile firefighterId={currentUser?.id} onNavigate={handleNavigate} onUpdateUser={handleUpdateUser} />}
+        {view === 'profile'   && <FireFighterProfile firefighterId={currentUser?.id} onNavigate={handleNavigate} onUpdateUser={handleUpdateUser} />}
         {view === 'demandes'  && <DemandesPage         currentUser={currentUser} role="firefighter" onNavigate={handleNavigate} />}
         {view === 'director'  && <DirectorApprovalPage currentUser={currentUser} role="firefighter" onNavigate={handleNavigate} />}
       </div>

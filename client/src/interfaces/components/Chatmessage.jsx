@@ -37,6 +37,31 @@ const getMe = (u) =>
   u?.email ||
   "user";
 
+  // أضف هذا بعد const getMe = (u) => {...}
+const getUserRole = async (userNameOrEmail) => {
+  try {
+    const roles = ["doctor", "nurse", "firefighter", "pharmacist"];
+    for (const role of roles) {
+      const res = await fetch(`${API}/${role}/getAll`);
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        const found = data.find(p => 
+          (p.fullName === userNameOrEmail) ||
+          (p.userId === userNameOrEmail) ||
+          (p.matricule === userNameOrEmail) ||
+          (p.nomPharmacie === userNameOrEmail) ||
+          (p.email === userNameOrEmail) ||
+          (p.gmail === userNameOrEmail)
+        );
+        if (found) return role;
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 // Notification beep
 const playBeep = () => {
   try {
@@ -673,29 +698,36 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
   const me = getMe(currentUser);
 
   const loadConvs = useCallback(() => {
-    fetch(`${API}/message/getAll`)
-      .then(r => r.json())
-      .then(data => {
-        if (!Array.isArray(data)) { setLoading(false); return; }
-        const map = {};
-        data.forEach(m => {
-          const partner = m.senderId === me ? m.receiverId : m.senderId;
-          if (!partner) return;
-          const t = new Date(m.timestamp || m.createdAt || 0);
-          if (!map[partner] || t > new Date(map[partner]._t || 0)) {
-            map[partner] = { name: partner, lastMsg: m.content, _t: m.timestamp || m.createdAt, unread: 0 };
-          }
-          if (m.senderId !== me) map[partner].unread = (map[partner].unread || 0) + 1;
-        });
-        setConvs(Object.values(map).map((c, i) => ({
-          id: `conv-${i}`, name: c.name, avatar:"👤",
-          lastMsg: c.lastMsg, time: fmtTime(c._t),
-          unread: c.unread, online: true,
-        })));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, [me]);
+  fetch(`${API}/message/getAll`)
+    .then(r => r.json())
+    .then(async data => {
+      if (!Array.isArray(data)) { setLoading(false); return; }
+      const map = {};
+      for (const m of data) {
+        const partner = m.senderId === me ? m.receiverId : m.senderId;
+        if (!partner) continue;
+        
+        // جلب دور المستخدم الآخر
+        const partnerRole = await getUserRole(partner);
+        // فقط إذا كان نفس الدور
+        if (partnerRole !== role) continue;
+        
+        const t = new Date(m.timestamp || m.createdAt || 0);
+        if (!map[partner] || t > new Date(map[partner]._t || 0)) {
+          map[partner] = { name: partner, lastMsg: m.content, _t: m.timestamp || m.createdAt, unread: 0, role: partnerRole };
+        }
+        if (m.senderId !== me) map[partner].unread = (map[partner].unread || 0) + 1;
+      }
+      setConvs(Object.values(map).map((c, i) => ({
+        id: `conv-${i}`, name: c.name, avatar: ROLE_CONFIG[c.role]?.emoji || "👤",
+        lastMsg: c.lastMsg, time: fmtTime(c._t),
+        unread: c.unread, online: true,
+      })));
+      setLoading(false);
+    })
+    .catch(() => setLoading(false));
+}, [me, role]);
+      
 
   useEffect(() => { loadConvs(); }, [loadConvs]);
 
@@ -726,14 +758,21 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
 
   const handleSelect = (c) => { clearNotifs(c.name); onSelect(c); };
 
-  const createConv = (contact) => {
-    const exists = convs.find(c => c.name === contact.name);
-    if (exists) { handleSelect(exists); return; }
-    const newConv = { id:`new-${Date.now()}`, name: contact.name, avatar: contact.avatar,
-      lastMsg:"", time:"maintenant", unread:0, online:true };
-    setConvs(prev => [newConv, ...prev]);
-    handleSelect(newConv);
-  };
+  const createConv = async (contact) => {
+  // ✅ التحقق من أن المراسل من نفس الدور
+  const contactRole = await getUserRole(contact.name);
+  if (contactRole !== role) {
+    alert(`❌ Vous ne pouvez pas envoyer de message à un ${contactRole}.`);
+    return;
+  }
+  const exists = convs.find(c => c.name === contact.name);
+  if (exists) { handleSelect(exists); return; }
+  const newConv = { id:`new-${Date.now()}`, name: contact.name, avatar: contact.avatar,
+    lastMsg:"", time:"maintenant", unread:0, online:true };
+  setConvs(prev => [newConv, ...prev]);
+  handleSelect(newConv);
+};
+
 
   const totalUnread = Object.values(notifications).reduce((a,b) => a+b, 0);
 

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './DirectorApprovalPage.css'; // تأكد من إنشاء الملف
+import './DirectorApprovalPage.css';
 
 const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
   const [demandes, setDemandes] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [processingId, setProcessingId] = useState(null);
 
   useEffect(() => {
     fetchPendingDemandes();
@@ -12,12 +13,16 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
 
   const fetchPendingDemandes = async () => {
     try {
+      setLoading(true);
       // جلب الطلبات اللي directorStatus ديالها pending
       const res = await axios.get('http://localhost:5000/api/demande');
+      console.log('📥 Demandes reçues:', res.data);
+      
       const pending = res.data.filter(d => d.directorStatus === 'pending');
       setDemandes(pending);
     } catch (error) {
       console.error('Error fetching demandes:', error);
+      alert('❌ خطأ في جلب الطلبات: ' + (error.response?.data?.message || error.message));
     } finally {
       setLoading(false);
     }
@@ -25,23 +30,47 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
 
   const handleApprove = async (id) => {
     if (!window.confirm('هل أنت متأكد من الموافقة على هذا الطلب؟ سيتم تبديل الملكية.')) return;
+    
+    setProcessingId(id);
     try {
-      await axios.put(`http://localhost:5000/api/demande/${id}/director-approve`);
-      alert('✅ تمت الموافقة وتبديل الملكية!');
-      fetchPendingDemandes();
+      const response = await axios.put(`http://localhost:5000/api/demande/${id}/director-approve`);
+      console.log('✅ Approve response:', response.data);
+      
+      if (response.data.success || response.status === 200) {
+        alert('✅ تمت الموافقة وتبديل الملكية!');
+        fetchPendingDemandes();
+      } else {
+        alert('❌ خطأ: ' + (response.data.message || 'حدث خطأ غير معروف'));
+      }
     } catch (error) {
-      alert('❌ خطأ في الموافقة');
+      console.error('❌ Error in approve:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message;
+      alert('❌ خطأ في الموافقة: ' + errorMessage);
+    } finally {
+      setProcessingId(null);
     }
   };
 
   const handleReject = async (id) => {
     if (!window.confirm('هل تريد رفض هذا الطلب؟')) return;
+    
+    setProcessingId(id);
     try {
-      await axios.put(`http://localhost:5000/api/demande/${id}/director-reject`);
-      alert('❌ تم رفض الطلب');
-      fetchPendingDemandes();
+      const response = await axios.put(`http://localhost:5000/api/demande/${id}/director-reject`);
+      console.log('✅ Reject response:', response.data);
+      
+      if (response.data.success || response.status === 200) {
+        alert('❌ تم رفض الطلب');
+        fetchPendingDemandes();
+      } else {
+        alert('❌ خطأ: ' + (response.data.message || 'حدث خطأ غير معروف'));
+      }
     } catch (error) {
-      alert('❌ خطأ في الرفض');
+      console.error('❌ Error in reject:', error);
+      const errorMessage = error.response?.data?.message || error.response?.data || error.message;
+      alert('❌ خطأ في الرفض: ' + errorMessage);
+    } finally {
+      setProcessingId(null);
     }
   };
 
@@ -63,17 +92,16 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
           {demandes.map((d) => (
             <div key={d._id} className="demande-card">
               
-              {/* معلومات المناوبة */}
               <div className="garde-info">
                 <h3>🛡️ تفاصيل المناوبة</h3>
                 <p><strong>التاريخ:</strong> {new Date(d.gardeDate).toLocaleDateString()}</p>
-                <p><strong>النوع:</strong> {d.type === 'vente' ? '💰 بيع' : ' تبادل'}</p>
+                <p><strong>النوع:</strong> {d.type === 'vente' ? '💰 بيع' : '🔄 تبادل'}</p>
+                <p><strong>الحالة:</strong> {d.directorStatus === 'pending' ? '⏳ معلق' : d.directorStatus}</p>
               </div>
 
-              {/* مقارنة بين الطرفين */}
               <div className="users-comparison">
                 <div className="user-col owner">
-                  <h4> المالك الحالي (User A)</h4>
+                  <h4>👤 المالك الحالي (User A)</h4>
                   <p><strong>الاسم:</strong> {d.gardeOwner}</p>
                   <p><strong>المعرف:</strong> {d.proprietaireId?.slice(-6)}</p>
                 </div>
@@ -87,13 +115,20 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
                 </div>
               </div>
 
-              {/* أزرار الإجراء */}
               <div className="actions">
-                <button className="btn-approve" onClick={() => handleApprove(d._id)}>
-                  ✅ Valider (موافقة)
+                <button 
+                  className="btn-approve" 
+                  onClick={() => handleApprove(d._id)}
+                  disabled={processingId === d._id}
+                >
+                  {processingId === d._id ? '⏳ جاري...' : '✅ Valider (موافقة)'}
                 </button>
-                <button className="btn-reject" onClick={() => handleReject(d._id)}>
-                  ❌ Rejeter (رفض)
+                <button 
+                  className="btn-reject" 
+                  onClick={() => handleReject(d._id)}
+                  disabled={processingId === d._id}
+                >
+                  {processingId === d._id ? '⏳ جاري...' : '❌ Rejeter (رفض)'}
                 </button>
               </div>
 

@@ -27,54 +27,63 @@ export default function MapPage({ onNavigate, currentUser, role = "doctor" }) {
     { key:"firefighter", label:"Firefighters",  icon:"🚒"  },
   ];
 
-  // ── Fetch all roles ──
-  useEffect(() => {
-    const fetchAll = async () => {
-      setLoading(true);
-      const all  = [];
-      let total  = 0;
-      let withLoc = 0;
+// ── Fetch all roles ──
+useEffect(() => {
+  const fetchAll = async () => {
+    setLoading(true);
+    const all  = [];
+    let total  = 0;
+    let withLoc = 0;
 
-      for (const [roleKey, cfg] of Object.entries(roleConfig)) {
-        try {
-          const res  = await fetch(cfg.api);
-          const data = await res.json();
-          const list = Array.isArray(data) ? data : [];
-          total += list.length;
+    // جلب منطقة المستخدم الحالي
+    const currentUserRegion = currentUser?.location || currentUser?.wilaya || currentUser?.region || null;
 
-          list.forEach((item, idx) => {
-            const name = item[cfg.name] || `${cfg.label} ${idx+1}`;
-            const lat  = item.lat ? parseFloat(item.lat) : null;
-            const lng  = item.lng ? parseFloat(item.lng) : null;
+    for (const [roleKey, cfg] of Object.entries(roleConfig)) {
+      try {
+        const res  = await fetch(cfg.api);
+        const data = await res.json();
+        const list = Array.isArray(data) ? data : [];
+        total += list.length;
 
-            // ✅ فقط المستخدمين اللي عندهم إحداثيات حقيقية
-            if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
+        list.forEach((item, idx) => {
+          const name = item[cfg.name] || `${cfg.label} ${idx+1}`;
+          const lat  = item.lat ? parseFloat(item.lat) : null;
+          const lng  = item.lng ? parseFloat(item.lng) : null;
+          
+          // جلب منطقة المستخدم الآخر
+          const userRegion = item.location || item.wilaya || item.region || null;
 
-            withLoc++;
-            all.push({
-              id:       item._id || `${roleKey}-${idx}`,
-              role:     roleKey,
-              name,
-              location: item.location || "",
-              email:    item.email || item.gmail || "",
-              extra:    cfg.extra(item),
-              lat, lng,
-              color:    cfg.color,
-              icon:     cfg.icon,
-            });
+          // ✅ تصفية: فقط إذا كان نفس الدور ونفس المنطقة
+          if (roleKey !== role) return;
+          if (currentUserRegion && userRegion && currentUserRegion !== userRegion) return;
+
+          if (!lat || !lng || isNaN(lat) || isNaN(lng)) return;
+
+          withLoc++;
+          all.push({
+            id:       item._id || `${roleKey}-${idx}`,
+            role:     roleKey,
+            name,
+            location: item.location || "",
+            email:    item.email || item.gmail || "",
+            extra:    cfg.extra(item),
+            lat, lng,
+            color:    cfg.color,
+            icon:     cfg.icon,
           });
-        } catch (e) {
-          console.warn(`Failed to fetch ${roleKey}:`, e.message);
-        }
+        });
+      } catch (e) {
+        console.warn(`Failed to fetch ${roleKey}:`, e.message);
       }
+    }
 
-      setMarkers(all);
-      setStats({ total, withLocation: withLoc });
-      setLoading(false);
-    };
+    setMarkers(all);
+    setStats({ total, withLocation: withLoc });
+    setLoading(false);
+  };
 
-    fetchAll();
-  }, []);
+  fetchAll();
+}, [role, currentUser]);
 
   // ── Load Leaflet CSS + JS once ──
   useEffect(() => {

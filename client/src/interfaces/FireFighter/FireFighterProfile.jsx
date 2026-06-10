@@ -1,6 +1,6 @@
 // FirefighterProfile.jsx - Full Width + Bottom Nav
 import { useState, useEffect } from "react";
-import "./FirefighterProfile.css";
+import "./FireFighterProfile.css";
 
 export default function FirefighterProfile({ firefighterId, onNavigate, onUpdateUser }) {
   const [ff, setFf]           = useState(null);
