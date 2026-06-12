@@ -159,6 +159,7 @@ router.post('/', async (req, res) => {
                 id:    user._id,
                 email: user[emailField],
                 role:  role.toLowerCase(),
+                locationSet: account.locationSet || false,
                 ...(role === 'doctor'      && { fullName: user.fullName, specialty: user.specialty }),
                 ...(role === 'nurse'       && { userId: user.userId, diplome: user.diplome, service: user.service, equipe: user.equipe }),
                 ...(role === 'pharmacist'  && { nomPharmacie: user.nomPharmacie }),

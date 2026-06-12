@@ -23,9 +23,13 @@ const accountSchema = new mongoose.Schema({
   isActive: {
     type: Boolean,
     default: false
+  },
+  locationSet: {
+    type: Boolean,
+    default: false
   }
-}, { 
-  timestamps: true 
+}, {
+  timestamps: true
 });
 
 // تشفير الباسوورد قبل الحفظ
