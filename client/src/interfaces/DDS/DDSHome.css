@@ -396,6 +396,10 @@
   margin-bottom: 8px;
 }
 
+.dds-capitalize {
+  text-transform: capitalize;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .dds-search-box {

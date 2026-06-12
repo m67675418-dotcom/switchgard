@@ -163,7 +163,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
                 <tbody>
                   {pendingUsers.map(acc => (
                     <tr key={acc._id}>
-                      <td className="dds-td"><span style={{ textTransform: 'capitalize' }}>{roleEmoji[acc.role] || '👤'} {acc.role}</span></td>
+                      <td className="dds-td"><span className="dds-capitalize">{roleEmoji[acc.role] || '👤'} {acc.role}</span></td>
                       <td className="dds-td">{acc.email}</td>
                       <td className="dds-td">{new Date(acc.createdAt).toLocaleDateString()}</td>
                       <td className="dds-td">
@@ -195,7 +195,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
                       <td className="dds-td">{d.gardeOwner || '—'}</td>
                       <td className="dds-td">{d.demandeurName || '—'}</td>
                       <td className="dds-td">{d.gardeDate ? new Date(d.gardeDate).toLocaleDateString() : '—'}</td>
-                      <td className="dds-td"><span style={{ textTransform: 'capitalize' }}>{roleEmoji[d.role] || ''} {d.role}</span></td>
+                      <td className="dds-td"><span className="dds-capitalize">{roleEmoji[d.role] || ''} {d.role}</span></td>
                       <td className="dds-td">
                         <button className="dds-btn-approve" onClick={() => approveShift(d._id)}>✅ Approve</button>
                         <button className="dds-btn-reject"  onClick={() => rejectShift(d._id)}>❌ Reject</button>
