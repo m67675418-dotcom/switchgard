@@ -59,7 +59,7 @@
   color: #6b21a8;
 }
 
-.dem-filter-tabs button.active {
+.dem-filter-tabs button.dem-active {
   background: #6b21a8;
   color: white;
   border-color: #6b21a8;
@@ -106,22 +106,22 @@
   font-weight: 600;
 }
 
-.dem-status-badge.pending {
+.dem-status-badge.dem-pending {
   background: #fef3c7;
   color: #92400e;
 }
 
-.dem-status-badge.accepted {
+.dem-status-badge.dem-accepted {
   background: #d1fae5;
   color: #065f46;
 }
 
-.dem-status-badge.rejected {
+.dem-status-badge.dem-rejected {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.dem-status-badge.completed {
+.dem-status-badge.dem-completed {
   background: #dbeafe;
   color: #1e40af;
 }

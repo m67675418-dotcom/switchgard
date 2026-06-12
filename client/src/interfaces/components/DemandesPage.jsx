@@ -95,7 +95,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
         ].map(f => (
           <button
             key={f.key}
-            className={filter === f.key ? 'active' : ''}
+            className={filter === f.key ? 'dem-active' : ''}
             onClick={() => setFilter(f.key)}
           >
             {f.label}
@@ -122,7 +122,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
                   <h3>
                     {demande.type === 'vente' ? '💰 Demande de vente' : '🔄 Demande d\'échange'}
                   </h3>
-                  <span className={`dem-status-badge ${demande.status}`}>
+                  <span className={`dem-status-badge dem-${demande.status}`}>
                     {demande.status === 'pending' && '⏳ En attente'}
                     {demande.status === 'accepted' && '✅ Acceptée'}
                     {demande.status === 'rejected' && '❌ Rejetée'}
