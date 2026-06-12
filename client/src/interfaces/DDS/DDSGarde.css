@@ -1,11 +1,10 @@
-.dds-garde {
+.mg-garde {
   padding: 30px;
   max-width: 1400px;
   margin: 0 auto;
 }
 
-/* ✅ Back Button Style */
-.back-button {
+.mg-back-button {
   padding: 10px 20px;
   background: #6b21a8;
   color: white;
@@ -17,56 +16,56 @@
   transition: all 0.3s ease;
 }
 
-.back-button:hover {
+.mg-back-button:hover {
   background: #581c87;
   transform: translateX(-4px);
 }
 
-.dds-garde-header {
+.mg-garde-header {
   margin-bottom: 30px;
 }
 
-.dds-garde-header h1 {
+.mg-garde-header h1 {
   font-size: 28px;
   color: #1e293b;
   margin-bottom: 8px;
 }
 
-.filter-tabs {
+.mg-filter-tabs {
   display: flex;
   gap: 12px;
   margin-bottom: 24px;
 }
 
-.filter-tabs button {
+.mg-filter-tabs button {
   padding: 10px 20px;
   background: white;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.filter-tabs button.active {
+.mg-filter-tabs button.active {
   background: #6b21a8;
   color: white;
   border-color: #6b21a8;
 }
 
-.gardes-table-container {
+.mg-gardes-table-container {
   background: white;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-.gardes-table {
+.mg-gardes-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.gardes-table th {
+.mg-gardes-table th {
   background: #f1f5f9;
   padding: 14px;
   text-align: left;
@@ -74,44 +73,44 @@
   color: #1e293b;
 }
 
-.gardes-table td {
+.mg-gardes-table td {
   padding: 14px;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
 }
 
-.status-badge {
+.mg-status-badge {
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.status-badge.active {
+.mg-status-badge.active {
   background: #d1fae5;
   color: #065f46;
 }
 
-.status-badge.inactive {
+.mg-status-badge.inactive {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.empty-state {
+.mg-empty-state {
   text-align: center;
   padding: 80px 20px;
   background: white;
   border-radius: 12px;
 }
 
-.empty-state span {
+.mg-empty-state span {
   font-size: 64px;
   display: block;
   margin-bottom: 16px;
 }
 
-.loading {
+.mg-loading {
   text-align: center;
   padding: 60px;
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-muted, #64748b);
 }

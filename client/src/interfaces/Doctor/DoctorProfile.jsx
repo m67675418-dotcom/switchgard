@@ -52,19 +52,19 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
   };
 
   if (loading) return (
-    <div className="container">
-      <div className="skeletonHeader" />
-      <div className="skeletonCard" />
+    <div className="dp-container">
+      <div className="dp-skeletonHeader" />
+      <div className="dp-skeletonCard" />
     </div>
   );
 
   if (!doctor) return (
-    <div className="container">
-      <div className="mainContent">
-        <div className="errorBox">
+    <div className="dp-container">
+      <div className="dp-mainContent">
+        <div className="dp-errorBox">
           <span>⚠️</span>
           <p>Doctor not found</p>
-          <button className="btnBack" onClick={() => onNavigate?.('home')}>← Go Back</button>
+          <button className="dp-btnBack" onClick={() => onNavigate?.('home')}>← Go Back</button>
         </div>
       </div>
       <BottomNav onNavigate={onNavigate} active="profile" />
@@ -74,27 +74,27 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
   const specialtyOptions = ['Cardiology','Pediatrics','Dermatology','Orthopedics','Neurology','General Practice','Surgery','Psychiatry'];
 
   return (
-    <div className="container">
-      {toast && <div className={`toast ${toast.type === 'success' ? 'toastSuccess' : 'toastError'}`}>{toast.text}</div>}
+    <div className="dp-container">
+      {toast && <div className={`dp-toast ${toast.type === 'success' ? 'dp-toastSuccess' : 'dp-toastError'}`}>{toast.text}</div>}
 
       {/* ── HERO ── */}
-      <div className="hero">
-        <button className="backBtn" onClick={() => onNavigate?.('home')}>← Back</button>
-        <div className="avatarWrap">
-          <div className="avatar">🧑‍⚕️</div>
-          <span className={`statusDot ${doctor.isAvailable ? 'dotGreen' : 'dotRed'}`} />
+      <div className="dp-hero">
+        <button className="dp-backBtn" onClick={() => onNavigate?.('home')}>← Back</button>
+        <div className="dp-avatarWrap">
+          <div className="dp-avatar">🧑‍⚕️</div>
+          <span className={`dp-statusDot ${doctor.isAvailable ? 'dp-dotGreen' : 'dp-dotRed'}`} />
         </div>
         <div>
-          <h1 className="heroName">{doctor.fullName}</h1>
-          <p className="heroSpec">{doctor.specialty}</p>
+          <h1 className="dp-heroName">{doctor.fullName}</h1>
+          <p className="dp-heroSpec">{doctor.specialty}</p>
         </div>
       </div>
 
       {/* ── MAIN ── */}
-      <div className="mainContent">
+      <div className="dp-mainContent">
         {!editing ? (
           <>
-            <div className="infoSection">
+            <div className="dp-infoSection">
               {[
                 { icon: '📧', label: 'Email',       val: doctor.email },
                 { icon: '🩺', label: 'Specialty',   val: doctor.specialty },
@@ -102,41 +102,41 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
                 { icon: '📍', label: 'Location',    val: doctor.location || 'Not specified' },
                 { icon: '✅', label: 'Availability', val: doctor.isAvailable ? 'Available' : 'Busy' },
               ].map(({ icon, label, val }) => (
-                <div key={label} className="infoRow">
-                  <div className="infoIcon">{icon}</div>
-                  <div className="infoText">
-                    <span className="infoLabel">{label}</span>
-                    <span className="infoVal">{val}</span>
+                <div key={label} className="dp-infoRow">
+                  <div className="dp-infoIcon">{icon}</div>
+                  <div className="dp-infoText">
+                    <span className="dp-infoLabel">{label}</span>
+                    <span className="dp-infoVal">{val}</span>
                   </div>
                 </div>
               ))}
-              <div className="actions">
-                <button className="btnEdit" onClick={() => setEditing(true)}>✏️ Edit</button>
-                <button className="btnDelete" onClick={handleDelete} disabled={deleting}>
+              <div className="dp-actions">
+                <button className="dp-btnEdit" onClick={() => setEditing(true)}>✏️ Edit</button>
+                <button className="dp-btnDelete" onClick={handleDelete} disabled={deleting}>
                   {deleting ? 'Deleting...' : '🗑️ Delete'}
                 </button>
               </div>
             </div>
           </>
         ) : (
-          <div className="editForm">
-            <h3 className="editTitle">✏️ Edit Doctor</h3>
-            <div className="formGroup"><label>Full Name</label>
+          <div className="dp-editForm">
+            <h3 className="dp-editTitle">✏️ Edit Doctor</h3>
+            <div className="dp-formGroup"><label>Full Name</label>
               <input type="text" value={form.fullName} onChange={e => setForm({...form, fullName: e.target.value})} placeholder="Full Name" /></div>
-            <div className="formGroup"><label>Email</label>
+            <div className="dp-formGroup"><label>Email</label>
               <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} placeholder="Email" /></div>
-            <div className="formGroup"><label>Specialty</label>
+            <div className="dp-formGroup"><label>Specialty</label>
               <select value={form.specialty} onChange={e => setForm({...form, specialty: e.target.value})}>
                 <option value="">-- Select --</option>
                 {specialtyOptions.map(s => <option key={s} value={s}>{s}</option>)}
               </select></div>
-            <div className="formGroup"><label>Num Ordre</label>
+            <div className="dp-formGroup"><label>Num Ordre</label>
               <input type="text" value={form.numOrdre} onChange={e => setForm({...form, numOrdre: e.target.value})} placeholder="Num Ordre" /></div>
-            <div className="formGroup"><label>Location</label>
+            <div className="dp-formGroup"><label>Location</label>
               <input type="text" value={form.location} onChange={e => setForm({...form, location: e.target.value})} placeholder="Location" /></div>
-            <div className="editActions">
-              <button className="btnSave" onClick={handleUpdate} disabled={saving}>{saving ? 'Saving...' : '💾 Save'}</button>
-              <button className="btnCancel" onClick={() => setEditing(false)}>Cancel</button>
+            <div className="dp-editActions">
+              <button className="dp-btnSave" onClick={handleUpdate} disabled={saving}>{saving ? 'Saving...' : '💾 Save'}</button>
+              <button className="dp-btnCancel" onClick={() => setEditing(false)}>Cancel</button>
             </div>
           </div>
         )}
@@ -150,17 +150,17 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
 
 function BottomNav({ onNavigate, active }) {
   return (
-    <div className="bottomNav">
-      <button className={`navBtn ${active === 'home' ? 'navActive' : ''}`} onClick={() => onNavigate?.('home')}>
+    <div className="dp-bottomNav">
+      <button className={`dp-navBtn ${active === 'home' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('home')}>
         <span>🏠</span><span>Home</span>
       </button>
-      <button className={`navBtn ${active === 'message' ? 'navActive' : ''}`} onClick={() => onNavigate?.('message')}>
+      <button className={`dp-navBtn ${active === 'message' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('message')}>
         <span>💬</span><span>Messages</span>
       </button>
-      <button className={`navBtn ${active === 'garde' ? 'navActive' : ''}`} onClick={() => onNavigate?.('garde')}>
+      <button className={`dp-navBtn ${active === 'garde' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('garde')}>
         <span>🛡️</span><span>Shifts</span>
       </button>
-      <button className={`navBtn ${active === 'profile' ? 'navActive' : ''}`} onClick={() => onNavigate?.('profile')}>
+      <button className={`dp-navBtn ${active === 'profile' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('profile')}>
         <span>👤</span><span>Profile</span>
       </button>
     </div>

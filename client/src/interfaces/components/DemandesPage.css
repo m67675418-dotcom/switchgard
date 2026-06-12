@@ -1,10 +1,10 @@
-.demandes-page {
+.dem-demandes-page {
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.back-btn {
+.dem-back-btn {
   padding: 10px 20px;
   background: #6b21a8;
   color: white;
@@ -16,37 +16,37 @@
   transition: all 0.3s;
 }
 
-.back-btn:hover {
+.dem-back-btn:hover {
   background: #581c87;
   transform: translateX(-3px);
 }
 
-.header {
+.dem-header {
   margin-bottom: 30px;
 }
 
-.header h1 {
+.dem-header h1 {
   font-size: 28px;
-  color: #1e293b;
+  color: var(--color-text, #0f172a);
   margin-bottom: 8px;
 }
 
-.header p {
-  color: #64748b;
+.dem-header p {
+  color: var(--color-muted, #64748b);
   margin: 0;
 }
 
-.filter-tabs {
+.dem-filter-tabs {
   display: flex;
   gap: 10px;
   margin-bottom: 24px;
   flex-wrap: wrap;
 }
 
-.filter-tabs button {
+.dem-filter-tabs button {
   padding: 10px 18px;
   background: white;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-border, #e2e8f0);
   border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
@@ -54,24 +54,24 @@
   font-size: 13px;
 }
 
-.filter-tabs button:hover {
+.dem-filter-tabs button:hover {
   border-color: #6b21a8;
   color: #6b21a8;
 }
 
-.filter-tabs button.active {
+.dem-filter-tabs button.active {
   background: #6b21a8;
   color: white;
   border-color: #6b21a8;
 }
 
-.demandes-list {
+.dem-demandes-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.demande-card {
+.dem-demande-card {
   background: white;
   border-radius: 12px;
   padding: 20px;
@@ -79,12 +79,12 @@
   transition: all 0.3s;
 }
 
-.demande-card:hover {
+.dem-demande-card:hover {
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
   transform: translateY(-2px);
 }
 
-.demande-header {
+.dem-demande-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -93,60 +93,60 @@
   border-bottom: 2px solid #f1f5f9;
 }
 
-.demande-header h3 {
+.dem-demande-header h3 {
   margin: 0;
   font-size: 18px;
-  color: #1e293b;
+  color: var(--color-text, #0f172a);
 }
 
-.status-badge {
+.dem-status-badge {
   padding: 6px 14px;
   border-radius: 20px;
   font-size: 12px;
   font-weight: 600;
 }
 
-.status-badge.pending {
+.dem-status-badge.pending {
   background: #fef3c7;
   color: #92400e;
 }
 
-.status-badge.accepted {
+.dem-status-badge.accepted {
   background: #d1fae5;
   color: #065f46;
 }
 
-.status-badge.rejected {
+.dem-status-badge.rejected {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.status-badge.completed {
+.dem-status-badge.completed {
   background: #dbeafe;
   color: #1e40af;
 }
 
-.demande-info p {
+.dem-demande-info p {
   margin: 8px 0;
   color: #475569;
   font-size: 14px;
 }
 
-.demande-info strong {
-  color: #1e293b;
+.dem-demande-info strong {
+  color: var(--color-text, #0f172a);
 }
 
-.demande-actions {
+.dem-demande-actions {
   display: flex;
   gap: 12px;
   margin-top: 16px;
   flex-wrap: wrap;
 }
 
-.btn-accept, 
-.btn-reject, 
-.btn-chat,
-.btn-messages {
+.dem-btn-accept,
+.dem-btn-reject,
+.dem-btn-chat,
+.dem-btn-messages {
   padding: 12px 20px;
   border: none;
   border-radius: 8px;
@@ -156,59 +156,59 @@
   font-size: 14px;
 }
 
-.btn-accept {
+.dem-btn-accept {
   background: #10b981;
   color: white;
   flex: 1;
   min-width: 120px;
 }
 
-.btn-accept:hover {
+.dem-btn-accept:hover {
   background: #059669;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
 
-.btn-reject {
+.dem-btn-reject {
   background: #ef4444;
   color: white;
   flex: 1;
   min-width: 120px;
 }
 
-.btn-reject:hover {
+.dem-btn-reject:hover {
   background: #dc2626;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
 }
 
-.btn-chat {
+.dem-btn-chat {
   background: linear-gradient(135deg, #6b21a8 0%, #8b5cf6 100%);
   color: white;
   flex: 1;
   min-width: 200px;
 }
 
-.btn-chat:hover {
+.dem-btn-chat:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(107, 33, 168, 0.3);
 }
 
-.btn-messages {
-  background: #2563eb;
+.dem-btn-messages {
+  background: var(--color-accent, #2563eb);
   color: white;
   flex: 1;
   min-width: 180px;
 }
 
-.btn-messages:hover {
+.dem-btn-messages:hover {
   background: #1d4ed8;
   transform: translateY(-2px);
 }
 
-.waiting-director, 
-.approved,
-.rejected-director {
+.dem-waiting-director,
+.dem-approved,
+.dem-rejected-director {
   flex: 1;
   padding: 12px;
   text-align: center;
@@ -217,50 +217,50 @@
   font-size: 14px;
 }
 
-.waiting-director {
+.dem-waiting-director {
   background: #fef3c7;
   color: #92400e;
 }
 
-.approved {
+.dem-approved {
   background: #d1fae5;
   color: #065f46;
 }
 
-.rejected-director {
+.dem-rejected-director {
   background: #fee2e2;
   color: #991b1b;
 }
 
-.loading, .empty {
+.dem-loading, .dem-empty {
   text-align: center;
   padding: 60px;
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-muted, #64748b);
 }
 
-.empty span {
+.dem-empty span {
   font-size: 64px;
   display: block;
   margin-bottom: 16px;
 }
 
 @media (max-width: 600px) {
-  .demandes-page {
+  .dem-demandes-page {
     padding: 16px;
   }
-  
-  .demande-header {
+
+  .dem-demande-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
   }
-  
-  .demande-actions {
+
+  .dem-demande-actions {
     flex-direction: column;
   }
-  
-  .btn-accept, .btn-reject, .btn-chat, .btn-messages {
+
+  .dem-btn-accept, .dem-btn-reject, .dem-btn-chat, .dem-btn-messages {
     width: 100%;
   }
 }

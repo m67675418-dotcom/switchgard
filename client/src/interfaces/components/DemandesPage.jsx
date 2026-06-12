@@ -21,11 +21,11 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
     try {
       const userId = currentUser._id || currentUser.id;
       const res = await axios.get('http://localhost:5000/api/demande');
-      
-      const userDemandes = res.data.filter(d => 
+
+      const userDemandes = res.data.filter(d =>
         d.proprietaireId === userId || d.demandeurId === userId
       );
-      
+
       setDemandes(userDemandes);
     } catch (error) {
       console.error('Error fetching demandes:', error);
@@ -36,7 +36,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
 
   const handleAccept = async (demandeId) => {
     if (!window.confirm('✅ Accepter cette demande?')) return;
-    
+
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
@@ -48,7 +48,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
 
   const handleReject = async (demandeId) => {
     if (!window.confirm('❌ Rejeter cette demande?')) return;
-    
+
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
@@ -75,17 +75,17 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
   const currentUserId = currentUser._id || currentUser.id;
 
   return (
-    <div className="demandes-page">
-      <button className="back-btn" onClick={() => onNavigate?.('home')}>
+    <div className="dem-demandes-page">
+      <button className="dem-back-btn" onClick={() => onNavigate?.('home')}>
         ← Retour
       </button>
 
-      <div className="header">
+      <div className="dem-header">
         <h1>📋 Mes Demandes</h1>
         <p>Gérez vos demandes d'échange et de vente</p>
       </div>
 
-      <div className="filter-tabs">
+      <div className="dem-filter-tabs">
         {[
           { key: 'pending', label: '⏳ En attente' },
           { key: 'accepted', label: '✅ Acceptées' },
@@ -104,25 +104,25 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
       </div>
 
       {loading ? (
-        <div className="loading">⏳ Chargement...</div>
+        <div className="dem-loading">⏳ Chargement...</div>
       ) : filteredDemandes.length === 0 ? (
-        <div className="empty">
+        <div className="dem-empty">
           <span>📭</span>
           <p>Aucune demande trouvée</p>
         </div>
       ) : (
-        <div className="demandes-list">
+        <div className="dem-demandes-list">
           {filteredDemandes.map((demande) => {
             const isOwner = demande.proprietaireId === currentUserId;
             const otherParty = isOwner ? demande.demandeurName : demande.gardeOwner;
-            
+
             return (
-              <div key={demande._id} className="demande-card">
-                <div className="demande-header">
+              <div key={demande._id} className="dem-demande-card">
+                <div className="dem-demande-header">
                   <h3>
                     {demande.type === 'vente' ? '💰 Demande de vente' : '🔄 Demande d\'échange'}
                   </h3>
-                  <span className={`status-badge ${demande.status}`}>
+                  <span className={`dem-status-badge ${demande.status}`}>
                     {demande.status === 'pending' && '⏳ En attente'}
                     {demande.status === 'accepted' && '✅ Acceptée'}
                     {demande.status === 'rejected' && '❌ Rejetée'}
@@ -130,12 +130,12 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
                   </span>
                 </div>
 
-                <div className="demande-info">
+                <div className="dem-demande-info">
                   <p>
                     <strong>{isOwner ? '👤 Demandeur:' : '🏥 Propriétaire:'}</strong> {otherParty}
                   </p>
                   <p><strong>📅 Date de garde:</strong> {new Date(demande.gardeDate).toLocaleDateString()}</p>
-                  <p><strong>📩 Statut Directeur:</strong> 
+                  <p><strong>📩 Statut Directeur:</strong>
                     {demande.directorStatus === 'pending' && ' ⏳ En révision'}
                     {demande.directorStatus === 'approved' && ' ✅ Approuvé'}
                     {demande.directorStatus === 'rejected' && ' ❌ Rejeté'}
@@ -143,45 +143,45 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
                   </p>
                 </div>
 
-                <div className="demande-actions">
+                <div className="dem-demande-actions">
                   {isOwner && demande.status === 'pending' && (
                     <>
-                      <button className="btn-accept" onClick={() => handleAccept(demande._id)}>
+                      <button className="dem-btn-accept" onClick={() => handleAccept(demande._id)}>
                         ✅ Accepter
                       </button>
-                      <button className="btn-reject" onClick={() => handleReject(demande._id)}>
+                      <button className="dem-btn-reject" onClick={() => handleReject(demande._id)}>
                         ❌ Rejeter
                       </button>
                     </>
                   )}
-                  
+
                   {demande.status === 'accepted' && demande.directorStatus !== 'approved' && (
-                    <button className="btn-chat" onClick={() => handleOpenChat(demande)}>
+                    <button className="dem-btn-chat" onClick={() => handleOpenChat(demande)}>
                       💬 Ouvrir la conversation avec {otherParty}
                     </button>
                   )}
 
-                  <button 
-                    className="btn-messages"
+                  <button
+                    className="dem-btn-messages"
                     onClick={() => onNavigate?.('message')}
                   >
                     📨 Voir tous les messages
                   </button>
 
                   {demande.directorStatus === 'pending' && (
-                    <div className="waiting-director">
+                    <div className="dem-waiting-director">
                       ⏳ En attente de l'approbation du directeur...
                     </div>
                   )}
 
                   {demande.directorStatus === 'approved' && (
-                    <div className="approved">
+                    <div className="dem-approved">
                       🎉 Approuvé par le directeur! Échange complété.
                     </div>
                   )}
 
                   {demande.directorStatus === 'rejected' && (
-                    <div className="rejected-director">
+                    <div className="dem-rejected-director">
                       ❌ Refusé par le directeur
                     </div>
                   )}

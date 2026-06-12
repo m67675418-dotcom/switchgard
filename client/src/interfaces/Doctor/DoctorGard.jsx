@@ -15,24 +15,24 @@ export default function DoctorGard({ onNavigate, currentUser }) {
   const [toast, setToast] = useState(null);
   const [selectedGarde, setSelectedGarde] = useState(null);
 
-  const showToast = (text, type = "success") => { 
-    setToast({ text, type }); 
-    setTimeout(() => setToast(null), 3000); 
+  const showToast = (text, type = "success") => {
+    setToast({ text, type });
+    setTimeout(() => setToast(null), 3000);
   };
 
   const fetchGardes = () => {
     setLoading(true);
-    fetch("http://localhost:5000/api/garde/getAll")
+    fetch("http://localhost:5000/api/garde/getAll?role=doctor")
       .then(r => r.json())
-      .then(data => { 
-        setGardes(Array.isArray(data) ? data : []); 
-        setLoading(false); 
+      .then(data => {
+        setGardes(Array.isArray(data) ? data : []);
+        setLoading(false);
       })
       .catch(() => setLoading(false));
   };
 
-  useEffect(() => { 
-    fetchGardes(); 
+  useEffect(() => {
+    fetchGardes();
   }, []);
 
   const handleAdd = async () => {
@@ -41,43 +41,43 @@ export default function DoctorGard({ onNavigate, currentUser }) {
     console.log('currentUser._id:', currentUser?._id);
     console.log('currentUser.id:', currentUser?.id);
     console.log('form data:', form);
-    
-    if (!form.owner || !form.dateGarde) { 
-      showToast("Please enter owner and date ⚠️", "error"); 
-      return; 
+
+    if (!form.owner || !form.dateGarde) {
+      showToast("Please enter owner and date ⚠️", "error");
+      return;
     }
-    
+
     const ownerId = currentUser?._id || currentUser?.id;
     console.log('✅ ownerId to send:', ownerId);
-    
+
     if (!ownerId) {
       showToast("❌ Error: User ID not found! Please login again.", "error");
       console.error('❌ No userId found in currentUser!');
       return;
     }
-    
+
     setSaving(true);
     try {
-      const requestData = { 
-        owner: form.owner, 
-        dateGarde: form.dateGarde, 
+      const requestData = {
+        owner: form.owner,
+        dateGarde: form.dateGarde,
         status: form.status || "Active",
         role: "doctor",
         ownerId: ownerId
       };
-      
+
       console.log('📤 Sending to API:', JSON.stringify(requestData, null, 2));
-      
+
       const response = await fetch("http://localhost:5000/api/garde/add", {
-        method: "POST", 
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestData),
       });
-      
+
       console.log('📥 Response status:', response.status);
       const data = await response.json();
       console.log('📥 Response data:', data);
-      
+
       if (response.ok) {
         showToast("Gard added ✅");
         setForm({ owner: "", dateGarde: "", status: "Active" });
@@ -86,11 +86,11 @@ export default function DoctorGard({ onNavigate, currentUser }) {
       } else {
         showToast(`Failed: ${data.message || 'Server error'} ❌`, "error");
       }
-    } catch (err) { 
+    } catch (err) {
       console.error('❌ Error:', err);
-      showToast(`Failed: ${err.message} ❌`, "error"); 
-    } finally { 
-      setSaving(false); 
+      showToast(`Failed: ${err.message} ❌`, "error");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -101,34 +101,34 @@ export default function DoctorGard({ onNavigate, currentUser }) {
       await fetch(`http://localhost:5000/api/garde/${id}`, { method: "DELETE" });
       setGardes(p => p.filter(g => g._id !== id));
       showToast("Deleted ✅");
-    } catch { 
-      showToast("Failed to delete ❌", "error"); 
+    } catch {
+      showToast("Failed to delete ❌", "error");
     }
   };
 
   const filtered = activeTab === "All" ? gardes : gardes.filter(g => g.status === activeTab);
-  const fmt = d => { 
-    try { 
-      return new Date(d).toLocaleDateString("en-US", { 
-        year: "numeric", 
-        month: "long", 
-        day: "numeric" 
-      }); 
-    } catch { 
-      return d; 
-    } 
+  const fmt = d => {
+    try {
+      return new Date(d).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    } catch {
+      return d;
+    }
   };
 
   return (
-    <div className="container">
+    <div className="dg-container">
       {toast && (
-        <div className={`toast ${toast.type === "success" ? "toastSuccess" : "toastError"}`}>
+        <div className={`dg-toast ${toast.type === "success" ? "dg-toastSuccess" : "dg-toastError"}`}>
           {toast.text}
         </div>
       )}
 
       {/* ✅ HEADER with Clear Add Button */}
-      <div className="header" style={{
+      <div className="dg-header" style={{
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
@@ -138,8 +138,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         marginBottom: "20px",
         boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
       }}>
-        <button 
-          className="backBtn" 
+        <button
+          className="dg-backBtn"
           onClick={() => onNavigate?.("home")}
           style={{
             padding: "10px 20px",
@@ -153,17 +153,17 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         >
           ‹ Back
         </button>
-        
-        <h2 className="headerTitle" style={{
+
+        <h2 className="dg-headerTitle" style={{
           margin: 0,
           fontSize: "24px",
           color: "#1e293b"
         }}>
           Guard Schedule
         </h2>
-        
-        <button 
-          className="addBtn" 
+
+        <button
+          className="dg-addBtn"
           onClick={() => {
             console.log('➕ Add button clicked!');
             setShowForm(!showForm);
@@ -186,7 +186,7 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         </button>
       </div>
 
-      <div className="heroBand" style={{
+      <div className="dg-heroBand" style={{
         background: "linear-gradient(135deg, #2563eb 0%, #1e40af 100%)",
         padding: "40px",
         borderRadius: "16px",
@@ -197,57 +197,57 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         <p style={{ margin: 0, opacity: 0.9 }}>Track and manage all doctor guard shifts</p>
       </div>
 
-      <div className="mainContent">
+      <div className="dg-mainContent">
         {/* Stats */}
-        <div className="statsRow" style={{
+        <div className="dg-statsRow" style={{
           display: "grid",
           gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
           gap: "20px",
           marginBottom: "30px"
         }}>
-          <div className="statCard" style={{
+          <div className="dg-statCard" style={{
             background: "white",
             padding: "24px",
             borderRadius: "12px",
             textAlign: "center",
             boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
           }}>
-            <span className="statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#1a56db" }}>
+            <span className="dg-statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#1a56db" }}>
               {gardes.length}
             </span>
-            <span className="statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>All</span>
+            <span className="dg-statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>All</span>
           </div>
-          
-          <div className="statCard" style={{
+
+          <div className="dg-statCard" style={{
             background: "white",
             padding: "24px",
             borderRadius: "12px",
             textAlign: "center",
             boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
           }}>
-            <span className="statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#16a34a" }}>
+            <span className="dg-statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#16a34a" }}>
               {gardes.filter(g => g.status === "Active").length}
             </span>
-            <span className="statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>Active</span>
+            <span className="dg-statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>Active</span>
           </div>
-          
-          <div className="statCard" style={{
+
+          <div className="dg-statCard" style={{
             background: "white",
             padding: "24px",
             borderRadius: "12px",
             textAlign: "center",
             boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
           }}>
-            <span className="statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#dc2626" }}>
+            <span className="dg-statVal" style={{ fontSize: "36px", fontWeight: "bold", color: "#dc2626" }}>
               {gardes.filter(g => g.status === "Inactive").length}
             </span>
-            <span className="statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>Inactive</span>
+            <span className="dg-statLabel" style={{ display: "block", color: "#64748b", marginTop: "8px" }}>Inactive</span>
           </div>
         </div>
 
         {/* ✅ ADD FORM */}
         {showForm && (
-          <div className="gardForm" style={{
+          <div className="dg-gardForm" style={{
             background: "white",
             padding: "24px",
             borderRadius: "12px",
@@ -255,7 +255,7 @@ export default function DoctorGard({ onNavigate, currentUser }) {
             marginBottom: "24px",
             border: "2px solid #10b981"
           }}>
-            <h4 className="formTitle" style={{
+            <h4 className="dg-formTitle" style={{
               fontSize: "18px",
               marginBottom: "20px",
               color: "#1e293b",
@@ -265,20 +265,20 @@ export default function DoctorGard({ onNavigate, currentUser }) {
             }}>
               ➕ Add New Guard
             </h4>
-            
-            <div className="formGrid" style={{
+
+            <div className="dg-formGrid" style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
               gap: "16px"
             }}>
-              <div className="formGroup">
+              <div className="dg-formGroup">
                 <label style={{display: "block", marginBottom: "6px", fontWeight: "600", color: "#475569"}}>
                   Doctor Name *
                 </label>
-                <input 
-                  type="text" 
-                  placeholder="Dr. Smith" 
-                  value={form.owner} 
+                <input
+                  type="text"
+                  placeholder="Dr. Smith"
+                  value={form.owner}
                   onChange={e => setForm({ ...form, owner: e.target.value })}
                   style={{
                     width: "100%",
@@ -289,14 +289,14 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                   }}
                 />
               </div>
-              
-              <div className="formGroup">
+
+              <div className="dg-formGroup">
                 <label style={{display: "block", marginBottom: "6px", fontWeight: "600", color: "#475569"}}>
                   Date *
                 </label>
-                <input 
-                  type="date" 
-                  value={form.dateGarde} 
+                <input
+                  type="date"
+                  value={form.dateGarde}
                   onChange={e => setForm({ ...form, dateGarde: e.target.value })}
                   style={{
                     width: "100%",
@@ -307,13 +307,13 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                   }}
                 />
               </div>
-              
-              <div className="formGroup">
+
+              <div className="dg-formGroup">
                 <label style={{display: "block", marginBottom: "6px", fontWeight: "600", color: "#475569"}}>
                   Status
                 </label>
-                <select 
-                  value={form.status} 
+                <select
+                  value={form.status}
                   onChange={e => setForm({ ...form, status: e.target.value })}
                   style={{
                     width: "100%",
@@ -328,10 +328,10 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                 </select>
               </div>
             </div>
-            
-            <button 
-              className="saveBtn" 
-              onClick={handleAdd} 
+
+            <button
+              className="dg-saveBtn"
+              onClick={handleAdd}
               disabled={saving}
               style={{
                 marginTop: "20px",
@@ -354,15 +354,15 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         )}
 
         {/* Tabs */}
-        <div className="tabs" style={{
+        <div className="dg-tabs" style={{
           display: "flex",
           gap: "12px",
           marginBottom: "20px"
         }}>
           {TABS.map(t => (
-            <button 
-              key={t} 
-              className={`tabBtn ${activeTab === t ? "tabActive" : ""}`} 
+            <button
+              key={t}
+              className={`dg-tabBtn ${activeTab === t ? "dg-tabActive" : ""}`}
               onClick={() => setActiveTab(t)}
               style={{
                 padding: "10px 24px",
@@ -382,11 +382,11 @@ export default function DoctorGard({ onNavigate, currentUser }) {
 
         {/* List */}
         {loading ? (
-          <div className="loadingWrap" style={{ textAlign: "center", padding: "60px" }}>
+          <div className="dg-loadingWrap" style={{ textAlign: "center", padding: "60px" }}>
             ⏳ Loading...
           </div>
         ) : filtered.length === 0 ? (
-          <div className="empty" style={{
+          <div className="dg-empty" style={{
             textAlign: "center",
             padding: "60px",
             background: "white",
@@ -396,16 +396,16 @@ export default function DoctorGard({ onNavigate, currentUser }) {
             <p style={{ color: "#64748b" }}>No guards found</p>
           </div>
         ) : (
-          <div className="list" style={{
+          <div className="dg-list" style={{
             display: "flex",
             flexDirection: "column",
             gap: "12px"
           }}>
             {filtered.map(g => (
-              <div 
-                key={g._id} 
-                className="gardCard" 
-                onClick={() => setSelectedGarde(g)} 
+              <div
+                key={g._id}
+                className="dg-gardCard"
+                onClick={() => setSelectedGarde(g)}
                 style={{
                   background: "white",
                   padding: "20px",
@@ -420,8 +420,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                 onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
                 onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
               >
-                <div className="cardLeft" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-                  <div className="shiftBadge" style={{
+                <div className="dg-cardLeft" style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                  <div className="dg-shiftBadge" style={{
                     fontSize: "32px",
                     width: "50px",
                     height: "50px",
@@ -434,23 +434,23 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                     🛡
                   </div>
                 </div>
-                
-                <div className="cardMiddle" style={{ flex: 1 }}>
-                  <h4 className="cardName" style={{ margin: "0 0 4px 0", fontSize: "16px", color: "#1e293b" }}>
+
+                <div className="dg-cardMiddle" style={{ flex: 1 }}>
+                  <h4 className="dg-cardName" style={{ margin: "0 0 4px 0", fontSize: "16px", color: "#1e293b" }}>
                     {g.owner}
                   </h4>
-                  <p className="cardDate" style={{ margin: "0 0 4px 0", color: "#64748b", fontSize: "14px" }}>
+                  <p className="dg-cardDate" style={{ margin: "0 0 4px 0", color: "#64748b", fontSize: "14px" }}>
                     📅 {fmt(g.dateGarde)}
                   </p>
                   {g.id && (
-                    <p className="cardLoc" style={{ margin: 0, color: "#94a3b8", fontSize: "12px" }}>
+                    <p className="dg-cardLoc" style={{ margin: 0, color: "#94a3b8", fontSize: "12px" }}>
                       🏷 ID: {g.id}
                     </p>
                   )}
                 </div>
-                
-                <div className="cardRight" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                  <span className={`shiftLabel ${g.status === "Active" ? "statusActive" : "statusInactive"}`} 
+
+                <div className="dg-cardRight" style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <span className={`dg-shiftLabel ${g.status === "Active" ? "dg-statusActive" : "dg-statusInactive"}`}
                     style={{
                       padding: "6px 12px",
                       borderRadius: "20px",
@@ -462,8 +462,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
                   >
                     {g.status}
                   </span>
-                  <button 
-                    className="deleteBtn" 
+                  <button
+                    className="dg-deleteBtn"
                     onClick={e => handleDelete(e, g._id)}
                     style={{
                       background: "none",
@@ -483,7 +483,7 @@ export default function DoctorGard({ onNavigate, currentUser }) {
       </div>
 
       {/* Bottom Navigation */}
-      <div className="bottomNav" style={{
+      <div className="dg-bottomNav" style={{
         position: "fixed",
         bottom: 0,
         left: 0,
@@ -496,7 +496,7 @@ export default function DoctorGard({ onNavigate, currentUser }) {
         boxShadow: "0 -2px 12px rgba(0,0,0,0.1)",
         zIndex: 100
       }}>
-        <button className="navBtn" onClick={() => onNavigate?.("home")} style={{
+        <button className="dg-navBtn" onClick={() => onNavigate?.("home")} style={{
           background: "none",
           border: "none",
           display: "flex",
@@ -509,8 +509,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
           <span style={{ fontSize: "24px" }}>🏠</span>
           <span style={{ fontSize: "12px" }}>Home</span>
         </button>
-        
-        <button className="navBtn" onClick={() => onNavigate?.("message")} style={{
+
+        <button className="dg-navBtn" onClick={() => onNavigate?.("message")} style={{
           background: "none",
           border: "none",
           display: "flex",
@@ -523,8 +523,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
           <span style={{ fontSize: "24px" }}>💬</span>
           <span style={{ fontSize: "12px" }}>Messages</span>
         </button>
-        
-        <button className="navBtn navActive" style={{
+
+        <button className="dg-navBtn dg-navActive" style={{
           background: "#eff6ff",
           border: "none",
           display: "flex",
@@ -539,8 +539,8 @@ export default function DoctorGard({ onNavigate, currentUser }) {
           <span style={{ fontSize: "24px" }}>🛡</span>
           <span style={{ fontSize: "12px", fontWeight: "bold" }}>Shifts</span>
         </button>
-        
-        <button className="navBtn" onClick={() => onNavigate?.("profile")} style={{
+
+        <button className="dg-navBtn" onClick={() => onNavigate?.("profile")} style={{
           background: "none",
           border: "none",
           display: "flex",
@@ -562,9 +562,9 @@ export default function DoctorGard({ onNavigate, currentUser }) {
           currentUser={currentUser}
           role="doctor"
           onClose={() => setSelectedGarde(null)}
-          onDemande={() => { 
-            setSelectedGarde(null); 
-            showToast("Demande sent! ✅"); 
+          onDemande={() => {
+            setSelectedGarde(null);
+            showToast("Demande sent! ✅");
           }}
         />
       )}

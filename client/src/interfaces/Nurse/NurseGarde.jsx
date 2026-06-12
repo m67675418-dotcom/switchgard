@@ -13,13 +13,13 @@ export default function NurseGarde({ onNavigate, currentUser }) {
   const [form, setForm]                   = useState({ owner: "", dateGarde: "", status: "Active" });
   const [saving, setSaving]               = useState(false);
   const [toast, setToast]                 = useState(null);
-  const [selectedGarde, setSelectedGarde] = useState(null); // ✅ NEW
+  const [selectedGarde, setSelectedGarde] = useState(null);
 
   const showToast = (text, type = "success") => { setToast({ text, type }); setTimeout(() => setToast(null), 3000); };
 
   const fetchGardes = () => {
     setLoading(true);
-    fetch("http://localhost:5000/api/garde/getAll")
+    fetch("http://localhost:5000/api/garde/getAll?role=nurse")
       .then(r => r.json())
       .then(data => { setGardes(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
@@ -43,7 +43,7 @@ export default function NurseGarde({ onNavigate, currentUser }) {
   };
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // ✅ prevent modal opening
+    e.stopPropagation();
     try {
       await fetch(`http://localhost:5000/api/garde/${id}`, { method: "DELETE" });
       setGardes(p => p.filter(g => g._id !== id));
@@ -55,72 +55,72 @@ export default function NurseGarde({ onNavigate, currentUser }) {
   const fmt = d => { try { return new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); } catch { return d; } };
 
   return (
-    <div className="container">
-      {toast && <div className={`toast ${toast.type === "success" ? "toastSuccess" : "toastError"}`}>{toast.text}</div>}
+    <div className="ng-container">
+      {toast && <div className={`ng-toast ${toast.type === "success" ? "ng-toastSuccess" : "ng-toastError"}`}>{toast.text}</div>}
 
-      <div className="header">
-        <button className="backBtn" onClick={() => onNavigate?.("home")}>‹</button>
-        <h2 className="headerTitle">Gard Schedule</h2>
-        <button className="addBtn" onClick={() => setShowForm(!showForm)}>{showForm ? "✕" : "＋"}</button>
+      <div className="ng-header">
+        <button className="ng-backBtn" onClick={() => onNavigate?.("home")}>‹</button>
+        <h2 className="ng-headerTitle">Gard Schedule</h2>
+        <button className="ng-addBtn" onClick={() => setShowForm(!showForm)}>{showForm ? "✕" : "＋"}</button>
       </div>
 
-      <div className="heroBand">
+      <div className="ng-heroBand">
         <h1>🛡 Guard Management</h1>
         <p>Track and manage all nurse guard shifts</p>
       </div>
 
-      <div className="mainContent">
-        <div className="statsRow">
+      <div className="ng-mainContent">
+        <div className="ng-statsRow">
           {[
             { label: "All",      val: gardes.length,                                      color: "#1a56db" },
             { label: "Active",   val: gardes.filter(g => g.status === "Active").length,   color: "#10b981" },
             { label: "Inactive", val: gardes.filter(g => g.status === "Inactive").length, color: "#dc2626" },
           ].map(({ label, val, color }) => (
-            <div key={label} className="statCard">
-              <span className="statVal" style={{ color }}>{val}</span>
-              <span className="statLabel">{label}</span>
+            <div key={label} className="ng-statCard">
+              <span className="ng-statVal" style={{ color }}>{val}</span>
+              <span className="ng-statLabel">{label}</span>
             </div>
           ))}
         </div>
 
         {showForm && (
-          <div className="gardForm">
-            <h4 className="formTitle">➕ Add New Gard</h4>
-            <div className="formGrid">
-              <div className="formGroup"><label>Owner Name *</label>
+          <div className="ng-gardForm">
+            <h4 className="ng-formTitle">➕ Add New Gard</h4>
+            <div className="ng-formGrid">
+              <div className="ng-formGroup"><label>Owner Name *</label>
                 <input type="text" placeholder="Name" value={form.owner} onChange={e => setForm({ ...form, owner: e.target.value })} /></div>
-              <div className="formGroup"><label>Date *</label>
+              <div className="ng-formGroup"><label>Date *</label>
                 <input type="date" value={form.dateGarde} onChange={e => setForm({ ...form, dateGarde: e.target.value })} /></div>
-              <div className="formGroup"><label>Status</label>
+              <div className="ng-formGroup"><label>Status</label>
                 <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
                   <option value="Active">✅ Active</option>
                   <option value="Inactive">❌ Inactive</option>
                 </select></div>
             </div>
-            <button className="saveBtn" onClick={handleAdd} disabled={saving}>{saving ? "Saving..." : "💾 Save Gard"}</button>
+            <button className="ng-saveBtn" onClick={handleAdd} disabled={saving}>{saving ? "Saving..." : "💾 Save Gard"}</button>
           </div>
         )}
 
-        <div className="tabs">
-          {TABS.map(t => <button key={t} className={`tabBtn ${activeTab === t ? "tabActive" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>)}
+        <div className="ng-tabs">
+          {TABS.map(t => <button key={t} className={`ng-tabBtn ${activeTab === t ? "ng-tabActive" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>)}
         </div>
 
         {loading ? (
-          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
+          <div className="ng-loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="ng-skeleton" />)}</div>
         ) : filtered.length === 0 ? (
-          <div className="empty"><span>🛡️</span><p>No gards found</p></div>
+          <div className="ng-empty"><span>🛡️</span><p>No gards found</p></div>
         ) : (
-          <div className="list">
+          <div className="ng-list">
             {filtered.map(g => (
-              <div key={g._id} className="gardCard" onClick={() => setSelectedGarde(g)} style={{ cursor: "pointer" }}>
-                <div className="cardLeft"><div className="shiftBadge">🛡️</div></div>
-                <div className="cardMiddle">
-                  <h4 className="cardName">{g.owner}</h4>
-                  <p className="cardDate">📅 {fmt(g.dateGarde)}</p>
+              <div key={g._id} className="ng-gardCard" onClick={() => setSelectedGarde(g)} style={{ cursor: "pointer" }}>
+                <div className="ng-cardLeft"><div className="ng-shiftBadge">🛡️</div></div>
+                <div className="ng-cardMiddle">
+                  <h4 className="ng-cardName">{g.owner}</h4>
+                  <p className="ng-cardDate">📅 {fmt(g.dateGarde)}</p>
                 </div>
-                <div className="cardRight">
-                  <span className={`shiftLabel ${g.status === "Active" ? "statusActive" : "statusInactive"}`}>{g.status}</span>
-                  <button className="deleteBtn" onClick={e => handleDelete(e, g._id)}>🗑</button>
+                <div className="ng-cardRight">
+                  <span className={`ng-shiftLabel ${g.status === "Active" ? "ng-statusActive" : "ng-statusInactive"}`}>{g.status}</span>
+                  <button className="ng-deleteBtn" onClick={e => handleDelete(e, g._id)}>🗑</button>
                 </div>
               </div>
             ))}
@@ -128,14 +128,13 @@ export default function NurseGarde({ onNavigate, currentUser }) {
         )}
       </div>
 
-      <div className="bottomNav">
-        <button className="navBtn" onClick={() => onNavigate?.("home")}><span>🏠</span><span>Home</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-        <button className="navBtn navActive"><span>🛡️</span><span>Shifts</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
+      <div className="ng-bottomNav">
+        <button className="ng-navBtn" onClick={() => onNavigate?.("home")}><span>🏠</span><span>Home</span></button>
+        <button className="ng-navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
+        <button className="ng-navBtn ng-navActive"><span>🛡️</span><span>Shifts</span></button>
+        <button className="ng-navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
 
-      {/* ✅ MODAL */}
       {selectedGarde && (
         <GardeDetailModal
           garde={selectedGarde}

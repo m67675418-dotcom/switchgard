@@ -13,7 +13,11 @@ const DDSGarde = ({ currentUser, onNavigate }) => {
 
   const fetchGardes = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/garde/getAll');
+      const role = currentUser?.managerType;
+      const url = role
+        ? `http://localhost:5000/api/garde/getAll?role=${role}`
+        : 'http://localhost:5000/api/garde/getAll';
+      const res = await axios.get(url);
       setGardes(res.data);
     } catch (error) {
       console.error('Error fetching gardes:', error);
@@ -22,8 +26,8 @@ const DDSGarde = ({ currentUser, onNavigate }) => {
     }
   };
 
-  const filteredGardes = filter === 'all' 
-    ? gardes 
+  const filteredGardes = filter === 'all'
+    ? gardes
     : gardes.filter(g => g.status.toLowerCase() === filter);
 
   const fmt = (d) => {
@@ -35,18 +39,17 @@ const DDSGarde = ({ currentUser, onNavigate }) => {
   };
 
   return (
-    <div className="dds-garde">
-      {/* ✅ Back Button */}
-      <button className="back-button" onClick={() => onNavigate?.('home')}>
+    <div className="mg-garde">
+      <button className="mg-back-button" onClick={() => onNavigate?.('home')}>
         ← Back to Home
       </button>
 
-      <div className="dds-garde-header">
+      <div className="mg-garde-header">
         <h1>🛡️ All Gardes</h1>
         <p>Manage all guard shifts</p>
       </div>
 
-      <div className="filter-tabs">
+      <div className="mg-filter-tabs">
         <button className={filter === 'all' ? 'active' : ''} onClick={() => setFilter('all')}>
           All ({gardes.length})
         </button>
@@ -56,15 +59,15 @@ const DDSGarde = ({ currentUser, onNavigate }) => {
       </div>
 
       {loading ? (
-        <div className="loading">⏳ Loading...</div>
+        <div className="mg-loading">⏳ Loading...</div>
       ) : filteredGardes.length === 0 ? (
-        <div className="empty-state">
+        <div className="mg-empty-state">
           <span>📋</span>
           <p>No gardes found</p>
         </div>
       ) : (
-        <div className="gardes-table-container">
-          <table className="gardes-table">
+        <div className="mg-gardes-table-container">
+          <table className="mg-gardes-table">
             <thead>
               <tr>
                 <th>Owner</th>
@@ -79,7 +82,7 @@ const DDSGarde = ({ currentUser, onNavigate }) => {
                   <td>{garde.owner || 'N/A'}</td>
                   <td>{fmt(garde.dateGarde)}</td>
                   <td>
-                    <span className={`status-badge ${garde.status.toLowerCase()}`}>
+                    <span className={`mg-status-badge ${garde.status.toLowerCase()}`}>
                       {garde.status}
                     </span>
                   </td>

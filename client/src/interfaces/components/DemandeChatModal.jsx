@@ -82,19 +82,6 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
     }
   };
 
-  const handleSendToDirector = async () => {
-    if (!window.confirm('📤 Envoyer la demande au directeur DDS pour approbation finale?')) return;
-    
-    try {
-      await axios.put(`${API}/demande/${demande._id}/send-to-director`);
-      alert('✅ Demande envoyée au directeur!');
-      if (onSendToDirector) onSendToDirector();
-      onClose();
-    } catch (error) {
-      alert('❌ Erreur: ' + (error.response?.data?.message || error.message));
-    }
-  };
-
   const formatTime = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -162,11 +149,8 @@ const DemandeChatModal = ({ demande, currentUser, onClose, onSendToDirector }) =
         </form>
 
         <div className="dcm-footer">
-          <button className="dcm-director-btn" onClick={handleSendToDirector}>
-            📤 Envoyer au Directeur DDS pour approbation
-          </button>
           <p className="dcm-footer-hint">
-            ⚠️ Cliquez seulement après vous être mis d'accord
+            ⏳ En attente de la décision du manager
           </p>
         </div>
 

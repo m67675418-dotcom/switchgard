@@ -49,7 +49,7 @@ const NotificationBell = ({ currentUser }) => {
   const handleAcceptDemande = async (demandeId, e) => {
     e.stopPropagation();
     if (!window.confirm('✅ Accepter cette demande?')) return;
-    
+
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
@@ -63,7 +63,7 @@ const NotificationBell = ({ currentUser }) => {
   const handleRejectDemande = async (demandeId, e) => {
     e.stopPropagation();
     if (!window.confirm('❌ Rejeter cette demande?')) return;
-    
+
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
@@ -87,50 +87,50 @@ const NotificationBell = ({ currentUser }) => {
   };
 
   return (
-    <div className="notification-bell">
-      <div className="bell-icon" onClick={() => setShowDropdown(!showDropdown)}>
+    <div className="nb-notification-bell">
+      <div className="nb-bell-icon" onClick={() => setShowDropdown(!showDropdown)}>
         🔔
-        {unreadCount > 0 && <span className="badge">{unreadCount}</span>}
+        {unreadCount > 0 && <span className="nb-badge">{unreadCount}</span>}
       </div>
 
       {showDropdown && (
-        <div className="notification-dropdown">
-          <div className="dropdown-header">
+        <div className="nb-notification-dropdown">
+          <div className="nb-dropdown-header">
             <h3>Notifications ({notifications.length})</h3>
             {unreadCount > 0 && (
-              <button onClick={handleMarkAllAsRead} className="mark-all-read">
+              <button onClick={handleMarkAllAsRead} className="nb-mark-all-read">
                 Tout marquer lu
               </button>
             )}
           </div>
-          
-          <div className="dropdown-body">
+
+          <div className="nb-dropdown-body">
             {notifications.length === 0 ? (
-              <p className="no-notifications">Aucune notification</p>
+              <p className="nb-no-notifications">Aucune notification</p>
             ) : (
               notifications.map((notif) => (
-                <div 
-                  key={notif._id} 
-                  className={`notification-item ${!notif.read ? 'unread' : ''}`}
+                <div
+                  key={notif._id}
+                  className={`nb-notification-item ${!notif.read ? 'unread' : ''}`}
                   onClick={() => handleMarkAsRead(notif._id)}
                 >
-                  <span className="notif-icon">{getIcon(notif.type)}</span>
-                  <div className="notif-content">
-                    <p className="notif-message">{notif.message}</p>
-                    <span className="notif-time">
+                  <span className="nb-notif-icon">{getIcon(notif.type)}</span>
+                  <div className="nb-notif-content">
+                    <p className="nb-notif-message">{notif.message}</p>
+                    <span className="nb-notif-time">
                       {new Date(notif.createdAt).toLocaleString()}
                     </span>
-                    
+
                     {notif.type === 'demande_received' && notif.demandeId && (
-                      <div className="notif-actions">
-                        <button 
-                          className="btn-accept-small"
+                      <div className="nb-notif-actions">
+                        <button
+                          className="nb-btn-accept-small"
                           onClick={(e) => handleAcceptDemande(notif.demandeId, e)}
                         >
                           ✅ Accepter
                         </button>
-                        <button 
-                          className="btn-reject-small"
+                        <button
+                          className="nb-btn-reject-small"
                           onClick={(e) => handleRejectDemande(notif.demandeId, e)}
                         >
                           ❌ Rejeter

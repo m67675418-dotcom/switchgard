@@ -82,61 +82,60 @@ const DDSMessage = ({ currentUser, onNavigate }) => {
     }
   };
 
-  if (loading) return <div className="loading">⏳ Loading...</div>;
+  if (loading) return <div className="mm-loading">⏳ Loading...</div>;
 
   return (
-    <div className="dds-message">
-      {/* ✅ Back Button */}
-      <button className="back-button" onClick={() => onNavigate?.('home')}>
+    <div className="mm-message">
+      <button className="mm-back-button" onClick={() => onNavigate?.('home')}>
         ← Back to Home
       </button>
 
-      <div className="dds-message-header">
+      <div className="mm-message-header">
         <h1>💬 Messages</h1>
         <p>Communicate with staff</p>
       </div>
 
-      <div className="message-container">
-        <div className="conversations-list">
+      <div className="mm-message-container">
+        <div className="mm-conversations-list">
           <h3>Conversations</h3>
           {conversations.map((user) => (
-            <div 
+            <div
               key={user._id}
-              className={`conversation-item ${selectedUser?._id === user._id ? 'active' : ''}`}
+              className={`mm-conversation-item ${selectedUser?._id === user._id ? 'active' : ''}`}
               onClick={() => setSelectedUser(user)}
             >
-              <div className="user-avatar">{getAvatar(user.type)}</div>
-              <div className="user-info">
-                <span className="user-name">
+              <div className="mm-user-avatar">{getAvatar(user.type)}</div>
+              <div className="mm-user-info">
+                <span className="mm-user-name">
                   {user.fullName || user.nomPharmacie || user.matricule || 'User'}
                 </span>
-                <span className="user-type">{user.type}</span>
+                <span className="mm-user-type">{user.type}</span>
               </div>
             </div>
           ))}
         </div>
 
-        <div className="chat-area">
+        <div className="mm-chat-area">
           {selectedUser ? (
             <>
-              <div className="chat-header">
-                <div className="chat-user-info">
-                  <div className="user-avatar">{getAvatar(selectedUser.type)}</div>
+              <div className="mm-chat-header">
+                <div className="mm-chat-user-info">
+                  <div className="mm-user-avatar">{getAvatar(selectedUser.type)}</div>
                   <div>
                     <h4>{selectedUser.fullName || 'User'}</h4>
-                    <span className="user-type">{selectedUser.type}</span>
+                    <span className="mm-user-type">{selectedUser.type}</span>
                   </div>
                 </div>
               </div>
 
-              <div className="chat-messages">
+              <div className="mm-chat-messages">
                 {chatMessages.length === 0 ? (
-                  <div className="empty-chat">
+                  <div className="mm-empty-chat">
                     <p>No messages yet</p>
                   </div>
                 ) : (
                   chatMessages.map((msg) => (
-                    <div 
+                    <div
                       key={msg._id}
                       className={`message-bubble ${msg.senderId === (currentUser._id || currentUser.id) ? 'sent' : 'received'}`}
                     >
@@ -146,18 +145,18 @@ const DDSMessage = ({ currentUser, onNavigate }) => {
                 )}
               </div>
 
-              <form className="message-input" onSubmit={handleSendMessage}>
+              <form className="mm-message-input" onSubmit={handleSendMessage}>
                 <input
                   type="text"
                   placeholder="Type message..."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                 />
-                <button type="submit" className="send-btn">📤 Send</button>
+                <button type="submit" className="mm-send-btn">📤 Send</button>
               </form>
             </>
           ) : (
-            <div className="no-conversation">
+            <div className="mm-no-conversation">
               <span>💬</span>
               <p>Select a user</p>
             </div>

@@ -13,13 +13,13 @@ export default function FirefighterGarde({ onNavigate, currentUser }) {
   const [form, setForm]                   = useState({ owner: "", dateGarde: "", status: "Active" });
   const [saving, setSaving]               = useState(false);
   const [toast, setToast]                 = useState(null);
-  const [selectedGarde, setSelectedGarde] = useState(null); // ✅ NEW
+  const [selectedGarde, setSelectedGarde] = useState(null);
 
   const showToast = (t, type = "success") => { setToast({ text: t, type }); setTimeout(() => setToast(null), 3000); };
 
   const fetchGardes = () => {
     setLoading(true);
-    fetch("http://localhost:5000/api/garde/getAll")
+    fetch("http://localhost:5000/api/garde/getAll?role=firefighter")
       .then(r => r.json())
       .then(data => { setGardes(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
@@ -42,7 +42,7 @@ export default function FirefighterGarde({ onNavigate, currentUser }) {
   };
 
   const handleDelete = async (e, id) => {
-    e.stopPropagation(); // ✅ prevent modal opening
+    e.stopPropagation();
     try {
       await fetch(`http://localhost:5000/api/garde/${id}`, { method: "DELETE" });
       setGardes(p => p.filter(g => g._id !== id)); showToast("Deleted ✅");
@@ -53,72 +53,72 @@ export default function FirefighterGarde({ onNavigate, currentUser }) {
   const fmt = d => { try { return new Date(d).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); } catch { return d; } };
 
   return (
-    <div className="container">
-      {toast && <div className={`toast ${toast.type === "success" ? "toastSuccess" : "toastError"}`}>{toast.text}</div>}
+    <div className="fg-container">
+      {toast && <div className={`fg-toast ${toast.type === "success" ? "fg-toastSuccess" : "fg-toastError"}`}>{toast.text}</div>}
 
-      <div className="header">
-        <button className="backBtn" onClick={() => onNavigate?.("home")}>‹</button>
-        <h2 className="headerTitle">Gard Schedule</h2>
-        <button className="addBtn" onClick={() => setShowForm(!showForm)}>{showForm ? "✕" : "＋"}</button>
+      <div className="fg-header">
+        <button className="fg-backBtn" onClick={() => onNavigate?.("home")}>‹</button>
+        <h2 className="fg-headerTitle">Gard Schedule</h2>
+        <button className="fg-addBtn" onClick={() => setShowForm(!showForm)}>{showForm ? "✕" : "＋"}</button>
       </div>
 
-      <div className="heroBand">
+      <div className="fg-heroBand">
         <h1>🛡 Guard Management</h1>
         <p>Track and manage all firefighter guard shifts</p>
       </div>
 
-      <div className="mainContent">
-        <div className="statsRow">
+      <div className="fg-mainContent">
+        <div className="fg-statsRow">
           {[
             { label: "All",      val: gardes.length,                                      color: "#1a56db" },
             { label: "Active",   val: gardes.filter(g => g.status === "Active").length,   color: "#ef4444" },
             { label: "Inactive", val: gardes.filter(g => g.status === "Inactive").length, color: "#dc2626" },
           ].map(({ label, val, color }) => (
-            <div key={label} className="statCard">
-              <span className="statVal" style={{ color }}>{val}</span>
-              <span className="statLabel">{label}</span>
+            <div key={label} className="fg-statCard">
+              <span className="fg-statVal" style={{ color }}>{val}</span>
+              <span className="fg-statLabel">{label}</span>
             </div>
           ))}
         </div>
 
         {showForm && (
-          <div className="gardForm">
-            <h4 className="formTitle">➕ Add New Gard</h4>
-            <div className="formGrid">
-              <div className="formGroup"><label>Owner Name *</label>
+          <div className="fg-gardForm">
+            <h4 className="fg-formTitle">➕ Add New Gard</h4>
+            <div className="fg-formGrid">
+              <div className="fg-formGroup"><label>Owner Name *</label>
                 <input type="text" placeholder="Name" value={form.owner} onChange={e => setForm({ ...form, owner: e.target.value })} /></div>
-              <div className="formGroup"><label>Date *</label>
+              <div className="fg-formGroup"><label>Date *</label>
                 <input type="date" value={form.dateGarde} onChange={e => setForm({ ...form, dateGarde: e.target.value })} /></div>
-              <div className="formGroup"><label>Status</label>
+              <div className="fg-formGroup"><label>Status</label>
                 <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })}>
                   <option value="Active">✅ Active</option>
                   <option value="Inactive">❌ Inactive</option>
                 </select></div>
             </div>
-            <button className="saveBtn" onClick={handleAdd} disabled={saving}>{saving ? "Saving..." : "💾 Save Gard"}</button>
+            <button className="fg-saveBtn" onClick={handleAdd} disabled={saving}>{saving ? "Saving..." : "💾 Save Gard"}</button>
           </div>
         )}
 
-        <div className="tabs">
-          {TABS.map(t => <button key={t} className={`tabBtn ${activeTab === t ? "tabActive" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>)}
+        <div className="fg-tabs">
+          {TABS.map(t => <button key={t} className={`fg-tabBtn ${activeTab === t ? "fg-tabActive" : ""}`} onClick={() => setActiveTab(t)}>{t}</button>)}
         </div>
 
         {loading ? (
-          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
+          <div className="fg-loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="fg-skeleton" />)}</div>
         ) : filtered.length === 0 ? (
-          <div className="empty"><span>🛡️</span><p>No gards found</p></div>
+          <div className="fg-empty"><span>🛡️</span><p>No gards found</p></div>
         ) : (
-          <div className="list">
+          <div className="fg-list">
             {filtered.map(g => (
-              <div key={g._id} className="gardCard" onClick={() => setSelectedGarde(g)} style={{ cursor: "pointer" }}>
-                <div className="cardLeft"><div className="shiftBadge">🛡️</div></div>
-                <div className="cardMiddle">
-                  <h4 className="cardName">{g.owner}</h4>
-                  <p className="cardDate">📅 {fmt(g.dateGarde)}</p>
+              <div key={g._id} className="fg-gardCard" onClick={() => setSelectedGarde(g)} style={{ cursor: "pointer" }}>
+                <div className="fg-cardLeft"><div className="fg-shiftBadge">🛡️</div></div>
+                <div className="fg-cardMiddle">
+                  <h4 className="fg-cardName">{g.owner}</h4>
+                  <p className="fg-cardDate">📅 {fmt(g.dateGarde)}</p>
                 </div>
-                <div className="cardRight">
-                  <span className={`shiftLabel ${g.status === "Active" ? "statusActive" : "statusInactive"}`}>{g.status}</span>
-                  <button className="deleteBtn" onClick={e => handleDelete(e, g._id)}>🗑</button>
+                <div className="fg-cardRight">
+                  <span className={`fg-shiftLabel ${g.status === "Active" ? "fg-statusActive" : "fg-statusInactive"}`}>{g.status}</span>
+                  <button className="fg-deleteBtn" onClick={e => handleDelete(e, g._id)}>🗑</button>
                 </div>
               </div>
             ))}
@@ -126,14 +126,13 @@ export default function FirefighterGarde({ onNavigate, currentUser }) {
         )}
       </div>
 
-      <div className="bottomNav">
-        <button className="navBtn" onClick={() => onNavigate?.("home")}><span>🏠</span><span>Home</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-        <button className="navBtn navActive"><span>🛡️</span><span>Shifts</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
+      <div className="fg-bottomNav">
+        <button className="fg-navBtn" onClick={() => onNavigate?.("home")}><span>🏠</span><span>Home</span></button>
+        <button className="fg-navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
+        <button className="fg-navBtn fg-navActive"><span>🛡️</span><span>Shifts</span></button>
+        <button className="fg-navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
 
-      {/* ✅ MODAL */}
       {selectedGarde && (
         <GardeDetailModal
           garde={selectedGarde}

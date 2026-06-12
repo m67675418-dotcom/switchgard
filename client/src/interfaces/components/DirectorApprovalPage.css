@@ -1,10 +1,10 @@
-.director-page {
+.dir-director-page {
   padding: 30px;
   max-width: 1200px;
   margin: 0 auto;
 }
 
-.back-btn {
+.dir-back-btn {
   padding: 10px 20px;
   background: #6b21a8;
   color: white;
@@ -15,42 +15,42 @@
   font-weight: 600;
 }
 
-.header h1 {
-  color: #1e293b;
+.dir-header h1 {
+  color: var(--color-text, #0f172a);
   margin-bottom: 8px;
 }
 
-.header p {
-  color: #64748b;
+.dir-header p {
+  color: var(--color-muted, #64748b);
   margin-bottom: 30px;
 }
 
-.demandes-grid {
+.dir-demandes-grid {
   display: grid;
   gap: 24px;
 }
 
-.demande-card {
+.dir-demande-card {
   background: white;
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border, #e2e8f0);
 }
 
-.garde-info {
-  background: #f8fafc;
+.dir-garde-info {
+  background: var(--color-surface, #f8fafc);
   padding: 16px;
   border-radius: 12px;
   margin-bottom: 20px;
 }
 
-.garde-info h3 {
+.dir-garde-info h3 {
   margin-top: 0;
   color: #6b21a8;
 }
 
-.users-comparison {
+.dir-users-comparison {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -60,37 +60,37 @@
   border-radius: 12px;
 }
 
-.user-col {
+.dir-user-col {
   flex: 1;
   text-align: center;
 }
 
-.user-col h4 {
+.dir-user-col h4 {
   margin-top: 0;
   font-size: 14px;
   color: #475569;
 }
 
-.user-col p {
+.dir-user-col p {
   margin: 8px 0;
   font-size: 15px;
 }
 
-.owner { border-right: 2px dashed #cbd5e1; }
-.new-owner { color: #059669; font-weight: 600; }
+.dir-owner { border-right: 2px dashed #cbd5e1; }
+.dir-new-owner { color: #059669; font-weight: 600; }
 
-.arrow {
+.dir-arrow {
   font-size: 24px;
   color: #6b21a8;
   padding: 0 20px;
 }
 
-.actions {
+.dir-actions {
   display: flex;
   gap: 16px;
 }
 
-.btn-approve, .btn-reject {
+.dir-btn-approve, .dir-btn-reject {
   flex: 1;
   padding: 12px;
   border: none;
@@ -100,21 +100,21 @@
   transition: all 0.3s;
 }
 
-.btn-approve {
+.dir-btn-approve {
   background: #10b981;
   color: white;
 }
-.btn-approve:hover { background: #059669; }
+.dir-btn-approve:hover { background: #059669; }
 
-.btn-reject {
+.dir-btn-reject {
   background: #ef4444;
   color: white;
 }
-.btn-reject:hover { background: #dc2626; }
+.dir-btn-reject:hover { background: #dc2626; }
 
-.loading, .empty {
+.dir-loading, .dir-empty {
   text-align: center;
   padding: 60px;
   font-size: 18px;
-  color: #64748b;
+  color: var(--color-muted, #64748b);
 }
