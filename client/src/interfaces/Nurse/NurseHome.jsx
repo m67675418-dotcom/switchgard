@@ -1,18 +1,34 @@
-// NurseHome.jsx - ✅ Updated: NotificationBell added
+// client/src/interfaces/Nurse/NurseHome.jsx
 import { useState, useEffect } from "react";
 import "./NurseHome.css";
-import NotificationBell from "../components/NotificationBell";
 
 export default function NurseHome({ onNavigate, currentUser }) {
   const [items, setItems]     = useState([]);
   const [search, setSearch]   = useState("");
   const [loading, setLoading] = useState(true);
+  const [stats, setStats]     = useState({ total: 0, onShift: 0, pending: 0 });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/nurse/getAll")
-      .then(r => r.json())
-      .then(data => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("http://localhost:5000/api/nurse/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/garde/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/demandes/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+    ]).then(([nurses, gardes, demandes]) => {
+      const nurseList = Array.isArray(nurses) ? nurses : [];
+      setItems(nurseList);
+      setStats({
+        total:   nurseList.length,
+        onShift: Array.isArray(gardes)   ? gardes.filter(g => g.role === "nurse").length   : 0,
+        pending: Array.isArray(demandes) ? demandes.filter(d => d.role === "nurse" && d.status === "pending").length : 0,
+      });
+      setLoading(false);
+    });
   }, []);
 
   const filtered = items.filter(i =>
@@ -20,67 +36,77 @@ export default function NurseHome({ onNavigate, currentUser }) {
   );
 
   return (
-    <div className="container">
-      <div className="searchBox" style={{ position: "relative" }}>
-        {/* ✅ NotificationBell */}
-        <div style={{ position: "absolute", top: 16, right: 16 }}>
-          <NotificationBell
-            userId={currentUser?._id || currentUser?.id}
-            role="nurse"
-            onNavigate={onNavigate}
+    <div className="nh-container">
+      <div className="nh-search-box">
+        <h1>Find a Nurse</h1>
+        <p>Browse nursing staff</p>
+        <div className="nh-search-inner">
+          <span className="nh-search-icon">🔍</span>
+          <input
+            className="nh-search-input"
+            placeholder="Search by name..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-        </div>
-        <h1>👩‍⚕️ Nurses</h1>
-        <p>Find nurses near you</p>
-        <div className="searchInner">
-          <span className="searchIcon">🔍</span>
-          <input className="searchInput" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
 
-      <div className="mainContent">
-        <div className="shortcuts">
-          <button className="shortcutBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-          <button className="shortcutBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-          {/* ✅ Demandes shortcut */}
-          <button className="shortcutBtn" onClick={() => onNavigate?.("demandes")}><span>📤</span><span>Demandes</span></button>
+      <div className="nh-main-content">
+        <div className="nh-stats">
+          <div className="nh-stat-card">
+            <div className="nh-stat-label">Total Nurses</div>
+            <div className="nh-stat-value">{stats.total}</div>
+          </div>
+          <div className="nh-stat-card">
+            <div className="nh-stat-label">On Shift</div>
+            <div className="nh-stat-value">{stats.onShift}</div>
+          </div>
+          <div className="nh-stat-card">
+            <div className="nh-stat-label">Pending</div>
+            <div className="nh-stat-value">{stats.pending}</div>
+          </div>
         </div>
 
-        <div className="sectionTitle">
+        <div className="nh-section-title">
           <h3>Nurses List</h3>
-          <span className="count">{filtered.length}</span>
+          <span className="nh-count">{filtered.length}</span>
         </div>
 
         {loading ? (
-          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
+          <div className="nh-loading-wrap">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="nh-skeleton" />
+            ))}
+          </div>
         ) : filtered.length === 0 ? (
-          <div className="empty"><span>👩‍⚕️</span><p>No nurses found</p></div>
+          <div className="nh-empty">
+            <span>👩‍⚕️</span>
+            <p>No nurses found</p>
+          </div>
         ) : (
-          <div className="list">
+          <div className="nh-list">
             {filtered.map((item, idx) => (
-              <div key={item._id || idx} className="card" onClick={() => onNavigate?.("profile", item._id)}>
-                <div className="cardAvatar">👩‍⚕️</div>
-                <div className="cardInfo">
-                  <h4 className="cardName">{item.fullName || item.userId || item.nomPharmacie || item.matricule || "N/A"}</h4>
-                  <p className="cardSpec">{item.specialty || item.diplome || item.grade || ""}</p>
-                  <p className="cardLoc">📍 {item.location || item.service || item.adressePharmacie || item.uniteIntervention || "Not specified"}</p>
+              <div
+                key={item._id || idx}
+                className="nh-card"
+                onClick={() => onNavigate?.("profile", item._id)}
+              >
+                <div className="nh-card-avatar">👩‍⚕️</div>
+                <div className="nh-card-info">
+                  <h4 className="nh-card-name">{item.userId || item.gmail || "Unknown"}</h4>
+                  <p className="nh-card-spec">{item.specialty || item.diplome || ""}</p>
+                  <p className="nh-card-loc">📍 {item.location || item.service || "Not specified"}</p>
                 </div>
-                <div className="cardRight">
-                  <span className="badge badgeGreen">Nurse</span>
-                  <span className="arrow">›</span>
+                <div className="nh-card-right">
+                  <span className={`nh-badge ${item.isAvailable ? "nh-badge-green" : "nh-badge-red"}`}>
+                    {item.isAvailable ? "Available" : "Busy"}
+                  </span>
+                  <span className="nh-arrow">›</span>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-
-      <div className="bottomNav">
-        <button className="navBtn navActive"><span>🏠</span><span>Home</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("map")}><span>🗺️</span><span>Map</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
     </div>
   );

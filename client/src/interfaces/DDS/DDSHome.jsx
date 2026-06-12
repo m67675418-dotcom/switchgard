@@ -1,101 +1,222 @@
+// client/src/interfaces/DDS/DDSHome.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import "./DDSHome.css";
+
+const API = 'http://localhost:5000/api';
+
+const roleLabel = { doctor: 'Doctors', nurse: 'Nurses', pharmacist: 'Pharmacists', firefighter: 'Firefighters' };
+const roleEmoji = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
 
 const DDSHome = ({ currentUser, onNavigate }) => {
-  const [demandes, setDemandes] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [tab, setTab]                   = useState('users');
+  const [pendingUsers, setPendingUsers]  = useState([]);
+  const [pendingShifts, setPendingShifts] = useState([]);
+  const [loading, setLoading]           = useState(true);
+  const [stats, setStats]               = useState({ total: 0, onShift: 0, pending: 0 });
+
+  const managerType = currentUser?.managerType;
+  const token = localStorage.getItem('token');
+  const authHeader = { headers: { Authorization: `Bearer ${token}` } };
 
   useEffect(() => {
-    fetchPendingDemandes();
+    fetchAll();
   }, []);
 
-  const fetchPendingDemandes = async () => {
+  const fetchAll = async () => {
+    setLoading(true);
     try {
-      console.log('📡 Fetching pending demandes for DDS...');
-      const res = await axios.get('http://localhost:5000/api/demande');
-      
-      console.log('📥 All demandes:', res.data);
-      
-      // ✅ Filter only pending demandes for director
-      const pending = res.data.filter(d => 
-        d.directorStatus === 'pending' || !d.directorStatus
+      const [usersRes, shiftsRes, gardesRes, demandesRes] = await Promise.all([
+        axios.get(`${API}/account/pending`, authHeader),
+        axios.get(`${API}/demande`, authHeader),
+        fetch("http://localhost:5000/api/garde/getAll").then(r => r.json()).catch(() => []),
+        fetch("http://localhost:5000/api/demandes/getAll").then(r => r.json()).catch(() => []),
+      ]);
+
+      const users = usersRes.data.accounts || [];
+      setPendingUsers(users);
+
+      const shifts = (shiftsRes.data || []).filter(d =>
+        d.status === 'accepted' &&
+        d.directorStatus === 'pending' &&
+        d.role === managerType
       );
-      
-      console.log('✅ Pending demandes:', pending);
-      setDemandes(pending);
-    } catch (error) {
-      console.error('❌ Error fetching demandes:', error);
+      setPendingShifts(shifts);
+
+      const gardes   = Array.isArray(gardesRes)   ? gardesRes   : [];
+      const demandes = Array.isArray(demandesRes) ? demandesRes : [];
+      setStats({
+        total:   users.length,
+        onShift: gardes.filter(g => g.role === "manager").length,
+        pending: demandes.filter(d => d.role === "manager" && d.status === "pending").length,
+      });
+    } catch (err) {
+      console.error('Error fetching manager data:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleApprove = async (demandeId) => {
-    if (!window.confirm('الموافقة على هذا الطلب؟')) return;
-    
+  const approveUser = async (id, email) => {
+    if (!window.confirm(`Approve account for ${email}?`)) return;
     try {
-      const res = await axios.put(`http://localhost:5000/api/demande/${demandeId}/director-approve`);
-      console.log('✅ Approved:', res.data);
-      alert('✅ تمت الموافقة!');
-      fetchPendingDemandes();
-    } catch (error) {
-      console.error('❌ Error:', error);
-      alert('❌ خطأ في الموافقة: ' + error.message);
+      await axios.put(`${API}/account/${id}/approve`, {}, authHeader);
+      setPendingUsers(prev => prev.filter(a => a._id !== id));
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
     }
   };
 
-  const handleReject = async (demandeId) => {
-    if (!window.confirm('رفض هذا الطلب؟')) return;
-    
+  const rejectUser = async (id, email) => {
+    if (!window.confirm(`Reject and delete account for ${email}?`)) return;
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/director-reject`);
-      alert('❌ تم رفض الطلب');
-      fetchPendingDemandes();
-    } catch (error) {
-      alert('❌ خطأ في الرفض');
+      await axios.delete(`${API}/account/${id}/reject`, authHeader);
+      setPendingUsers(prev => prev.filter(a => a._id !== id));
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
     }
   };
+
+  const approveShift = async (id) => {
+    if (!window.confirm('Approve this shift exchange?')) return;
+    try {
+      await axios.put(`${API}/demande/${id}/director-approve`, {}, authHeader);
+      setPendingShifts(prev => prev.filter(d => d._id !== id));
+      alert('✅ Shift exchange approved!');
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const rejectShift = async (id) => {
+    if (!window.confirm('Reject this shift exchange?')) return;
+    try {
+      await axios.put(`${API}/demande/${id}/director-reject`, {}, authHeader);
+      setPendingShifts(prev => prev.filter(d => d._id !== id));
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const typeLabel = managerType ? `${roleEmoji[managerType]} ${roleLabel[managerType]}` : 'All';
 
   return (
-    <div className="dds-home">
-      <h1>👔 DDS Dashboard - الطلبات المعلقة</h1>
-      
-      {loading ? (
-        <p>⏳ جاري التحميل...</p>
-      ) : demandes.length === 0 ? (
-        <div className="empty-state">
-          <p>✅ لا توجد طلبات معلقة</p>
-          <p style={{fontSize: '14px', color: '#64748b'}}>
-            الطلبات ستظهر هنا بعد موافقة المستخدمين عليها
-          </p>
-        </div>
-      ) : (
-        <div className="demandes-list">
-          {demandes.map((demande) => (
-            <div key={demande._id} className="demande-card">
-              <h3>📋 طلب {demande.type === 'vente' ? 'بيع' : 'تبادل'}</h3>
-              
-              <div className="demande-info">
-                <p><strong>المالك الحالي:</strong> {demande.gardeOwner}</p>
-                <p><strong>طالب التبديل:</strong> {demande.demandeurName}</p>
-                <p><strong>التاريخ:</strong> {new Date(demande.gardeDate).toLocaleDateString()}</p>
-                <p><strong>الحالة:</strong> {demande.status}</p>
-              </div>
+    <div className="dds-container">
+      <div className="dds-search-box">
+        <h1>Manager Dashboard</h1>
+        <p>Managing: {typeLabel}</p>
+      </div>
 
-              <div className="actions">
-                <button className="btn-approve" onClick={() => handleApprove(demande._id)}>
-                  ✅ موافقة
-                </button>
-                <button className="btn-reject" onClick={() => handleReject(demande._id)}>
-                  ❌ رفض
-                </button>
-              </div>
-            </div>
-          ))}
+      <div className="dds-main-content">
+        <div className="dds-stats">
+          <div className="dds-stat-card">
+            <div className="dds-stat-label">Total Managers</div>
+            <div className="dds-stat-value">{stats.total}</div>
+          </div>
+          <div className="dds-stat-card">
+            <div className="dds-stat-label">On Shift</div>
+            <div className="dds-stat-value">{stats.onShift}</div>
+          </div>
+          <div className="dds-stat-card">
+            <div className="dds-stat-label">Pending</div>
+            <div className="dds-stat-value">{stats.pending}</div>
+          </div>
         </div>
-      )}
+
+        <div className="dds-tabs">
+          {[
+            { key: 'users',  label: `👤 Pending Users (${pendingUsers.length})` },
+            { key: 'shifts', label: `🔄 Shift Exchanges (${pendingShifts.length})` },
+          ].map(t => (
+            <button
+              key={t.key}
+              className={`dds-tab-btn ${tab === t.key ? 'dds-tab-active' : ''}`}
+              onClick={() => setTab(t.key)}
+            >
+              {t.label}
+            </button>
+          ))}
+          <button className="dds-refresh-btn" onClick={fetchAll}>
+            🔄 Refresh
+          </button>
+        </div>
+
+        {loading ? (
+          <div className="dds-loading-wrap">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="dds-skeleton" />
+            ))}
+          </div>
+        ) : tab === 'users' ? (
+          pendingUsers.length === 0 ? (
+            <DDSEmpty label="No pending user approvals" />
+          ) : (
+            <div className="dds-table-wrap">
+              <table className="dds-table">
+                <thead>
+                  <tr>
+                    {['Role', 'Email', 'Registered', 'Actions'].map(h => (
+                      <th key={h} className="dds-th">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingUsers.map(acc => (
+                    <tr key={acc._id}>
+                      <td className="dds-td"><span style={{ textTransform: 'capitalize' }}>{roleEmoji[acc.role] || '👤'} {acc.role}</span></td>
+                      <td className="dds-td">{acc.email}</td>
+                      <td className="dds-td">{new Date(acc.createdAt).toLocaleDateString()}</td>
+                      <td className="dds-td">
+                        <button className="dds-btn-approve" onClick={() => approveUser(acc._id, acc.email)}>✅ Approve</button>
+                        <button className="dds-btn-reject"  onClick={() => rejectUser(acc._id, acc.email)}>❌ Reject</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        ) : (
+          pendingShifts.length === 0 ? (
+            <DDSEmpty label="No pending shift exchange approvals" />
+          ) : (
+            <div className="dds-table-wrap">
+              <table className="dds-table">
+                <thead>
+                  <tr>
+                    {['From', 'To', 'Date', 'Role', 'Actions'].map(h => (
+                      <th key={h} className="dds-th">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingShifts.map(d => (
+                    <tr key={d._id}>
+                      <td className="dds-td">{d.gardeOwner || '—'}</td>
+                      <td className="dds-td">{d.demandeurName || '—'}</td>
+                      <td className="dds-td">{d.gardeDate ? new Date(d.gardeDate).toLocaleDateString() : '—'}</td>
+                      <td className="dds-td"><span style={{ textTransform: 'capitalize' }}>{roleEmoji[d.role] || ''} {d.role}</span></td>
+                      <td className="dds-td">
+                        <button className="dds-btn-approve" onClick={() => approveShift(d._id)}>✅ Approve</button>
+                        <button className="dds-btn-reject"  onClick={() => rejectShift(d._id)}>❌ Reject</button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )
+        )}
+      </div>
     </div>
   );
 };
+
+const DDSEmpty = ({ label }) => (
+  <div className="dds-empty-state">
+    <div className="dds-empty-state-icon">✅</div>
+    <p>{label}</p>
+  </div>
+);
 
 export default DDSHome;

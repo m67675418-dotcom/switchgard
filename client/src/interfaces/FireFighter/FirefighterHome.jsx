@@ -1,82 +1,112 @@
-// FirefighterHome.jsx - ✅ Updated: NotificationBell added
+// client/src/interfaces/FireFighter/FirefighterHome.jsx
 import { useState, useEffect } from "react";
 import "./FirefighterHome.css";
-import NotificationBell from "../components/NotificationBell";
 
 export default function FirefighterHome({ onNavigate, currentUser }) {
   const [items, setItems]     = useState([]);
   const [search, setSearch]   = useState("");
   const [loading, setLoading] = useState(true);
+  const [stats, setStats]     = useState({ total: 0, onShift: 0, pending: 0 });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/firefighter/getAll")
-      .then(r => r.json())
-      .then(data => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("http://localhost:5000/api/firefighter/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/garde/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/demandes/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+    ]).then(([firefighters, gardes, demandes]) => {
+      const ffList = Array.isArray(firefighters) ? firefighters : [];
+      setItems(ffList);
+      setStats({
+        total:   ffList.length,
+        onShift: Array.isArray(gardes)   ? gardes.filter(g => g.role === "firefighter").length   : 0,
+        pending: Array.isArray(demandes) ? demandes.filter(d => d.role === "firefighter" && d.status === "pending").length : 0,
+      });
+      setLoading(false);
+    });
   }, []);
 
+  const filtered = items.filter(i =>
+    (i.matricule || i.userId || "").toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="container">
-      <div className="searchBox" style={{ position: "relative" }}>
-        {/* ✅ NotificationBell */}
-        <div style={{ position: "absolute", top: 16, right: 16 }}>
-          <NotificationBell
-            userId={currentUser?._id || currentUser?.id}
-            role="firefighter"
-            onNavigate={onNavigate}
+    <div className="ffh-container">
+      <div className="ffh-search-box">
+        <h1>Find a Firefighter</h1>
+        <p>Browse firefighting units</p>
+        <div className="ffh-search-inner">
+          <span className="ffh-search-icon">🔍</span>
+          <input
+            className="ffh-search-input"
+            placeholder="Search by matricule or ID..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-        </div>
-        <h1>🚒 Firefighters</h1>
-        <p>Find firefighters near you</p>
-        <div className="searchInner">
-          <span className="searchIcon">🔍</span>
-          <input className="searchInput" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
 
-      <div className="mainContent">
-        <div className="shortcuts">
-          <button className="shortcutBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-          <button className="shortcutBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-          {/* ✅ Demandes shortcut */}
-          <button className="shortcutBtn" onClick={() => onNavigate?.("demandes")}><span>📤</span><span>Demandes</span></button>
+      <div className="ffh-main-content">
+        <div className="ffh-stats">
+          <div className="ffh-stat-card">
+            <div className="ffh-stat-label">Total Firefighters</div>
+            <div className="ffh-stat-value">{stats.total}</div>
+          </div>
+          <div className="ffh-stat-card">
+            <div className="ffh-stat-label">On Shift</div>
+            <div className="ffh-stat-value">{stats.onShift}</div>
+          </div>
+          <div className="ffh-stat-card">
+            <div className="ffh-stat-label">Pending</div>
+            <div className="ffh-stat-value">{stats.pending}</div>
+          </div>
         </div>
 
-        <div className="sectionTitle">
+        <div className="ffh-section-title">
           <h3>Firefighters List</h3>
-          <span className="count">{items.length}</span>
+          <span className="ffh-count">{filtered.length}</span>
         </div>
 
         {loading ? (
-          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
-        ) : items.length === 0 ? (
-          <div className="empty"><span>🚒</span><p>No firefighters found</p></div>
+          <div className="ffh-loading-wrap">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="ffh-skeleton" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="ffh-empty">
+            <span>🚒</span>
+            <p>No firefighters found</p>
+          </div>
         ) : (
-          <div className="list">
-            {items.map((item, idx) => (
-              <div key={item._id || idx} className="card" onClick={() => onNavigate?.("profile", item._id)}>
-                <div className="cardAvatar">🚒</div>
-                <div className="cardInfo">
-                  <h4 className="cardName">{item.fullName || item.userId || item.matricule || "N/A"}</h4>
-                  <p className="cardSpec">{item.grade || ""}</p>
-                  <p className="cardLoc">📍 {item.uniteIntervention || "Not specified"}</p>
+          <div className="ffh-list">
+            {filtered.map((item, idx) => (
+              <div
+                key={item._id || idx}
+                className="ffh-card"
+                onClick={() => onNavigate?.("profile", item._id)}
+              >
+                <div className="ffh-card-avatar">🚒</div>
+                <div className="ffh-card-info">
+                  <h4 className="ffh-card-name">{item.matricule || item.userId || "Unknown"}</h4>
+                  <p className="ffh-card-spec">{item.rank || ""}</p>
+                  <p className="ffh-card-loc">📍 {item.uniteIntervention || "Not specified"}</p>
                 </div>
-                <div className="cardRight">
-                  <span className="badge badgeGreen">Firefighter</span>
-                  <span className="arrow">›</span>
+                <div className="ffh-card-right">
+                  <span className={`ffh-badge ${item.isAvailable ? "ffh-badge-green" : "ffh-badge-red"}`}>
+                    {item.isAvailable ? "Available" : "Busy"}
+                  </span>
+                  <span className="ffh-arrow">›</span>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-
-      <div className="bottomNav">
-        <button className="navBtn navActive"><span>🏠</span><span>Home</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("map")}><span>🗺️</span><span>Map</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
     </div>
   );

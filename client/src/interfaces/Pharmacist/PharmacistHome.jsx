@@ -1,82 +1,112 @@
-// PharmacistHome.jsx - ✅ Updated: NotificationBell added
+// client/src/interfaces/Pharmacist/PharmacistHome.jsx
 import { useState, useEffect } from "react";
 import "./PharmacistHome.css";
-import NotificationBell from "../components/NotificationBell";
 
 export default function PharmacistHome({ onNavigate, currentUser }) {
   const [items, setItems]     = useState([]);
   const [search, setSearch]   = useState("");
   const [loading, setLoading] = useState(true);
+  const [stats, setStats]     = useState({ total: 0, onShift: 0, pending: 0 });
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/pharmacist/getAll")
-      .then(r => r.json())
-      .then(data => { setItems(Array.isArray(data) ? data : []); setLoading(false); })
-      .catch(() => setLoading(false));
+    Promise.all([
+      fetch("http://localhost:5000/api/pharmacist/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/garde/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+      fetch("http://localhost:5000/api/demandes/getAll")
+        .then(r => r.json())
+        .catch(() => []),
+    ]).then(([pharmacists, gardes, demandes]) => {
+      const pharmList = Array.isArray(pharmacists) ? pharmacists : [];
+      setItems(pharmList);
+      setStats({
+        total:   pharmList.length,
+        onShift: Array.isArray(gardes)   ? gardes.filter(g => g.role === "pharmacist").length   : 0,
+        pending: Array.isArray(demandes) ? demandes.filter(d => d.role === "pharmacist" && d.status === "pending").length : 0,
+      });
+      setLoading(false);
+    });
   }, []);
 
+  const filtered = items.filter(i =>
+    (i.nomPharmacie || i.email || "").toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
-    <div className="container">
-      <div className="searchBox" style={{ position: "relative" }}>
-        {/* ✅ NotificationBell */}
-        <div style={{ position: "absolute", top: 16, right: 16 }}>
-          <NotificationBell
-            userId={currentUser?._id || currentUser?.id}
-            role="pharmacist"
-            onNavigate={onNavigate}
+    <div className="phmh-container">
+      <div className="phmh-search-box">
+        <h1>Find a Pharmacist</h1>
+        <p>Browse pharmacies</p>
+        <div className="phmh-search-inner">
+          <span className="phmh-search-icon">🔍</span>
+          <input
+            className="phmh-search-input"
+            placeholder="Search by pharmacy name..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
           />
-        </div>
-        <h1>💊 Pharmacists</h1>
-        <p>Find pharmacists near you</p>
-        <div className="searchInner">
-          <span className="searchIcon">🔍</span>
-          <input className="searchInput" placeholder="Search..." value={search} onChange={e => setSearch(e.target.value)} />
         </div>
       </div>
 
-      <div className="mainContent">
-        <div className="shortcuts">
-          <button className="shortcutBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-          <button className="shortcutBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-          {/* ✅ Demandes shortcut */}
-          <button className="shortcutBtn" onClick={() => onNavigate?.("demandes")}><span>📤</span><span>Demandes</span></button>
+      <div className="phmh-main-content">
+        <div className="phmh-stats">
+          <div className="phmh-stat-card">
+            <div className="phmh-stat-label">Total Pharmacists</div>
+            <div className="phmh-stat-value">{stats.total}</div>
+          </div>
+          <div className="phmh-stat-card">
+            <div className="phmh-stat-label">On Shift</div>
+            <div className="phmh-stat-value">{stats.onShift}</div>
+          </div>
+          <div className="phmh-stat-card">
+            <div className="phmh-stat-label">Pending</div>
+            <div className="phmh-stat-value">{stats.pending}</div>
+          </div>
         </div>
 
-        <div className="sectionTitle">
+        <div className="phmh-section-title">
           <h3>Pharmacists List</h3>
-          <span className="count">{items.length}</span>
+          <span className="phmh-count">{filtered.length}</span>
         </div>
 
         {loading ? (
-          <div className="loadingWrap">{[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="skeleton" />)}</div>
-        ) : items.length === 0 ? (
-          <div className="empty"><span>💊</span><p>No pharmacists found</p></div>
+          <div className="phmh-loading-wrap">
+            {[1, 2, 3, 4, 5, 6].map(i => (
+              <div key={i} className="phmh-skeleton" />
+            ))}
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="phmh-empty">
+            <span>💊</span>
+            <p>No pharmacists found</p>
+          </div>
         ) : (
-          <div className="list">
-            {items.map((item, idx) => (
-              <div key={item._id || idx} className="card" onClick={() => onNavigate?.("profile", item._id)}>
-                <div className="cardAvatar">💊</div>
-                <div className="cardInfo">
-                  <h4 className="cardName">{item.nomPharmacie || item.fullName || "N/A"}</h4>
-                  <p className="cardSpec">{item.gmail || ""}</p>
-                  <p className="cardLoc">📍 {item.adressePharmacie || "Not specified"}</p>
+          <div className="phmh-list">
+            {filtered.map((item, idx) => (
+              <div
+                key={item._id || idx}
+                className="phmh-card"
+                onClick={() => onNavigate?.("profile", item._id)}
+              >
+                <div className="phmh-card-avatar">💊</div>
+                <div className="phmh-card-info">
+                  <h4 className="phmh-card-name">{item.nomPharmacie || item.email || "Unknown"}</h4>
+                  <p className="phmh-card-spec">{item.gmail || ""}</p>
+                  <p className="phmh-card-loc">📍 {item.adressePharmacie || "Not specified"}</p>
                 </div>
-                <div className="cardRight">
-                  <span className="badge badgeGreen">Pharmacist</span>
-                  <span className="arrow">›</span>
+                <div className="phmh-card-right">
+                  <span className={`phmh-badge ${item.isAvailable ? "phmh-badge-green" : "phmh-badge-red"}`}>
+                    {item.isAvailable ? "Available" : "Busy"}
+                  </span>
+                  <span className="phmh-arrow">›</span>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
-
-      <div className="bottomNav">
-        <button className="navBtn navActive"><span>🏠</span><span>Home</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("messages")}><span>💬</span><span>Messages</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("map")}><span>🗺️</span><span>Map</span></button>
-        <button className="navBtn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
       </div>
     </div>
   );
