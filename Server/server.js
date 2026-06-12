@@ -185,6 +185,10 @@ app.use(
   require("./routes/notificationRoutes/notificationRoutes"),
 );
 
+// ✅ Facility Routes
+app.use('/api/facilities', require('./routes/facilityRoutes/getFacilities'));
+app.use('/api/account/setLocation', require('./routes/facilityRoutes/setLocation'));
+
 // ✅ Admin Protected Routes
 const { protect, authorize } = require("./middleware/authMiddleware");
 app.get("/api/admin/dashboard", protect, authorize("admin"), (req, res) => {
