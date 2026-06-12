@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './GetSingleTransaction.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 

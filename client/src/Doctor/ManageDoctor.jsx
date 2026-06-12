@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageDoctor.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -235,11 +236,11 @@ const ManageDoctor = ({ onSelectDoctor }) => {
 
     return (
         <div className="manage-page">
-            <div className="manage-card">
+            <div className="manage-card form-card">
                 <div className="logo-text">👨‍️ Manage<span>Doctor</span></div>
                 <p className="tagline">Hospital Management System</p>
                 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSearch} className="search-box">
                     <input 
@@ -284,7 +285,7 @@ const ManageDoctor = ({ onSelectDoctor }) => {
                             )}
                         </div>
                     ) : (
-                        <table className="doctors-table">
+                        <table className="doctors-table form-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -415,10 +416,10 @@ const ManageDoctor = ({ onSelectDoctor }) => {
                                 <span>✅ Available</span>
                             </label>
                             <div className="form-actions">
-                                <button type="button" className="cancel-btn" onClick={handleCancel}>
+                                <button type="button" className="cancel-btn form-btn form-btn-danger" onClick={handleCancel}>
                                     ❌ Cancel
                                 </button>
-                                <button type="submit" className="main-btn" disabled={loading}>
+                                <button type="submit" className="main-btn form-btn" disabled={loading}>
                                     {loading ? '⏳ Updating...' : '💾 Update'}
                                 </button>
                             </div>

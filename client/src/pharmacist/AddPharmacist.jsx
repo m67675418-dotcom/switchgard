@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './AddPharmacist.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api'; // ✅ مسار أساسي
 
@@ -61,14 +62,14 @@ const AddPharmacist = () => {
 
     return (
         <div className="login-page">
-            <div className="login-card">
+            <div className="login-card form-card">
                 <div className="logo-text">
                     💊 <span>Add</span> Pharmacist
                 </div>
                 <p className="tagline">Pharmacy Management System</p>
 
                 {status.message && (
-                    <div className={`status-message ${status.type}`}>{status.message}</div>
+                    <div className={`status-message form-status ${status.type}`}>{status.message}</div>
                 )}
 
                 <form onSubmit={handleSubmit}>
@@ -130,7 +131,7 @@ const AddPharmacist = () => {
                         <span>🌙 Night Shift Pharmacy</span>
                     </label>
 
-                    <button type="submit" className="main-btn" disabled={loading}>
+                    <button type="submit" className="main-btn form-btn" disabled={loading}>
                         {loading ? '⏳ Processing...' : '➕ Add Pharmacist'}
                     </button>
                 </form>

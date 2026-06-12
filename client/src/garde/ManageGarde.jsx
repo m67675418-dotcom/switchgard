@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageGarde.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -203,12 +204,12 @@ const ManageGarde = ({ onSelectGarde }) => {
 
     return (
         <div className="manage-page">
-            <div className="manage-card">
+            <div className="manage-card form-card">
                 <div className="logo-text">📅 Manage<span>Garde</span></div>
                 <p className="tagline">Shift & Schedule Management</p>
 
                 {status.message && (
-                    <div className={`status-message ${status.type}`}>{status.message}</div>
+                    <div className={`status-message form-status ${status.type}`}>{status.message}</div>
                 )}
 
                 <form onSubmit={handleSearch} className="search-box">
@@ -245,7 +246,7 @@ const ManageGarde = ({ onSelectGarde }) => {
                             {searchQuery ? 'No gardes match your search' : '📭 No gardes found'}
                         </div>
                     ) : (
-                        <table className="gardes-table">
+                        <table className="gardes-table form-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -332,8 +333,8 @@ const ManageGarde = ({ onSelectGarde }) => {
                             </select>
 
                             <div className="form-actions">
-                                <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                                <button type="submit" className="main-btn" disabled={loading}>
+                                <button type="button" className="cancel-btn form-btn form-btn-danger" onClick={handleCancel}>❌ Cancel</button>
+                                <button type="submit" className="main-btn form-btn" disabled={loading}>
                                     {loading ? '⏳ Updating...' : '💾 Update'}
                                 </button>
                             </div>

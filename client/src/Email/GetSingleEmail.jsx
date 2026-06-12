@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './SendEmail.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api'; // ✅ مسار أساسي
 
@@ -59,11 +60,11 @@ const SendEmail = ({ onEmailSent }) => {
 
     return (
         <div className="login-page">
-            <div className="login-card">
+            <div className="login-card form-card">
                 <div className="logo-text">📧 <span>Send</span> Email</div>
                 <p className="tagline">Internal Messaging System</p>
 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <input type="email" name="to" placeholder="👤 Recipient Email" value={formData.to} onChange={handleChange} required />
@@ -80,7 +81,7 @@ const SendEmail = ({ onEmailSent }) => {
                         <textarea name="html" placeholder="<!DOCTYPE html> Write your HTML email..." value={formData.html} onChange={handleChange} required rows="5" className="form-textarea" />
                     )}
 
-                    <button type="submit" className="main-btn" disabled={loading}>
+                    <button type="submit" className="main-btn form-btn" disabled={loading}>
                         {loading ? '⏳ Sending...' : '📤 Send Email'}
                     </button>
                 </form>

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import './GetSingleMessage.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 

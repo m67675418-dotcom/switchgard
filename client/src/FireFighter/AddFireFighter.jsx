@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './AddFireFighter.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -68,11 +69,11 @@ const AddFireFighter = () => {
 
     return (
         <div className="login-page">
-            <div className="login-card">
+            <div className="login-card form-card">
                 <div className="logo-text">🚒 <span>Add</span> Firefighter</div>
                 <p className="tagline">Emergency Response Management</p>
 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <input type="text" name="userId" placeholder="🆔 User ID" value={formData.userId} onChange={handleChange} />
@@ -88,7 +89,7 @@ const AddFireFighter = () => {
                         {uniteOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
 
-                    <button type="submit" className="main-btn" disabled={loading}>
+                    <button type="submit" className="main-btn form-btn" disabled={loading}>
                         {loading ? '⏳ Processing...' : '➕ Add Firefighter'}
                     </button>
                 </form>

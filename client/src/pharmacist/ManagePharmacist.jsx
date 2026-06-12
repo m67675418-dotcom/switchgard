@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManagePharmacist.css';
+import '../styles/form.css';
 
 const ManagePharmacist = () => {
     const [pharmacists, setPharmacists] = useState([]);
@@ -194,12 +195,12 @@ const ManagePharmacist = () => {
 
     return (
         <div className="manage-page">
-            <div className="manage-card">
+            <div className="manage-card form-card">
                 <div className="logo-text">💊 Manage<span>Pharmacist</span></div>
                 <p className="tagline">Pharmacy Management System</p>
 
                 {status.message && (
-                    <div className={`status-message ${status.type}`}>{status.message}</div>
+                    <div className={`status-message form-status ${status.type}`}>{status.message}</div>
                 )}
 
                 {/* ID Search */}
@@ -239,7 +240,7 @@ const ManagePharmacist = () => {
                             {searchQuery ? 'No pharmacists match your search' : '📭 No pharmacists found'}
                         </div>
                     ) : (
-                        <table className="pharmacists-table">
+                        <table className="pharmacists-table form-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -339,8 +340,8 @@ const ManagePharmacist = () => {
                         </label>
 
                         <div className="form-actions">
-                            <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                            <button type="submit" className="main-btn" disabled={loading}>
+                            <button type="button" className="cancel-btn form-btn form-btn-danger" onClick={handleCancel}>❌ Cancel</button>
+                            <button type="submit" className="main-btn form-btn" disabled={loading}>
                                 {loading ? '⏳ Updating...' : '💾 Update'}
                             </button>
                         </div>

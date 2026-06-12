@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageTransactions.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -157,11 +158,11 @@ const ManageTransactions = ({ onSelectTransaction }) => {
 
     return (
         <div className="manage-page">
-            <div className="manage-card">
+            <div className="manage-card form-card">
                 <h2 className="logo-text">💳 Manage<span>Transactions</span></h2>
                 <p className="tagline">Hospital Management System</p>
 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSearch} className="search-box">
                     <input type="text" className="search-input"
@@ -178,7 +179,7 @@ const ManageTransactions = ({ onSelectTransaction }) => {
                     ) : transactions.length === 0 ? (
                         <div className="no-data">📭 No transactions found</div>
                     ) : (
-                        <table className="transactions-table">
+                        <table className="transactions-table form-table">
                             <thead>
                                 <tr>
                                     <th>ID</th><th>Garde ID</th><th>Demander ID</th>
@@ -254,8 +255,8 @@ const ManageTransactions = ({ onSelectTransaction }) => {
                                 </div>
                             </div>
                             <div className="form-actions">
-                                <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                                <button type="submit" className="main-btn" disabled={loading}>
+                                <button type="button" className="cancel-btn form-btn form-btn-danger" onClick={handleCancel}>❌ Cancel</button>
+                                <button type="submit" className="main-btn form-btn" disabled={loading}>
                                     {loading ? '⏳ Updating...' : '💾 Update'}
                                 </button>
                             </div>

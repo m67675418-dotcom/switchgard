@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import axios from 'axios';
 import './AddDoctor.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -106,30 +107,30 @@ const AddDoctor = () => {
 
     return (
         <div className="login-page">
-            <div className="login-card">
+            <div className="login-card form-card">
                 <div className="logo-text">👨‍️ <span>Add</span> Doctor</div>
                 <p className="tagline">Hospital Management System</p>
 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <input type="text" name="fullName" placeholder="👤 Full Name (Dr. ...)" value={formData.fullName} onChange={handleInputChange} required />
-                    <input type="email" name="email" placeholder="📧 Email Address" value={formData.email} onChange={handleInputChange} required />
-                    <input type="password" name="password" placeholder="🔐 Password" value={formData.password} onChange={handleInputChange} required />
-                    
-                    <select name="specialty" value={formData.specialty} onChange={handleInputChange} required className="form-select">
+                    <input type="text" name="fullName" placeholder="👤 Full Name (Dr. ...)" value={formData.fullName} onChange={handleInputChange} required className="form-field" />
+                    <input type="email" name="email" placeholder="📧 Email Address" value={formData.email} onChange={handleInputChange} required className="form-field" />
+                    <input type="password" name="password" placeholder="🔐 Password" value={formData.password} onChange={handleInputChange} required className="form-field" />
+
+                    <select name="specialty" value={formData.specialty} onChange={handleInputChange} required className="form-select form-field">
                         {specialtyOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                     </select>
-                    
-                    <input type="text" name="numOrdre" placeholder="🔢 Order Number (Num Ordre)" value={formData.numOrdre} onChange={handleInputChange} required />
-                    <input type="text" name="location" placeholder="📍 Clinic/Hospital Location" value={formData.location} onChange={handleInputChange} required />
-                    
+
+                    <input type="text" name="numOrdre" placeholder="🔢 Order Number (Num Ordre)" value={formData.numOrdre} onChange={handleInputChange} required className="form-field" />
+                    <input type="text" name="location" placeholder="📍 Clinic/Hospital Location" value={formData.location} onChange={handleInputChange} required className="form-field" />
+
                     <label className="checkbox-label">
                         <input type="checkbox" name="isAvailable" checked={formData.isAvailable} onChange={handleInputChange} />
                         <span>✅ Available for Appointments</span>
                     </label>
 
-                    <button type="submit" className="main-btn" disabled={loading}>
+                    <button type="submit" className="main-btn form-btn" disabled={loading}>
                         {loading ? '⏳ Adding...' : '✅ Add Doctor'}
                     </button>
                 </form>

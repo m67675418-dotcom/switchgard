@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import './AddMessage.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -52,11 +53,11 @@ const AddMessage = () => {
 
     return (
         <div className="login-page">
-            <div className="login-card">
+            <div className="login-card form-card">
                 <div className="logo-text">💬 <span>Add</span> Message</div>
                 <p className="tagline">Internal Messaging System</p>
 
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
                     <input type="text" name="senderId" placeholder="👤 Sender ID" value={formData.senderId} onChange={handleChange} required />
@@ -69,7 +70,7 @@ const AddMessage = () => {
                         <span>👁️ Mark as Read</span>
                     </label>
 
-                    <button type="submit" className="main-btn" disabled={loading}>
+                    <button type="submit" className="main-btn form-btn" disabled={loading}>
                         {loading ? '⏳ Sending...' : '📤 Send Message'}
                     </button>
                 </form>

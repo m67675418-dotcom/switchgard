@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';  // ✅ ماكاينش useCallback هنا
 import axios from 'axios';
 import './GetSingleDoctor.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 

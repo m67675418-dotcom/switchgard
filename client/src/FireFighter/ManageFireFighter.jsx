@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './ManageFireFighter.css';
+import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
@@ -164,10 +165,10 @@ const ManageFireFighter = ({ onSelectFireFighter }) => {
 
     return (
         <div className="manage-page">
-            <div className="manage-card">
+            <div className="manage-card form-card">
                 <div className="logo-text">🚒 Manage<span>FireFighter</span></div>
                 <p className="tagline">Emergency Response Management System</p>
-                {status.message && <div className={`status-message ${status.type}`}>{status.message}</div>}
+                {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSearch} className="search-box">
                     <input type="text" className="search-input" placeholder="🔍 Search by ID or Matricule..." value={searchId} onChange={(e) => setSearchId(e.target.value)} />
@@ -182,7 +183,7 @@ const ManageFireFighter = ({ onSelectFireFighter }) => {
                 <div className="table-wrapper">
                     {loading && firefighters.length === 0 ? <div className="loading">⏳ Loading...</div> :
                      filteredFirefighters.length === 0 ? <div className="no-data">📭 No firefighters found</div> :
-                     <table className="firefighters-table">
+                     <table className="firefighters-table form-table">
                         <thead><tr><th>Matricule</th><th>User ID</th><th>Grade</th><th>Unit</th><th>Actions</th></tr></thead>
                         <tbody>
                             {filteredFirefighters.map((ff) => {
@@ -219,8 +220,8 @@ const ManageFireFighter = ({ onSelectFireFighter }) => {
                             {uniteOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
                         </select>
                         <div className="form-actions">
-                            <button type="button" className="cancel-btn" onClick={handleCancel}>❌ Cancel</button>
-                            <button type="submit" className="main-btn" disabled={loading}>{loading ? '⏳...' : '💾 Update'}</button>
+                            <button type="button" className="cancel-btn form-btn form-btn-danger" onClick={handleCancel}>❌ Cancel</button>
+                            <button type="submit" className="main-btn form-btn" disabled={loading}>{loading ? '⏳...' : '💾 Update'}</button>
                         </div>
                     </form>
                 </>}
