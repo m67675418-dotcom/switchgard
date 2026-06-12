@@ -779,13 +779,11 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
   return (
     <div className="cm-inbox">
       <div className="cm-inbox-header">
-        <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:12 }}>
+        <div style={{ marginBottom:12 }}>
           <h2 className="cm-inbox-title">
             {cfg.heroEmoji} Messages
             {totalUnread > 0 && <span className="cm-inbox-badge" style={{ background: cfg.color }}>{totalUnread}</span>}
           </h2>
-          <button style={{ background:"none", border:"none", fontSize:22, cursor:"pointer" }}
-            onClick={() => onNavigate?.("home")}>🏠</button>
         </div>
         <div className="cm-search-box">
           <span>🔍</span>
@@ -830,16 +828,6 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
 
       <button className="cm-fab" style={{ background: cfg.color }} onClick={() => setShowModal(true)}>✏️</button>
       {showModal && <ContactsModal cfg={cfg} onClose={() => setShowModal(false)} onCreate={createConv} />}
-
-      <div className="cm-bottom-nav">
-        <button className="cm-nav-btn" onClick={() => onNavigate?.("home")}><span>🏠</span><span>Home</span></button>
-        <button className="cm-nav-btn cm-nav-active" style={{ color: cfg.color, background: cfg.light }}>
-          <span>💬</span><span>Messages</span>
-          {totalUnread > 0 && <span className="cm-nav-badge" style={{ background: cfg.color }}>{totalUnread}</span>}
-        </button>
-        <button className="cm-nav-btn" onClick={() => onNavigate?.("garde")}><span>🛡️</span><span>Shifts</span></button>
-        <button className="cm-nav-btn" onClick={() => onNavigate?.("profile")}><span>👤</span><span>Profile</span></button>
-      </div>
     </div>
   );
 }

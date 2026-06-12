@@ -3,6 +3,10 @@ const router = express.Router();
 const Demande = require('../../models/Demande');
 const Garde = require('../../models/Garde');
 const Notification = require('../../models/Notification');
+const Manager = require('../../models/Manager');
+const Message = require('../../models/Message');
+const Transaction = require('../../models/Transaction');
+const { protect, authorize } = require('../../middleware/authMiddleware');
 
 // Create demande
 router.post('/', async (req, res) => {
@@ -61,7 +65,7 @@ router.get('/check', async (req, res) => {
   }
 });
 
-// ✅ Accepter la demande (User A)
+// ✅ Accepter la demande (User B accepts, notifies demandeur + manager)
 router.put('/:id/accept', async (req, res) => {
   try {
     const demande = await Demande.findById(req.params.id);
@@ -70,25 +74,55 @@ router.put('/:id/accept', async (req, res) => {
     }
 
     demande.status = 'accepted';
+    demande.directorStatus = 'pending';
     await demande.save();
 
-    // Send notification to User B (demandeur)
-    const notificationB = new Notification({
+    // Notify demandeur (User A) that the request was accepted
+    const notificationDemandeur = new Notification({
       userId: demande.demandeurId,
       type: 'demande_accepted',
       message: `✅ ${demande.gardeOwner} a accepté votre demande`,
       demandeId: demande._id.toString()
     });
-    await notificationB.save();
+    await notificationDemandeur.save();
 
-    // Emit via Socket.io
     if (global.io) {
-      global.io.to(demande.demandeurId).emit('new_notification', notificationB);
+      global.io.to(demande.demandeurId).emit('new_notification', notificationDemandeur);
     }
 
-    console.log('✅ Demande acceptée, notification envoyée à User B');
+    // Notify all managers of the relevant role
+    const managers = await Manager.find({ managerType: demande.role });
+    console.log(`🔍 Looking for managers with managerType="${demande.role}" — found ${managers.length}`);
+    for (const manager of managers) {
+      const managerNotif = new Notification({
+        userId: manager._id.toString(),
+        type: 'director_review',
+        message: `📋 Demande d'échange en attente: ${demande.gardeOwner} → ${demande.demandeurName} (garde du ${new Date(demande.gardeDate).toLocaleDateString()})`,
+        demandeId: demande._id.toString()
+      });
+      await managerNotif.save();
+      console.log(`🔔 Notification sent to manager ${manager.fullName} (id: ${manager._id})`);
+      if (global.io) {
+        global.io.to(manager._id.toString()).emit('new_notification', managerNotif);
+      }
+    }
+    if (managers.length === 0) {
+      console.warn(`⚠️  No managers found for role "${demande.role}" — check managerType field in DDS collection`);
+    }
 
-    res.json({ message: 'Demande acceptée', demande, notification: notificationB });
+    // Auto-start a conversation between the two users
+    try {
+      await Message.create({
+        senderId:   demande.gardeOwner,
+        receiverId: demande.demandeurName,
+        content: `🤝 Shift exchange accepted! Let's coordinate the details here.`,
+        isRead: false,
+      });
+    } catch (msgErr) {
+      console.warn('⚠️ Auto-message failed (non-fatal):', msgErr.message);
+    }
+
+    res.json({ message: 'Demande acceptée', demande, notification: notificationDemandeur });
 
   } catch (error) {
     console.error('❌ Error accepting demande:', error);
@@ -134,8 +168,8 @@ router.put('/:id/send-to-director', async (req, res) => {
   }
 });
 
-// Director approve
-router.put('/:id/director-approve', async (req, res) => {
+// Manager/Admin approve shift exchange
+router.put('/:id/director-approve', protect, authorize('admin', 'manager'), async (req, res) => {
   try {
     const demande = await Demande.findById(req.params.id);
     if (!demande) return res.status(404).json({ message: 'Demande non trouvée' });
@@ -172,6 +206,24 @@ router.put('/:id/director-approve', async (req, res) => {
     });
     await notifDemandeur.save();
 
+    // Record 200 DZD commission for this shift exchange
+    try {
+      await Transaction.create({
+        gardeId:       demande.gardeId.toString(),
+        gardeOwner:    demande.gardeOwner,
+        demandeurId:   demande.demandeurId,
+        demandeurName: demande.demandeurName,
+        gardeDate:     demande.gardeDate,
+        role:          demande.role,
+        amount:        200,
+        status:        'completed',
+        type:          'shift_exchange',
+        note:          `Shift exchange: ${demande.gardeOwner} → ${demande.demandeurName}`,
+      });
+    } catch (txErr) {
+      console.warn('⚠️ Commission transaction failed (non-fatal):', txErr.message);
+    }
+
     res.json({ success: true, message: 'Approuvé avec succès', demande, garde });
 
   } catch (error) {
@@ -180,8 +232,8 @@ router.put('/:id/director-approve', async (req, res) => {
   }
 });
 
-// Director reject
-router.put('/:id/director-reject', async (req, res) => {
+// Manager/Admin reject shift exchange
+router.put('/:id/director-reject', protect, authorize('admin', 'manager'), async (req, res) => {
   try {
     const demande = await Demande.findById(req.params.id);
     if (!demande) return res.status(404).json({ message: 'Demande non trouvée' });
@@ -190,13 +242,28 @@ router.put('/:id/director-reject', async (req, res) => {
     demande.status = 'rejected';
     await demande.save();
 
-    const notif = new Notification({
+    // Notify demandeur (User A)
+    const notifDemandeur = new Notification({
       userId: demande.demandeurId,
       type: 'final_rejected',
-      message: `❌ Demande rejetée par le directeur`,
+      message: `❌ Votre demande d'échange a été refusée par le directeur`,
       demandeId: demande._id.toString()
     });
-    await notif.save();
+    await notifDemandeur.save();
+
+    // Notify proprietaire (User B)
+    const notifOwner = new Notification({
+      userId: demande.proprietaireId,
+      type: 'final_rejected',
+      message: `❌ L'échange avec ${demande.demandeurName} a été refusé par le directeur`,
+      demandeId: demande._id.toString()
+    });
+    await notifOwner.save();
+
+    if (global.io) {
+      global.io.to(demande.demandeurId).emit('new_notification', notifDemandeur);
+      global.io.to(demande.proprietaireId).emit('new_notification', notifOwner);
+    }
 
     res.json({ success: true, message: 'Rejeté', demande });
   } catch (error) {

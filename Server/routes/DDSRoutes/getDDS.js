@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const DDS = require('../../models/DDS');
+const Manager = require('../../models/Manager');
 
 router.get('/', async (req, res) => {
   try {
-    const allDDS = await DDS.find().select('-password');
-    res.json(allDDS);
+    const all = await Manager.find().select('-password');
+    res.json(all);
   } catch (error) {
-    res.status(500).json({ message: 'خطأ في جلب DDS', error: error.message });
+    res.status(500).json({ message: 'خطأ في جلب المديرين', error: error.message });
   }
 });
 

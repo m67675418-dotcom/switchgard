@@ -34,10 +34,6 @@ const Signup = ({ onSignupSuccess }) => {
   const [grade, setGrade]                       = useState('');
   const [uniteIntervention, setUniteIntervention] = useState('');
 
-  // DDS
-  const [ddsFullName, setDdsFullName] = useState('');
-  const [ddsPosition, setDdsPosition] = useState('');
-
   const [loading, setLoading] = useState(false);
   const [error, setError]     = useState('');
   const [success, setSuccess] = useState('');
@@ -104,9 +100,6 @@ const Signup = ({ onSignupSuccess }) => {
       case 'firefighter':
         additionalData = { matricule, grade, uniteIntervention, location: locationStr, lat, lng };
         break;
-      case 'dds': // ✅ NEW - DDS
-        additionalData = { fullName: ddsFullName, position: ddsPosition, location: locationStr, lat, lng };
-        break;
       default: break;
     }
 
@@ -120,12 +113,15 @@ const Signup = ({ onSignupSuccess }) => {
       });
       const data = await response.json();
 
-      if (data.success || data.token) {
-        const userData = data.user || { ...formData, _id: Date.now() };
-        localStorage.setItem('token', data.token || 'demo-token');
+      if (data.pending) {
+        navigate('/pending-approval');
+      } else if (data.token) {
+        // Shouldn't happen for public signup, but handle just in case
+        const userData = data.user || {};
+        localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(userData));
-        setSuccess('✅ Account created! Redirecting...');
-        setTimeout(() => { if (onSignupSuccess) onSignupSuccess(userData); navigate('/dashboard'); }, 1500);
+        if (onSignupSuccess) onSignupSuccess(userData);
+        navigate('/dashboard');
       } else {
         setError(data.message || '❌ Registration failed');
       }
@@ -189,7 +185,6 @@ const Signup = ({ onSignupSuccess }) => {
               <option value="nurse">👩‍⚕️ Nurse</option>
               <option value="pharmacist">💊 Pharmacist</option>
               <option value="firefighter">🚒 Firefighter</option>
-              <option value="dds">👔 DDS (Director)</option> {/* ✅ NEW */}
             </select>
 
             {/* ✅ Location section */}
@@ -254,14 +249,6 @@ const Signup = ({ onSignupSuccess }) => {
               </div>
             )}
 
-            {/* ── DDS Fields ── */}
-            {selectedRole === 'dds' && (
-              <div className="role-fields-section">
-                <p className="role-fields-title">👔 DDS Information</p>
-                <input type="text" placeholder="👤 Full Name" value={ddsFullName} onChange={e=>setDdsFullName(e.target.value)} required />
-                <input type="text" placeholder="🏢 Position (e.g., Director of Health)" value={ddsPosition} onChange={e=>setDdsPosition(e.target.value)} />
-              </div>
-            )}
 
             <button type="submit" className="main-btn" disabled={loading}>
               {loading ? '⏳ Creating Account...' : '✅ Create Account'}

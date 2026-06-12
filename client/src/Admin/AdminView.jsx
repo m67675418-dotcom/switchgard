@@ -1,5 +1,5 @@
 // client/src/Admin/AdminView.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AdminView.css';
 import Sidebar from '../components/Sidebar';
 import PageHeader from '../components/PageHeader';
@@ -23,9 +23,7 @@ import GetSingleMessage from '../message/GetSingleMessage';
 import AddGarde from '../garde/AddGarde';
 import ManageGarde from '../garde/ManageGarde';
 import GetSingleGarde from '../garde/GetSingleGarde';
-import AddTransaction from '../transaction/AddTransaction';
-import ManageTransactions from '../transaction/ManageTransactions';
-import GetSingleTransaction from '../transaction/GetSingleTransaction';
+import SmartContract from '../transaction/SmartContract';
 import SendEmail from '../Email/SendEmail';
 import GetSingleEmail from '../Email/GetSingleEmail';
 import PendingAccounts from './PendingAccounts';
@@ -36,43 +34,134 @@ const SIDEBAR_ITEMS = [
 ];
 
 const MODULES = [
-  { key: 'doctors',      icon: '👨‍⚕️', name: 'Doctors',      desc: 'Add & manage doctors' },
-  { key: 'nurses',       icon: '👩‍⚕️', name: 'Nurses',       desc: 'Add & manage nurses' },
-  { key: 'pharmacists',  icon: '💊',   name: 'Pharmacists',  desc: 'Add & manage pharmacists' },
-  { key: 'firefighters', icon: '🚒',   name: 'Firefighters', desc: 'Add & manage firefighters' },
-  { key: 'dds',          icon: '👔',   name: 'Managers',     desc: 'Add & manage managers' },
-  { key: 'guards',       icon: '🛡️',  name: 'Shifts',       desc: 'Manage staff shifts' },
-  { key: 'messages',     icon: '💬',   name: 'Messages',     desc: 'All messages' },
-  { key: 'transactions', icon: '💰',   name: 'Transactions', desc: 'Manage transactions' },
-  { key: 'emails',       icon: '📧',   name: 'Emails',       desc: 'Send & manage emails' },
-  { key: 'pending',      icon: '⏳',   name: 'Approvals',    desc: 'Approve new accounts' },
+  { key: 'doctors',       icon: '👨‍⚕️', name: 'Doctors',       desc: 'Add & manage doctors' },
+  { key: 'nurses',        icon: '👩‍⚕️', name: 'Nurses',        desc: 'Add & manage nurses' },
+  { key: 'pharmacists',   icon: '💊',   name: 'Pharmacists',   desc: 'Add & manage pharmacists' },
+  { key: 'firefighters',  icon: '🚒',   name: 'Firefighters',  desc: 'Add & manage firefighters' },
+  { key: 'dds',           icon: '👔',   name: 'Managers',      desc: 'Add & manage managers' },
+  { key: 'guards',        icon: '🛡️',  name: 'Shifts',        desc: 'Manage staff shifts' },
+  { key: 'messages',      icon: '💬',   name: 'Messages',      desc: 'All messages' },
+  { key: 'smartcontract', icon: '⛓️',  name: 'Smart Contract', desc: 'Commission ledger & shift swap payments' },
+  { key: 'emails',        icon: '📧',   name: 'Emails',        desc: 'Send & manage emails' },
+  { key: 'pending',       icon: '⏳',   name: 'Approvals',     desc: 'Approve new accounts' },
 ];
 
 export default function AdminView({ currentUser, onLogout }) {
-  const [activeModule, setActiveModule] = useState(null);
+  const [activeModule, setActiveModule]                   = useState(null);
+  const [showAddModal, setShowAddModal]                   = useState(false);
   const [selectedDoctorId, setSelectedDoctorId]           = useState(null);
   const [selectedFireFighterId, setSelectedFireFighterId] = useState(null);
   const [selectedManagerId, setSelectedManagerId]         = useState(null);
   const [selectedMessageId, setSelectedMessageId]         = useState(null);
   const [selectedGardeId, setSelectedGardeId]             = useState(null);
-  const [selectedTransactionId, setSelectedTransactionId] = useState(null);
   const [selectedEmailId, setSelectedEmailId]             = useState(null);
+
+  useEffect(() => { setShowAddModal(false); }, [activeModule]);
 
   const handleSidebarNavigate = (view) => {
     if (view === 'dashboard') setActiveModule(null);
     else setActiveModule(view);
   };
 
+  const openModal  = () => setShowAddModal(true);
+  const closeModal = () => setShowAddModal(false);
+
+  function AddModal({ title, children }) {
+    if (!showAddModal) return null;
+    return (
+      <div className="av-modal-overlay" onClick={closeModal}>
+        <div className="av-modal" onClick={e => e.stopPropagation()}>
+          <div className="av-modal-header">
+            <span className="av-modal-title">{title}</span>
+            <button className="av-modal-close" onClick={closeModal}>✕</button>
+          </div>
+          <div className="av-modal-body">{children}</div>
+        </div>
+      </div>
+    );
+  }
+
   const moduleContent = {
-    doctors: <><AddDoctor /><ManageDoctor onSelectDoctor={setSelectedDoctorId} /><GetSingleDoctor doctorId={selectedDoctorId} /></>,
-    nurses: <><AddNurse /><ManageNurse /></>,
-    pharmacists: <><AddPharmacist /><ManagePharmacist /></>,
-    firefighters: <><AddFireFighter /><ManageFireFighter onSelectFireFighter={setSelectedFireFighterId} /><GetSingleFireFighter fireFighterId={selectedFireFighterId} /></>,
-    dds: <><AddDDS /><ManageDDS onSelectDDS={setSelectedManagerId} /><GetSingleDDS ddsId={selectedManagerId} /></>,
-    messages: <><AddMessage /><ManageMessage onSelectMessage={setSelectedMessageId} /><GetSingleMessage messageId={selectedMessageId} /></>,
-    guards: <><AddGarde currentUser={currentUser} /><ManageGarde onSelectGarde={setSelectedGardeId} /><GetSingleGarde gardeId={selectedGardeId} /></>,
-    transactions: <><AddTransaction /><ManageTransactions onSelectTransaction={setSelectedTransactionId} /><GetSingleTransaction transactionId={selectedTransactionId} /></>,
-    emails: <><SendEmail onEmailSent={setSelectedEmailId} /><GetSingleEmail emailId={selectedEmailId} /></>,
+    doctors: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Doctor</button>
+        </div>
+        <ManageDoctor onSelectDoctor={setSelectedDoctorId} />
+        <GetSingleDoctor doctorId={selectedDoctorId} />
+        <AddModal title="👨‍⚕️ Add Doctor"><AddDoctor /></AddModal>
+      </>
+    ),
+    nurses: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Nurse</button>
+        </div>
+        <ManageNurse />
+        <AddModal title="👩‍⚕️ Add Nurse"><AddNurse /></AddModal>
+      </>
+    ),
+    pharmacists: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Pharmacist</button>
+        </div>
+        <ManagePharmacist />
+        <AddModal title="💊 Add Pharmacist"><AddPharmacist /></AddModal>
+      </>
+    ),
+    firefighters: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Firefighter</button>
+        </div>
+        <ManageFireFighter onSelectFireFighter={setSelectedFireFighterId} />
+        <GetSingleFireFighter fireFighterId={selectedFireFighterId} />
+        <AddModal title="🚒 Add Firefighter"><AddFireFighter /></AddModal>
+      </>
+    ),
+    dds: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Manager</button>
+        </div>
+        <ManageDDS onSelectDDS={setSelectedManagerId} />
+        <GetSingleDDS ddsId={selectedManagerId} />
+        <AddModal title="👔 Add Manager"><AddDDS /></AddModal>
+      </>
+    ),
+    guards: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ Add Shift</button>
+        </div>
+        <ManageGarde onSelectGarde={setSelectedGardeId} />
+        <GetSingleGarde gardeId={selectedGardeId} />
+        <AddModal title="🛡️ Add Shift"><AddGarde currentUser={currentUser} /></AddModal>
+      </>
+    ),
+    messages: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>➕ New Message</button>
+        </div>
+        <ManageMessage onSelectMessage={setSelectedMessageId} />
+        <GetSingleMessage messageId={selectedMessageId} />
+        <AddModal title="💬 New Message"><AddMessage /></AddModal>
+      </>
+    ),
+    smartcontract: <SmartContract />,
+    emails: (
+      <>
+        <div className="av-mod-bar">
+          <button className="av-add-btn" onClick={openModal}>📧 Compose Email</button>
+        </div>
+        <GetSingleEmail emailId={selectedEmailId} />
+        <AddModal title="📧 Compose Email">
+          <SendEmail onEmailSent={(id) => { setSelectedEmailId(id); closeModal(); }} />
+        </AddModal>
+      </>
+    ),
     pending: <PendingAccounts />,
   };
 

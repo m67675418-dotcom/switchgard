@@ -1,170 +1,167 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './DDSMessage.css';
 
-const DDSMessage = ({ currentUser, onNavigate }) => {
-  const [conversations, setConversations] = useState([]);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [newMessage, setNewMessage] = useState('');
-  const [chatMessages, setChatMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
+const API = 'http://localhost:5000/api';
+
+const ROLE_EMOJI = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
+
+const getName = (u) => u.fullName || u.nomPharmacie || u.matricule || u.userId || 'User';
+
+export default function DDSMessage({ currentUser }) {
+  const [contacts, setContacts]     = useState([]);
+  const [selected, setSelected]     = useState(null);
+  const [messages, setMessages]     = useState([]);
+  const [text, setText]             = useState('');
+  const [search, setSearch]         = useState('');
+  const [loading, setLoading]       = useState(true);
+  const [sending, setSending]       = useState(false);
+  const bottomRef                   = useRef(null);
+
+  const me = currentUser?._id || currentUser?.id;
 
   useEffect(() => {
-    fetchConversations();
+    Promise.all([
+      axios.get(`${API}/doctor/getAll`),
+      axios.get(`${API}/nurse/getAll`),
+      axios.get(`${API}/pharmacist/getAll`),
+      axios.get(`${API}/firefighter/getAll`),
+    ]).then(([d, n, p, f]) => {
+      setContacts([
+        ...d.data.map(u => ({ ...u, role: 'doctor' })),
+        ...n.data.map(u => ({ ...u, role: 'nurse' })),
+        ...p.data.map(u => ({ ...u, role: 'pharmacist' })),
+        ...f.data.map(u => ({ ...u, role: 'firefighter' })),
+      ]);
+      setLoading(false);
+    }).catch(() => setLoading(false));
   }, []);
 
   useEffect(() => {
-    if (selectedUser) {
-      fetchChatMessages();
-    }
-  }, [selectedUser]);
+    if (!selected || !me) return;
+    axios.get(`${API}/message/conversation/${me}/${selected._id}`)
+      .then(r => setMessages(r.data || []))
+      .catch(() => setMessages([]));
+  }, [selected, me]);
 
-  const fetchConversations = async () => {
-    try {
-      const [doctors, nurses, pharmacists, firefighters] = await Promise.all([
-        axios.get('http://localhost:5000/api/doctor/getAll'),
-        axios.get('http://localhost:5000/api/nurse/getAll'),
-        axios.get('http://localhost:5000/api/pharmacist/getAll'),
-        axios.get('http://localhost:5000/api/firefighter/getAll')
-      ]);
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
-      const allUsers = [
-        ...doctors.data.map(u => ({ ...u, type: 'doctor' })),
-        ...nurses.data.map(u => ({ ...u, type: 'nurse' })),
-        ...pharmacists.data.map(u => ({ ...u, type: 'pharmacist' })),
-        ...firefighters.data.map(u => ({ ...u, type: 'firefighter' }))
-      ];
-
-      setConversations(allUsers);
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchChatMessages = async () => {
-    if (!selectedUser || !currentUser) return;
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/api/message/conversation?userId1=${currentUser._id || currentUser.id}&userId2=${selectedUser._id}`
-      );
-      setChatMessages(res.data || []);
-    } catch (error) {
-      setChatMessages([]);
-    }
-  };
-
-  const handleSendMessage = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedUser) return;
-
+    if (!text.trim() || !selected || sending) return;
+    setSending(true);
     try {
-      await axios.post('http://localhost:5000/api/message/add', {
-        senderId: currentUser._id || currentUser.id,
-        receiverId: selectedUser._id,
-        content: newMessage
+      await axios.post(`${API}/message/add`, {
+        senderId:   me,
+        receiverId: selected._id,
+        content:    text.trim(),
       });
-      setNewMessage('');
-      fetchChatMessages();
-    } catch (error) {
-      alert('❌ Failed to send');
+      setText('');
+      const r = await axios.get(`${API}/message/conversation/${me}/${selected._id}`);
+      setMessages(r.data || []);
+    } catch {
+      alert('Failed to send message');
+    } finally {
+      setSending(false);
     }
   };
 
-  const getAvatar = (type) => {
-    switch (type) {
-      case 'doctor': return '👨‍⚕️';
-      case 'nurse': return '👩‍⚕️';
-      case 'pharmacist': return '💊';
-      case 'firefighter': return '🚒';
-      default: return '👤';
-    }
-  };
-
-  if (loading) return <div className="mm-loading">⏳ Loading...</div>;
+  const filtered = contacts.filter(c =>
+    !search || getName(c).toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div className="mm-message">
-      <button className="mm-back-button" onClick={() => onNavigate?.('home')}>
-        ← Back to Home
-      </button>
+    <div className="dm-shell">
+      {/* Sidebar — contact list */}
+      <div className="dm-sidebar">
+        <div className="dm-sidebar-header">
+          <h2 className="dm-sidebar-title">💬 Messages</h2>
+          <div className="dm-search">
+            <span>🔍</span>
+            <input
+              placeholder="Search staff…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+        </div>
 
-      <div className="mm-message-header">
-        <h1>💬 Messages</h1>
-        <p>Communicate with staff</p>
-      </div>
-
-      <div className="mm-message-container">
-        <div className="mm-conversations-list">
-          <h3>Conversations</h3>
-          {conversations.map((user) => (
+        <div className="dm-contact-list">
+          {loading ? (
+            [1,2,3,4,5].map(i => <div key={i} className="dm-skeleton" />)
+          ) : filtered.length === 0 ? (
+            <div className="dm-empty-list">No staff found</div>
+          ) : filtered.map(c => (
             <div
-              key={user._id}
-              className={`mm-conversation-item ${selectedUser?._id === user._id ? 'active' : ''}`}
-              onClick={() => setSelectedUser(user)}
+              key={c._id}
+              className={`dm-contact ${selected?._id === c._id ? 'dm-contact-active' : ''}`}
+              onClick={() => setSelected(c)}
             >
-              <div className="mm-user-avatar">{getAvatar(user.type)}</div>
-              <div className="mm-user-info">
-                <span className="mm-user-name">
-                  {user.fullName || user.nomPharmacie || user.matricule || 'User'}
-                </span>
-                <span className="mm-user-type">{user.type}</span>
+              <div className="dm-avatar">{ROLE_EMOJI[c.role] || '👤'}</div>
+              <div className="dm-contact-info">
+                <span className="dm-contact-name">{getName(c)}</span>
+                <span className="dm-contact-role">{c.role}</span>
               </div>
             </div>
           ))}
         </div>
+      </div>
 
-        <div className="mm-chat-area">
-          {selectedUser ? (
-            <>
-              <div className="mm-chat-header">
-                <div className="mm-chat-user-info">
-                  <div className="mm-user-avatar">{getAvatar(selectedUser.type)}</div>
-                  <div>
-                    <h4>{selectedUser.fullName || 'User'}</h4>
-                    <span className="mm-user-type">{selectedUser.type}</span>
-                  </div>
-                </div>
+      {/* Chat area */}
+      <div className="dm-chat">
+        {selected ? (
+          <>
+            <div className="dm-chat-header">
+              <div className="dm-avatar">{ROLE_EMOJI[selected.role] || '👤'}</div>
+              <div>
+                <div className="dm-chat-name">{getName(selected)}</div>
+                <div className="dm-chat-role">{selected.role}</div>
               </div>
-
-              <div className="mm-chat-messages">
-                {chatMessages.length === 0 ? (
-                  <div className="mm-empty-chat">
-                    <p>No messages yet</p>
-                  </div>
-                ) : (
-                  chatMessages.map((msg) => (
-                    <div
-                      key={msg._id}
-                      className={`message-bubble ${msg.senderId === (currentUser._id || currentUser.id) ? 'sent' : 'received'}`}
-                    >
-                      {msg.content}
-                    </div>
-                  ))
-                )}
-              </div>
-
-              <form className="mm-message-input" onSubmit={handleSendMessage}>
-                <input
-                  type="text"
-                  placeholder="Type message..."
-                  value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                />
-                <button type="submit" className="mm-send-btn">📤 Send</button>
-              </form>
-            </>
-          ) : (
-            <div className="mm-no-conversation">
-              <span>💬</span>
-              <p>Select a user</p>
             </div>
-          )}
-        </div>
+
+            <div className="dm-messages">
+              {messages.length === 0 ? (
+                <div className="dm-empty-chat">
+                  <span>💬</span>
+                  <p>No messages yet — say hello!</p>
+                </div>
+              ) : messages.map(m => {
+                const isMine = m.senderId === me;
+                return (
+                  <div key={m._id} className={`dm-bubble-row ${isMine ? 'dm-out' : 'dm-in'}`}>
+                    <div className={`dm-bubble ${isMine ? 'dm-bubble-out' : 'dm-bubble-in'}`}>
+                      {m.content}
+                      <span className="dm-bubble-time">
+                        {new Date(m.timestamp || m.createdAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+              <div ref={bottomRef} />
+            </div>
+
+            <form className="dm-input-bar" onSubmit={handleSend}>
+              <input
+                className="dm-input"
+                placeholder="Type a message…"
+                value={text}
+                onChange={e => setText(e.target.value)}
+              />
+              <button type="submit" className="dm-send-btn" disabled={sending || !text.trim()}>
+                {sending ? '⏳' : '📤'}
+              </button>
+            </form>
+          </>
+        ) : (
+          <div className="dm-no-chat">
+            <span>💬</span>
+            <p>Select a staff member to start a conversation</p>
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default DDSMessage;
+}

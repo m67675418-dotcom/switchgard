@@ -1,20 +1,20 @@
 const express = require('express');
 const router = express.Router();
-const DDS = require('../../models/DDS');
+const Manager = require('../../models/Manager');
 
 router.post('/', async (req, res) => {
   try {
     const { email, password, fullName } = req.body;
-    
-    const existingDDS = await DDS.findOne({ email });
-    if (existingDDS) return res.status(400).json({ message: 'الـ DDS موجود بالفعل' });
 
-    const newDDS = new DDS({ email, password, fullName });
-    await newDDS.save();
+    const existing = await Manager.findOne({ email });
+    if (existing) return res.status(400).json({ message: 'هذا المدير موجود بالفعل' });
 
-    res.status(201).json({ message: 'تم إنشاء DDS بنجاح', dds: newDDS });
+    const newManager = new Manager({ email, password, fullName });
+    await newManager.save();
+
+    res.status(201).json({ message: 'تم إنشاء المدير بنجاح', manager: newManager });
   } catch (error) {
-    res.status(500).json({ message: 'خطأ في إنشاء DDS', error: error.message });
+    res.status(500).json({ message: 'خطأ في إنشاء المدير', error: error.message });
   }
 });
 

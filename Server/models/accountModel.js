@@ -17,12 +17,12 @@ const accountSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'doctor', 'nurse', 'pharmacist', 'firefighter', 'dds', 'user'], // ✅ Added 'dds'
+    enum: ['admin', 'doctor', 'nurse', 'pharmacist', 'firefighter', 'manager', 'user'],
     default: 'user'
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   }
 }, { 
   timestamps: true 

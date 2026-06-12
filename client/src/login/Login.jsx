@@ -12,7 +12,7 @@ const ROLE_API = {
   nurse:       'nurse',
   pharmacist:  'pharmacist',
   firefighter: 'firefighter',
-  dds:         'dds', // ✅ NEW
+  manager:     'manager',
 };
 
 // Extract the display name from any user object
@@ -30,7 +30,7 @@ const Login = ({ onLoginSuccess }) => {
     { id: 'nurse',       label: 'Nurse',       emoji: '👩‍⚕️' },
     { id: 'pharmacist',  label: 'Pharmacist',  emoji: '💊'  },
     { id: 'firefighter', label: 'Firefighter', emoji: '🚒'  },
-    { id: 'dds',         label: 'DDS',         emoji: '👔'  }, // ✅ NEW
+    { id: 'manager',     label: 'Manager',     emoji: '👔'  },
     { id: 'admin',       label: 'Admin',       emoji: '🛡️'  },
   ];
 
@@ -71,7 +71,7 @@ const Login = ({ onLoginSuccess }) => {
                 nomPharmacie:  match.nomPharmacie  || userData.nomPharmacie,
                 specialty:     match.specialty     || userData.specialty,
                 location:      match.location      || userData.location,
-                position:      match.position      || userData.position, // ✅ DDS
+                position:      match.position      || userData.position,
                 profileId:     match._id,
               };
             }
@@ -95,7 +95,9 @@ const Login = ({ onLoginSuccess }) => {
     } catch (err) {
       const status  = err?.response?.status;
       const message = err?.response?.data?.message || '';
-      if (status === 403) {
+      if (status === 403 && message.includes('pending')) {
+        navigate('/pending-approval');
+      } else if (status === 403) {
         const match = message.match(/'([^']+)'/);
         setError(`❌ Wrong role! This account is registered as "${match ? match[1] : '?'}"`);
       } else if (status === 401) {

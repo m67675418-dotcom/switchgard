@@ -7,21 +7,28 @@ const API_BASE = 'http://localhost:5000/api';
 
 const AddGarde = ({ currentUser }) => {
     const ownerDefault = currentUser?.fullName || currentUser?.userId || currentUser?.matricule || currentUser?.email || '';
+    const placeDefault = currentUser?.hospital || currentUser?.location || currentUser?.nomPharmacie || '';
+    const serviceDefault = currentUser?.specialty || currentUser?.service || '';
 
     const [formData, setFormData] = useState({
-        id: '',
         owner: ownerDefault,
         dateGarde: '',
-        status: 'disponible'
+        time: '',
+        place: placeDefault,
+        service: serviceDefault,
+        status: 'Active',
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
 
     useEffect(() => {
-        if (ownerDefault) {
-            setFormData(prev => ({ ...prev, owner: ownerDefault }));
-        }
-    }, [ownerDefault]);
+        setFormData(prev => ({
+            ...prev,
+            owner: ownerDefault,
+            place: placeDefault,
+            service: serviceDefault,
+        }));
+    }, [ownerDefault, placeDefault, serviceDefault]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -33,30 +40,30 @@ const AddGarde = ({ currentUser }) => {
         setLoading(true);
         setStatus({ type: '', message: '' });
 
-        const { owner, dateGarde } = formData;
-
-        if (!owner || !dateGarde) {
-            setStatus({ type: 'error', message: '⚠️ Please fill in all required fields' });
+        if (!formData.owner || !formData.dateGarde) {
+            setStatus({ type: 'error', message: '⚠️ Owner and date are required' });
             setLoading(false);
             return;
         }
 
         try {
-            await axios.post(`${API_BASE}/garde/add`, formData);
+            const ownerId = currentUser?._id || currentUser?.id || currentUser?.userId;
+            await axios.post(`${API_BASE}/garde/add`, { ...formData, ownerId: ownerId || 'admin' });
             setStatus({ type: 'success', message: '✅ Shift added successfully!' });
-            setFormData({ id: '', owner: ownerDefault, dateGarde: '', status: 'disponible' });
+            setFormData({
+                owner: ownerDefault,
+                dateGarde: '',
+                time: '',
+                place: placeDefault,
+                service: serviceDefault,
+                status: 'Active',
+            });
         } catch (error) {
-            setStatus({ type: 'error', message: '❌ Failed to add shift: ' + (error.response?.data?.message || error.message) });
+            setStatus({ type: 'error', message: '❌ Failed: ' + (error.response?.data?.message || error.message) });
         } finally {
             setLoading(false);
         }
     };
-
-    const statusOptions = [
-        { value: 'disponible', label: '🟢 Available' },
-        { value: 'occupied',   label: '🔴 Occupied' },
-        { value: 'completed',  label: '✅ Completed' }
-    ];
 
     return (
         <div className="login-page">
@@ -67,14 +74,6 @@ const AddGarde = ({ currentUser }) => {
                 {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <input
-                        type="text"
-                        name="id"
-                        placeholder="🆔 Shift ID (Optional)"
-                        value={formData.id}
-                        onChange={handleChange}
-                        className="form-field"
-                    />
                     <input
                         type="text"
                         name="owner"
@@ -92,9 +91,33 @@ const AddGarde = ({ currentUser }) => {
                         required
                         className="form-field"
                     />
-
-                    <select name="status" value={formData.status} onChange={handleChange} required className="form-field">
-                        {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+                    <input
+                        type="time"
+                        name="time"
+                        value={formData.time}
+                        onChange={handleChange}
+                        className="form-field"
+                    />
+                    <input
+                        type="text"
+                        name="place"
+                        placeholder="📍 Place / Hospital"
+                        value={formData.place}
+                        onChange={handleChange}
+                        className="form-field"
+                    />
+                    <input
+                        type="text"
+                        name="service"
+                        placeholder="🩺 Service / Specialty"
+                        value={formData.service}
+                        onChange={handleChange}
+                        className="form-field"
+                    />
+                    <select name="status" value={formData.status} onChange={handleChange} className="form-field">
+                        <option value="Active">🟢 Active</option>
+                        <option value="Inactive">🔴 Inactive</option>
+                        <option value="Completed">✅ Completed</option>
                     </select>
 
                     <button type="submit" className="main-btn form-btn" disabled={loading}>

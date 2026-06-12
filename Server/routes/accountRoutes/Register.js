@@ -1,4 +1,3 @@
-// Register.js - ✅ UPDATED: Added DDS support
 const express     = require('express');
 const router      = express.Router();
 const Account     = require('../../models/accountModel');
@@ -6,7 +5,7 @@ const Doctor      = require('../../models/DoctorModel');
 const Nurse       = require('../../models/nurseModel');
 const Pharmacist  = require('../../models/pharmacistModel');
 const FireFighter = require('../../models/FireFighters');
-const DDS         = require('../../models/DDS'); // ✅ NEW
+const Manager     = require('../../models/Manager');
 
 router.post('/', async (req, res) => {
   try {
@@ -16,12 +15,17 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ success: false, message: '⚠️ يرجى ملء جميع الحقول' });
     }
 
+    if (role.toLowerCase() === 'manager') {
+      return res.status(403).json({ success: false, message: '⚠️ Manager accounts can only be created by an admin.' });
+    }
+
     const existingAccount = await Account.findOne({ email: email.toLowerCase() });
     if (existingAccount) {
       return res.status(409).json({ success: false, message: '⚠️ هذا الإيميل مستخدم بالفعل' });
     }
 
-    const newAccount = new Account({ email: email.toLowerCase(), password, role });
+    // isActive: false — pending admin/manager approval
+    const newAccount = new Account({ email: email.toLowerCase(), password, role, isActive: false });
     await newAccount.save();
 
     try {
@@ -85,8 +89,8 @@ router.post('/', async (req, res) => {
           });
           break;
 
-        case 'dds': // ✅ NEW - DDS Support
-          newRecord = new DDS({
+        case 'manager':
+          newRecord = new Manager({
             userId:   newAccount._id,
             email:    email.toLowerCase(),
             fullName: otherData.fullName,
@@ -106,9 +110,8 @@ router.post('/', async (req, res) => {
       if (newRecord) await newRecord.save();
 
       res.status(201).json({
-        success: true,
-        message: '✅ تم إنشاء الحساب بنجاح!',
-        user: { id: newAccount._id, email: newAccount.email, role: newAccount.role }
+        pending: true,
+        message: '✅ Account created! Waiting for admin/manager approval before you can log in.'
       });
 
     } catch (modelError) {

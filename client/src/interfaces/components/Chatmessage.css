@@ -3,7 +3,7 @@
 
 .cm-page {
   display: flex; flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background: #f0f2f5;
   font-family: 'Segoe UI', system-ui, sans-serif;
   overflow: hidden;
@@ -23,7 +23,7 @@
 /* ══ INBOX ══ */
 .cm-inbox {
   display: flex; flex-direction: column;
-  height: 100vh;
+  height: 100%;
   background: #fff;
   position: relative;
 }
@@ -54,7 +54,7 @@
 .cm-tab.active { color: var(--accent, #2563eb); border-bottom-color: var(--accent, #2563eb); }
 
 .cm-conv-list {
-  flex: 1; overflow-y: auto; padding-bottom: 70px;
+  flex: 1; overflow-y: auto; padding-bottom: 8px;
 }
 .cm-conv-list::-webkit-scrollbar { display: none; }
 
@@ -108,27 +108,11 @@
 }
 .cm-fab:hover { transform: scale(1.08); }
 
-/* ── BOTTOM NAV ── */
-.cm-bottom-nav {
-  display: flex; justify-content: center; gap: 4px;
-  padding: 8px 16px 10px;
-  background: #fff; border-top: 1px solid #e2e8f0;
-  position: fixed; bottom: 0; left: 0; width: 100%; z-index: 200;
-}
-.cm-nav-btn {
-  background: none; border: none;
-  padding: 6px 24px; border-radius: 12px;
-  cursor: pointer; transition: all 0.2s;
-  color: #94a3b8; display: flex; flex-direction: column;
-  align-items: center; gap: 3px; font-size: 11px; font-weight: 600;
-}
-.cm-nav-btn span:first-child { font-size: 22px; }
-.cm-nav-btn:hover { background: #f8fafc; color: var(--accent, #2563eb); }
-.cm-nav-active { background: var(--accent-light, #eff6ff) !important; color: var(--accent, #2563eb) !important; }
+/* bottom nav removed — sidebar handles navigation */
 
 /* ══ CHAT WINDOW ══ */
 .cm-window {
-  display: flex; flex-direction: column; height: 100vh;
+  display: flex; flex-direction: column; height: 100%;
   background: #f0f2f5; position: relative;
 }
 .cm-window::before {

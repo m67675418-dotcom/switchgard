@@ -5,9 +5,9 @@ import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
-const ManageGarde = ({ onSelectGarde }) => {
-    const [gardes, setGardes] = useState([]);
-    const [selectedGarde, setSelectedGarde] = useState(null);
+const ManageShift = ({ onSelectShift }) => {
+    const [shifts, setShifts] = useState([]);
+    const [selectedShift, setSelectedShift] = useState(null);
     const [formData, setFormData] = useState({
         owner: '',
         dateGarde: '',
@@ -41,51 +41,51 @@ const ManageGarde = ({ onSelectGarde }) => {
     }, []);
 
     const handleCancel = useCallback(() => {
-        setSelectedGarde(null);
+        setSelectedShift(null);
         setFormData({ owner: '', dateGarde: '', status: '' });
         setSearchId('');
     }, []);
 
-    const fetchGardes = useCallback(async () => {
+    const fetchShifts = useCallback(async () => {
         try {
             setLoading(true);
             const res = await axios.get(`${API_BASE}/garde/getAll`);
-            setGardes(res.data || []);
+            setShifts(res.data || []);
             setLoading(false);
         } catch (err) {
-            showStatus('error', 'Failed to load gardes');
+            showStatus('error', 'Failed to load shifts');
             setLoading(false);
         }
     }, [showStatus]);
 
     useEffect(() => {
-        fetchGardes();
-    }, [fetchGardes]);
+        fetchShifts();
+    }, [fetchShifts]);
 
-    const handleRowClick = useCallback((garde) => {
-        const id = garde._id;
+    const handleRowClick = useCallback((shift) => {
+        const id = shift._id;
         setSearchId(id);
-        setSelectedGarde(garde);
+        setSelectedShift(shift);
         setFormData({
-            owner: garde.owner || '',
-            dateGarde: garde.dateGarde ? garde.dateGarde.split('T')[0] : '',
-            status: garde.status || ''
+            owner: shift.owner || '',
+            dateGarde: shift.dateGarde ? shift.dateGarde.split('T')[0] : '',
+            status: shift.status || ''
         });
     }, []);
 
-    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleGarde
-    const handleViewDetails = useCallback((garde) => {
-        const id = garde._id;
-        console.log('👁️ Viewing garde _id:', id);
-        if (onSelectGarde) {
-            onSelectGarde(id);
+    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleShift
+    const handleViewDetails = useCallback((shift) => {
+        const id = shift._id;
+        console.log('👁️ Viewing shift _id:', id);
+        if (onSelectShift) {
+            onSelectShift(id);
         }
-    }, [onSelectGarde]);
+    }, [onSelectShift]);
 
     const handleSearch = useCallback(async (e) => {
         e.preventDefault();
         if (!searchId.trim()) {
-            showStatus('error', 'Please enter a Garde ID');
+            showStatus('error', 'Please enter a Shift ID');
             return;
         }
         setLoading(true);
@@ -94,10 +94,10 @@ const ManageGarde = ({ onSelectGarde }) => {
             const found = res.data.find(g => g._id === searchId.trim());
             if (found) {
                 handleRowClick(found);
-                showStatus('success', 'Garde found!');
+                showStatus('success', 'Shift found!');
             } else {
-                setSelectedGarde(null);
-                showStatus('error', 'Garde not found');
+                setSelectedShift(null);
+                showStatus('error', 'Shift not found');
             }
         } catch (err) {
             showStatus('error', 'Search error: ' + err.message);
@@ -111,43 +111,43 @@ const ManageGarde = ({ onSelectGarde }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
     }, []);
 
-    const handleDelete = useCallback((garde) => {
-        const id = garde._id;
+    const handleDelete = useCallback((shift) => {
+        const id = shift._id;
         showModal({
             type: 'confirmDelete',
             title: '🗑️ Confirm Delete',
-            message: 'This action cannot be undone. Delete this garde?',
+            message: 'This action cannot be undone. Delete this shift?',
             details: {
-                'Garde ID': id,
-                'Owner': garde.owner || 'N/A',
-                'Date': garde.dateGarde || 'N/A',
-                'Status': garde.status || 'N/A'
+                'Shift ID': id,
+                'Owner': shift.owner || 'N/A',
+                'Date': shift.dateGarde || 'N/A',
+                'Status': shift.status || 'N/A'
             },
             onConfirm: async () => {
                 try {
                     await axios.delete(`${API_BASE}/garde/${id}`);
-                    showStatus('success', `✅ Garde deleted!`);
-                    if (selectedGarde && selectedGarde._id === id) handleCancel();
-                    fetchGardes();
+                    showStatus('success', `✅ Shift deleted!`);
+                    if (selectedShift && selectedShift._id === id) handleCancel();
+                    fetchShifts();
                 } catch (err) {
                     showStatus('error', '❌ Delete failed: ' + err.message);
                 }
             }
         });
-    }, [selectedGarde, showModal, showStatus, fetchGardes, handleCancel]);
+    }, [selectedShift, showModal, showStatus, fetchShifts, handleCancel]);
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        if (!selectedGarde) {
-            showStatus('error', 'Please select a garde first');
+        if (!selectedShift) {
+            showStatus('error', 'Please select a shift first');
             return;
         }
         showModal({
             type: 'confirmUpdate',
             title: '✏️ Confirm Update',
-            message: 'Update this garde information?',
+            message: 'Update this shift information?',
             details: {
-                'Garde ID': selectedGarde._id,
+                'Shift ID': selectedShift._id,
                 'Owner': formData.owner,
                 'Date': formData.dateGarde,
                 'Status': formData.status
@@ -155,10 +155,10 @@ const ManageGarde = ({ onSelectGarde }) => {
             onConfirm: async () => {
                 setLoading(true);
                 try {
-                    const id = selectedGarde._id;
+                    const id = selectedShift._id;
                     await axios.put(`${API_BASE}/garde/${id}`, formData);
-                    showStatus('success', `✅ Garde updated!`);
-                    fetchGardes();
+                    showStatus('success', `✅ Shift updated!`);
+                    fetchShifts();
                     handleCancel();
                 } catch (err) {
                     showStatus('error', 'Update failed: ' + err.message);
@@ -167,9 +167,9 @@ const ManageGarde = ({ onSelectGarde }) => {
                 }
             }
         });
-    }, [selectedGarde, formData, showModal, showStatus, fetchGardes, handleCancel]);
+    }, [selectedShift, formData, showModal, showStatus, fetchShifts, handleCancel]);
 
-    const filteredGardes = gardes.filter(g => {
+    const filteredShifts = shifts.filter(g => {
         const q = searchQuery.toLowerCase();
         return (g.owner || '').toLowerCase().includes(q) ||
                (g.status || '').toLowerCase().includes(q) ||
@@ -205,7 +205,7 @@ const ManageGarde = ({ onSelectGarde }) => {
     return (
         <div className="manage-page">
             <div className="manage-card form-card">
-                <div className="logo-text">📅 Manage<span>Garde</span></div>
+                <div className="logo-text">📅 Manage<span>Shifts</span></div>
                 <p className="tagline">Shift & Schedule Management</p>
 
                 {status.message && (
@@ -216,7 +216,7 @@ const ManageGarde = ({ onSelectGarde }) => {
                     <input
                         type="text"
                         className="search-input"
-                        placeholder="🔍 Search by Garde ID..."
+                        placeholder="🔍 Search by Shift ID..."
                         value={searchId}
                         onChange={(e) => setSearchId(e.target.value)}
                     />
@@ -239,14 +239,14 @@ const ManageGarde = ({ onSelectGarde }) => {
                 </div>
 
                 <div className="table-wrapper">
-                    {loading && gardes.length === 0 ? (
-                        <div className="loading">⏳ Loading gardes...</div>
-                    ) : filteredGardes.length === 0 ? (
+                    {loading && shifts.length === 0 ? (
+                        <div className="loading">⏳ Loading shifts...</div>
+                    ) : filteredShifts.length === 0 ? (
                         <div className="no-data">
-                            {searchQuery ? 'No gardes match your search' : '📭 No gardes found'}
+                            {searchQuery ? 'No shifts match your search' : '📭 No shifts found'}
                         </div>
                     ) : (
-                        <table className="gardes-table form-table">
+                        <table className="shifts-table form-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -257,20 +257,20 @@ const ManageGarde = ({ onSelectGarde }) => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {filteredGardes.map((garde) => {
-                                    const gardeId = garde._id;
-                                    const isSelected = selectedGarde && selectedGarde._id === gardeId;
-                                    const badge = getStatusBadge(garde.status);
+                                {filteredShifts.map((shift) => {
+                                    const shiftId = shift._id;
+                                    const isSelected = selectedShift && selectedShift._id === shiftId;
+                                    const badge = getStatusBadge(shift.status);
                                     
                                     return (
                                         <tr 
-                                            key={gardeId}
+                                            key={shiftId}
                                             className={isSelected ? 'selected' : ''}
-                                            onClick={() => handleRowClick(garde)}
+                                            onClick={() => handleRowClick(shift)}
                                         >
-                                            <td><small className="text-muted">{gardeId?.slice(-6)}</small></td>
-                                            <td><strong>{garde.owner || 'N/A'}</strong></td>
-                                            <td>{formatDate(garde.dateGarde)}</td>
+                                            <td><small className="text-muted">{shiftId?.slice(-6)}</small></td>
+                                            <td><strong>{shift.owner || 'N/A'}</strong></td>
+                                            <td>{formatDate(shift.dateGarde)}</td>
                                             <td>
                                                 <span className="status-badge" style={{ background: badge.bg, color: badge.color }}>
                                                     {badge.text}
@@ -281,14 +281,14 @@ const ManageGarde = ({ onSelectGarde }) => {
                                                     className="action-btn view" 
                                                     onClick={(e) => {
                                                         e.stopPropagation();
-                                                        handleViewDetails(garde);
+                                                        handleViewDetails(shift);
                                                     }}
                                                     title="View"
                                                 >
                                                     👁️
                                                 </button>
-                                                <button className="action-btn edit" onClick={() => handleRowClick(garde)}>✏️</button>
-                                                <button className="action-btn delete" onClick={() => handleDelete(garde)}>🗑️</button>
+                                                <button className="action-btn edit" onClick={() => handleRowClick(shift)}>✏️</button>
+                                                <button className="action-btn delete" onClick={() => handleDelete(shift)}>🗑️</button>
                                             </td>
                                         </tr>
                                     );
@@ -298,11 +298,11 @@ const ManageGarde = ({ onSelectGarde }) => {
                     )}
                 </div>
 
-                {selectedGarde && (
+                {selectedShift && (
                     <>
                         <div className="divider"><span>✏️ Edit Mode</span></div>
                         <form onSubmit={handleSubmit} className="edit-form">
-                            <h3>📋 Edit Garde Information</h3>
+                            <h3>📋 Edit Shift Information</h3>
                             
                             <input 
                                 type="text" 
@@ -344,10 +344,10 @@ const ManageGarde = ({ onSelectGarde }) => {
 
                 <div className="warning-box">
                     <p>⚠️ Verify information accuracy before updating</p>
-                    <p style={{fontSize:'12px',color:'#64748b'}}>📊 Showing {filteredGardes.length} of {gardes.length} gardes</p>
+                    <p style={{fontSize:'12px',color:'#64748b'}}>📊 Showing {filteredShifts.length} of {shifts.length} shifts</p>
                 </div>
 
-                <button className="refresh-btn" onClick={fetchGardes}>🔄 Refresh List</button>
+                <button className="refresh-btn" onClick={fetchShifts}>🔄 Refresh List</button>
             </div>
 
             {modal.show && (
@@ -378,4 +378,4 @@ const ManageGarde = ({ onSelectGarde }) => {
     );
 };
 
-export default ManageGarde;
+export default ManageShift;

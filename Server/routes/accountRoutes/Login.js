@@ -6,7 +6,7 @@ const Doctor     = require('../../models/DoctorModel');
 const Nurse      = require('../../models/nurseModel');
 const Pharmacist = require('../../models/pharmacistModel');
 const FireFighter = require('../../models/FireFighters');
-const DDS        = require('../../models/DDS'); // ✅ NEW
+const Manager    = require('../../models/Manager');
 const Account    = require('../../models/accountModel');
 
 router.post('/', async (req, res) => {
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
             });
         }
 
-        // ✅ باقي الأدوار (بما فيها DDS)
+        // باقي الأدوار
         let Model;
         let emailField = 'email';
 
@@ -94,8 +94,8 @@ router.post('/', async (req, res) => {
                 Model = FireFighter;
                 emailField = 'gmail';
                 break;
-            case 'dds': // ✅ NEW - DDS Support
-                Model = DDS;
+            case 'manager':
+                Model = Manager;
                 emailField = 'email';
                 break;
             default:
@@ -119,6 +119,16 @@ router.post('/', async (req, res) => {
 
         console.log(`✅ [5] ${role} found! ID: ${user._id}`);
 
+        // Check admin approval
+        const account = await Account.findOne({ email: email.toLowerCase() });
+        if (!account || !account.isActive) {
+            console.log(`⏳ Account pending approval: ${email}`);
+            return res.status(403).json({
+                success: false,
+                message: '⏳ Your account is pending approval. Please wait for a manager or admin to approve it.'
+            });
+        }
+
         const isMatch = await user.comparePassword(password);
         console.log('🔑 [6] Password match:', isMatch);
 
@@ -130,8 +140,11 @@ router.post('/', async (req, res) => {
             });
         }
 
+        const tokenPayload = { id: user._id, role: role.toLowerCase() };
+        if (role.toLowerCase() === 'manager') tokenPayload.managerType = user.managerType;
+
         const token = jwt.sign(
-            { id: user._id, role: role.toLowerCase() },
+            tokenPayload,
             process.env.JWT_SECRET || 'your_secret_key',
             { expiresIn: '7d' }
         );
@@ -150,7 +163,7 @@ router.post('/', async (req, res) => {
                 ...(role === 'nurse'       && { userId: user.userId, diplome: user.diplome, service: user.service, equipe: user.equipe }),
                 ...(role === 'pharmacist'  && { nomPharmacie: user.nomPharmacie }),
                 ...(role === 'firefighter' && { matricule: user.matricule, grade: user.grade }),
-                ...(role === 'dds'         && { fullName: user.fullName, position: user.position }) // ✅ NEW
+                ...(role === 'manager'      && { fullName: user.fullName, position: user.position, managerType: user.managerType })
             }
         });
 

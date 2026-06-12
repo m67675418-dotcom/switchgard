@@ -4,20 +4,22 @@ const Garde = require('../../models/Garde');
 
 router.post('/', async (req, res) => {
   try {
-    const { owner, dateGarde, status, ownerId, role } = req.body;
+    const { owner, dateGarde, status, ownerId, role, time, place, service } = req.body;
 
-    // ✅ تأكد من وجود ownerId
     if (!ownerId) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         message: '❌ ownerId is required',
-        received: req.body 
+        received: req.body
       });
     }
 
     const newGarde = new Garde({
       owner: owner || 'Unknown',
-      ownerId: ownerId,  // ✅ مهم جداً
+      ownerId,
       dateGarde,
+      time:    time    || '',
+      place:   place   || '',
+      service: service || '',
       status: status || 'Active',
       role: role || 'doctor',
     });
