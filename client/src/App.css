@@ -98,6 +98,3 @@ body {
   padding-bottom: 0;
 }
 
-@media (max-width: 767px) {
-  .role-body { padding-bottom: 72px; }
-}

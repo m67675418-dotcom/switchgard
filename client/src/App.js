@@ -9,7 +9,6 @@ import PendingApproval from "./auth/PendingApproval";
 import AdminView from "./Admin/AdminView";
 
 import Sidebar from "./components/Sidebar";
-import BottomNav from "./components/BottomNav";
 import PageHeader from "./components/PageHeader";
 
 import DoctorHome from "./interfaces/Doctor/DoctorHome";
@@ -37,17 +36,16 @@ import DDSGarde from "./interfaces/DDS/DDSGarde";
 import DDSMessage from "./interfaces/DDS/DDSMessage";
 import DDSProfile from "./interfaces/DDS/DDSProfile";
 
-import MapPage from "./interfaces/components/MapPage";
 import DemandesPage from "./interfaces/components/DemandesPage";
 import DirectorApprovalPage from "./interfaces/components/DirectorApprovalPage";
 
 // ── NAV CONFIG PER ROLE ──────────────────────────────────────────
 const NAV = {
-  doctor:     [{ view:'home',icon:'🏠',label:'Home' },{ view:'message',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡',label:'Shifts' },{ view:'map',icon:'🗺️',label:'Map' }],
-  nurse:      [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡',label:'Shifts' },{ view:'map',icon:'🗺️',label:'Map' }],
-  pharmacist: [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡',label:'Shifts' },{ view:'map',icon:'🗺️',label:'Map' }],
-  firefighter:[{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡',label:'Shifts' },{ view:'map',icon:'🗺️',label:'Map' }],
-  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡',label:'Shifts' },{ view:'map',icon:'🗺️',label:'Map' }],
+  doctor:     [{ view:'home',icon:'🏠',label:'Home' },{ view:'message',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  nurse:      [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  pharmacist: [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  firefighter:[{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
 };
 
 // ── ROLE SHELL (shared wrapper for all field roles) ──────────────
@@ -65,7 +63,6 @@ function RoleShell({ role, roleClass, currentUser, onLogout, onUpdateUser, child
         <div className="role-body">
           {children}
         </div>
-        <BottomNav items={navItems} activeView={view} onNavigate={onNavigate} />
       </div>
     </div>
   );
@@ -82,7 +79,6 @@ function DoctorView({ currentUser, onLogout, onUpdateUser }) {
       {view === "home"     && <DoctorHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <DoctorGard onNavigate={nav} currentUser={currentUser} />}
       {view === "message"  && <DoctorMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "map"      && <MapPage onNavigate={nav} currentUser={currentUser} role="doctor" />}
       {view === "profile"  && <DoctorProfile doctorId={profileId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
@@ -100,7 +96,6 @@ function NurseView({ currentUser, onLogout, onUpdateUser }) {
       {view === "home"     && <NurseHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <NurseGarde onNavigate={nav} currentUser={currentUser} />}
       {view === "messages" && <NurseMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "map"      && <MapPage onNavigate={nav} currentUser={currentUser} role="nurse" />}
       {view === "profile"  && <NurseProfile nurseId={nurseId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="nurse" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="nurse" onNavigate={nav} />}
@@ -117,7 +112,6 @@ function PharmacistView({ currentUser, onLogout, onUpdateUser }) {
       {view === "home"     && <PharmacistHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <PharmacistGarde onNavigate={nav} currentUser={currentUser} />}
       {view === "messages" && <PharmacistMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "map"      && <MapPage onNavigate={nav} currentUser={currentUser} role="pharmacist" />}
       {view === "profile"  && <PharmacistProfile pharmacistId={currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="pharmacist" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="pharmacist" onNavigate={nav} />}
@@ -134,7 +128,6 @@ function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
       {view === "home"     && <FirefighterHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <FirefighterGarde onNavigate={nav} currentUser={currentUser} />}
       {view === "messages" && <FirefighterMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "map"      && <MapPage onNavigate={nav} currentUser={currentUser} role="firefighter" />}
       {view === "profile"  && <FireFighterProfile firefighterId={currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="firefighter" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="firefighter" onNavigate={nav} />}
@@ -152,7 +145,6 @@ function DDSView({ currentUser, onLogout, onUpdateUser }) {
       {view === "home"     && <DDSHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <DDSGarde onNavigate={nav} currentUser={currentUser} />}
       {view === "messages" && <DDSMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "map"      && <MapPage onNavigate={nav} currentUser={currentUser} role="manager" />}
       {view === "profile"  && <DDSProfile ddsId={ddsId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}

@@ -28,13 +28,11 @@ import ManageTransactions from '../transaction/ManageTransactions';
 import GetSingleTransaction from '../transaction/GetSingleTransaction';
 import SendEmail from '../Email/SendEmail';
 import GetSingleEmail from '../Email/GetSingleEmail';
-import MapPage from '../interfaces/components/MapPage';
 import PendingAccounts from './PendingAccounts';
 
 const SIDEBAR_ITEMS = [
-  { view: 'dashboard', icon: '🛡️' },
-  { view: 'map',       icon: '🗺️' },
-  { view: 'pending',   icon: '⏳' },
+  { view: 'dashboard', icon: '🛡️', label: 'Dashboard' },
+  { view: 'pending',   icon: '⏳',  label: 'Approvals' },
 ];
 
 const MODULES = [
@@ -43,11 +41,10 @@ const MODULES = [
   { key: 'pharmacists',  icon: '💊',   name: 'Pharmacists',  desc: 'Add & manage pharmacists' },
   { key: 'firefighters', icon: '🚒',   name: 'Firefighters', desc: 'Add & manage firefighters' },
   { key: 'dds',          icon: '👔',   name: 'Managers',     desc: 'Add & manage managers' },
-  { key: 'guards',       icon: '🛡️',  name: 'Guards',       desc: 'Manage shift guards' },
+  { key: 'guards',       icon: '🛡️',  name: 'Shifts',       desc: 'Manage staff shifts' },
   { key: 'messages',     icon: '💬',   name: 'Messages',     desc: 'All messages' },
   { key: 'transactions', icon: '💰',   name: 'Transactions', desc: 'Manage transactions' },
   { key: 'emails',       icon: '📧',   name: 'Emails',       desc: 'Send & manage emails' },
-  { key: 'map',          icon: '🗺️',  name: 'Map',          desc: 'View all locations' },
   { key: 'pending',      icon: '⏳',   name: 'Approvals',    desc: 'Approve new accounts' },
 ];
 
@@ -73,10 +70,9 @@ export default function AdminView({ currentUser, onLogout }) {
     firefighters: <><AddFireFighter /><ManageFireFighter onSelectFireFighter={setSelectedFireFighterId} /><GetSingleFireFighter fireFighterId={selectedFireFighterId} /></>,
     dds: <><AddDDS /><ManageDDS onSelectDDS={setSelectedManagerId} /><GetSingleDDS ddsId={selectedManagerId} /></>,
     messages: <><AddMessage /><ManageMessage onSelectMessage={setSelectedMessageId} /><GetSingleMessage messageId={selectedMessageId} /></>,
-    guards: <><AddGarde /><ManageGarde onSelectGarde={setSelectedGardeId} /><GetSingleGarde gardeId={selectedGardeId} /></>,
+    guards: <><AddGarde currentUser={currentUser} /><ManageGarde onSelectGarde={setSelectedGardeId} /><GetSingleGarde gardeId={selectedGardeId} /></>,
     transactions: <><AddTransaction /><ManageTransactions onSelectTransaction={setSelectedTransactionId} /><GetSingleTransaction transactionId={selectedTransactionId} /></>,
     emails: <><SendEmail onEmailSent={setSelectedEmailId} /><GetSingleEmail emailId={selectedEmailId} /></>,
-    map: <MapPage onNavigate={() => setActiveModule(null)} currentUser={currentUser} role="doctor" />,
     pending: <PendingAccounts />,
   };
 
