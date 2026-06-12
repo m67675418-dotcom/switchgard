@@ -1,0 +1,132 @@
+/* client/src/Admin/AdminView.css */
+.av-wrapper {
+  display: flex;
+  min-height: 100vh;
+  background: var(--color-surface);
+  font-family: var(--font-base);
+}
+
+.av-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.av-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--space-6) var(--space-8);
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.av-page-title {
+  font-size: 13px;
+  color: var(--color-muted);
+  margin-bottom: var(--space-6);
+}
+
+.av-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.av-stat-card {
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  border-top: 3px solid var(--color-accent);
+}
+
+.av-stat-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-muted);
+  margin-bottom: var(--space-1);
+}
+
+.av-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--color-text);
+}
+
+.av-modules-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+}
+
+.av-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-4);
+}
+
+.av-module-card {
+  background: var(--color-card);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-6) var(--space-4);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.av-module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-accent);
+}
+
+.av-module-icon { font-size: 36px; margin-bottom: var(--space-3); }
+
+.av-module-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-1);
+}
+
+.av-module-desc {
+  font-size: 12px;
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.av-module-badge {
+  display: inline-block;
+  margin-top: var(--space-2);
+  background: var(--color-danger);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.av-module-content {
+  background: var(--color-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-8);
+  box-shadow: var(--shadow-md);
+}
+
+.av-module-content-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0 0 var(--space-6);
+}
+
+@media (max-width: 900px) {
+  .av-content { padding: var(--space-4); }
+  .av-grid { grid-template-columns: repeat(2, 1fr); }
+  .av-stats { grid-template-columns: repeat(2, 1fr); }
+}
