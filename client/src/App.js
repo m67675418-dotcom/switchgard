@@ -38,6 +38,7 @@ import DDSProfile from "./interfaces/DDS/DDSProfile";
 
 import DemandesPage from "./interfaces/components/DemandesPage";
 import DirectorApprovalPage from "./interfaces/components/DirectorApprovalPage";
+import LocationSetup from "./interfaces/user/LocationSetup";
 
 // ── NAV CONFIG PER ROLE ──────────────────────────────────────────
 const NAV = {
@@ -191,6 +192,15 @@ function App() {
 
   const getDashboard = () => {
     if (!currentUser) return <Navigate to="/" />;
+    const LOCATION_ROLES = ['doctor', 'nurse', 'pharmacist', 'firefighter'];
+    if (!currentUser.locationSet && LOCATION_ROLES.includes(currentUser.role)) {
+      return (
+        <LocationSetup
+          currentUser={currentUser}
+          onComplete={(data) => handleUpdateUser(data)}
+        />
+      );
+    }
     const props = { currentUser, onLogout: handleLogout, onUpdateUser: handleUpdateUser };
     switch (currentUser.role) {
       case "admin":       return <AdminView {...props} />;
