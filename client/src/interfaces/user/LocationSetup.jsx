@@ -66,7 +66,7 @@ export default function LocationSetup({ currentUser, onComplete }) {
       });
       setFacilities(res.data || []);
       if (!res.data || res.data.length === 0) {
-        setError(`No ${label}s found in ${wilayaName}. Try going back and selecting a neighboring wilaya.`);
+        setError(`No ${label}s found in this wilaya — try a neighboring wilaya.`);
       }
     } catch {
       setError('Failed to load facilities. Please try again.');
