@@ -10,6 +10,7 @@ const DoctorSchema = new mongoose.Schema({
   specialty:   { type: String },
   numOrdre:    { type: String },
   location:    { type: String },   // ← اسم المدينة
+  wilaya:      { type: String },
   lat:         { type: Number },   // ✅ خط العرض
   lng:         { type: Number },   // ✅ خط الطول
   isAvailable: { type: Boolean, default: true }

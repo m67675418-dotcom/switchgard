@@ -10,6 +10,7 @@ const FireFighterSchema = new mongoose.Schema({
   grade:             { type: String },
   uniteIntervention: { type: String },
   location:          { type: String },   // ✅ اسم المدينة
+  wilaya:            { type: String },
   lat:               { type: Number },   // ✅ خط العرض
   lng:               { type: Number },   // ✅ خط الطول
 }, { collection: "FireFighter", timestamps: true });

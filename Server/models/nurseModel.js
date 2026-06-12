@@ -10,6 +10,7 @@ const NurseSchema = new mongoose.Schema({
   service:  { type: String },
   equipe:   { type: String },
   location: { type: String },   // ✅ اسم المدينة
+  wilaya:   { type: String },
   lat:      { type: Number },   // ✅ خط العرض
   lng:      { type: Number },   // ✅ خط الطول
 }, { collection: "nurses", timestamps: true });

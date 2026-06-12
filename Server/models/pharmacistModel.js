@@ -10,6 +10,7 @@ const PharmacistSchema = new mongoose.Schema({
   adressePharmacie: { type: String, required: true },
   numAgrement:      { type: String, required: true },
   location:         { type: String },   // ✅ اسم المدينة
+  wilaya:           { type: String },
   lat:              { type: Number },   // ✅ خط العرض
   lng:              { type: Number },   // ✅ خط الطول
   isNightShift:     { type: Boolean, default: false }
