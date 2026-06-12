@@ -44,6 +44,7 @@ export default function LocationSetup({ currentUser, onComplete }) {
 
   const facilityMapRef      = useRef(null);
   const facilityMapInstance = useRef(null);
+  const fetchIdRef          = useRef(0);
 
   const role         = currentUser?.role;
   const facilityType = ROLE_FACILITY_TYPE[role] || 'hospital';
@@ -52,6 +53,8 @@ export default function LocationSetup({ currentUser, onComplete }) {
   const icon         = FACILITY_ICON[facilityType];
 
   const handleWilayaSelect = async (wilayaName) => {
+    fetchIdRef.current += 1;
+    const currentFetchId = fetchIdRef.current;
     setSelectedWilaya(wilayaName);
     setStep('facility');
     setLoading(true);
@@ -64,14 +67,16 @@ export default function LocationSetup({ currentUser, onComplete }) {
         params:  { wilaya: wilayaName, type: facilityType },
         headers: { Authorization: `Bearer ${token}` },
       });
+      if (fetchIdRef.current !== currentFetchId) return;
       setFacilities(res.data || []);
       if (!res.data || res.data.length === 0) {
         setError(`No ${label}s found in this wilaya — try a neighboring wilaya.`);
       }
     } catch {
+      if (fetchIdRef.current !== currentFetchId) return;
       setError('Failed to load facilities. Please try again.');
     } finally {
-      setLoading(false);
+      if (fetchIdRef.current === currentFetchId) setLoading(false);
     }
   };
 
@@ -82,6 +87,16 @@ export default function LocationSetup({ currentUser, onComplete }) {
       if (window.L) { setFacilityMapReady(true); clearInterval(interval); }
     }, 200);
     return () => clearInterval(interval);
+  }, []);
+
+  // Cleanup Leaflet map if component unmounts at any step
+  useEffect(() => {
+    return () => {
+      if (facilityMapInstance.current) {
+        facilityMapInstance.current.remove();
+        facilityMapInstance.current = null;
+      }
+    };
   }, []);
 
   // Initialize facility Leaflet map after step changes to 'facility' and DOM renders
