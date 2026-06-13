@@ -50,27 +50,22 @@ router.post('/', async (req, res) => {
         case 'nurse':
           newRecord = new Nurse({
             userId:   newAccount._id,
+            fullName: otherData.fullName,
             gmail:    email.toLowerCase(),
             diplome:  otherData.diplome,
             service:  otherData.service,
             equipe:   otherData.equipe,
-            location: otherData.location || '',
-            lat:      otherData.lat  || null,
-            lng:      otherData.lng  || null,
             password,
           });
           break;
 
         case 'pharmacist':
           newRecord = new Pharmacist({
-            userId:           newAccount._id,
-            gmail:            email.toLowerCase(),
-            nomPharmacie:     otherData.nomPharmacie,
-            adressePharmacie: otherData.adressePharmacie || otherData.location || '',
-            numAgrement:      otherData.numAgrement,
-            location:         otherData.location || '',
-            lat:              otherData.lat  || null,
-            lng:              otherData.lng  || null,
+            userId:       newAccount._id,
+            fullName:     otherData.fullName,
+            gmail:        email.toLowerCase(),
+            nomPharmacie: otherData.nomPharmacie,
+            numAgrement:  otherData.numAgrement,
             password,
           });
           break;
@@ -78,13 +73,11 @@ router.post('/', async (req, res) => {
         case 'firefighter':
           newRecord = new FireFighter({
             userId:            newAccount._id,
+            fullName:          otherData.fullName,
             gmail:             email.toLowerCase(),
             matricule:         otherData.matricule,
             grade:             otherData.grade,
             uniteIntervention: otherData.uniteIntervention,
-            location:          otherData.location || '',
-            lat:               otherData.lat  || null,
-            lng:               otherData.lng  || null,
             password,
           });
           break;
