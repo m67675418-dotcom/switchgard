@@ -4,6 +4,7 @@ const bcrypt   = require('bcryptjs');
 
 const NurseSchema = new mongoose.Schema({
   userId:   { type: String, required: true },
+  fullName: { type: String },
   password: { type: String, required: true, select: false },
   gmail:    { type: String, required: true, lowercase: true },
   diplome:  { type: String, enum: ['IDE', 'ISP'], required: true },

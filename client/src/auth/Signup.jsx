@@ -17,15 +17,18 @@ const Signup = ({ onSignupSuccess }) => {
   const [numOrdre, setNumOrdre]   = useState('');
 
   // Nurse
+  const [nurseFullName, setNurseFullName] = useState('');
   const [diplome, setDiplome] = useState('');
   const [service, setService] = useState('');
   const [equipe, setEquipe]   = useState('');
 
   // Pharmacist
+  const [pharmacistFullName, setPharmacistFullName] = useState('');
   const [nomPharmacie, setNomPharmacie] = useState('');
   const [numAgrement, setNumAgrement]   = useState('');
 
   // Firefighter
+  const [ffFullName, setFfFullName]               = useState('');
   const [matricule, setMatricule]               = useState('');
   const [grade, setGrade]                       = useState('');
   const [uniteIntervention, setUniteIntervention] = useState('');
@@ -49,13 +52,13 @@ const Signup = ({ onSignupSuccess }) => {
         additionalData = { fullName, specialty, numOrdre };
         break;
       case 'nurse':
-        additionalData = { diplome, service, equipe };
+        additionalData = { fullName: nurseFullName, diplome, service, equipe };
         break;
       case 'pharmacist':
-        additionalData = { nomPharmacie, numAgrement };
+        additionalData = { fullName: pharmacistFullName, nomPharmacie, numAgrement };
         break;
       case 'firefighter':
-        additionalData = { matricule, grade, uniteIntervention };
+        additionalData = { fullName: ffFullName, matricule, grade, uniteIntervention };
         break;
       default: break;
     }
@@ -161,6 +164,7 @@ const Signup = ({ onSignupSuccess }) => {
             {selectedRole === 'nurse' && (
               <div className="role-fields-section">
                 <p className="role-fields-title">👩‍⚕️ Nurse Information</p>
+                <input type="text" placeholder="👤 Full Name" value={nurseFullName} onChange={e=>setNurseFullName(e.target.value)} required />
                 <select value={diplome} onChange={e=>setDiplome(e.target.value)} required className="form-select">
                   <option value="">-- Select Diploma --</option>
                   <option value="IDE">IDE</option>
@@ -175,8 +179,9 @@ const Signup = ({ onSignupSuccess }) => {
             {selectedRole === 'pharmacist' && (
               <div className="role-fields-section">
                 <p className="role-fields-title">💊 Pharmacist Information</p>
-                <input type="text" placeholder="🏪 Pharmacy Name"   value={nomPharmacie} onChange={e=>setNomPharmacie(e.target.value)} required />
-                <input type="text" placeholder="📋 Approval Number" value={numAgrement}  onChange={e=>setNumAgrement(e.target.value)}  required />
+                <input type="text" placeholder="👤 Full Name"       value={pharmacistFullName} onChange={e=>setPharmacistFullName(e.target.value)} required />
+                <input type="text" placeholder="🏪 Pharmacy Name"   value={nomPharmacie}       onChange={e=>setNomPharmacie(e.target.value)}       required />
+                <input type="text" placeholder="📋 Approval Number" value={numAgrement}        onChange={e=>setNumAgrement(e.target.value)}        required />
               </div>
             )}
 
@@ -184,9 +189,10 @@ const Signup = ({ onSignupSuccess }) => {
             {selectedRole === 'firefighter' && (
               <div className="role-fields-section">
                 <p className="role-fields-title">🚒 Firefighter Information</p>
-                <input type="text" placeholder="🔢 Matricule" value={matricule}         onChange={e=>setMatricule(e.target.value)}         required />
-                <input type="text" placeholder="⭐ Grade"     value={grade}             onChange={e=>setGrade(e.target.value)}             required />
-                <input type="text" placeholder="🚒 Unit"      value={uniteIntervention} onChange={e=>setUniteIntervention(e.target.value)} required />
+                <input type="text" placeholder="👤 Full Name" value={ffFullName}          onChange={e=>setFfFullName(e.target.value)}          required />
+                <input type="text" placeholder="🔢 Matricule" value={matricule}           onChange={e=>setMatricule(e.target.value)}           required />
+                <input type="text" placeholder="⭐ Grade"     value={grade}               onChange={e=>setGrade(e.target.value)}               required />
+                <input type="text" placeholder="🚒 Unit"      value={uniteIntervention}   onChange={e=>setUniteIntervention(e.target.value)}   required />
               </div>
             )}
 

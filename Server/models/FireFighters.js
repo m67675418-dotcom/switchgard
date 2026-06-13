@@ -4,6 +4,7 @@ const bcrypt   = require('bcryptjs');
 
 const FireFighterSchema = new mongoose.Schema({
   userId:            { type: String },
+  fullName:          { type: String },
   gmail:             { type: String, required: true, lowercase: true },
   matricule:         { type: String, required: true },
   password:          { type: String, required: false, select: false },

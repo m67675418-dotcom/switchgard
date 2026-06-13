@@ -1,4 +1,3 @@
-// FirefighterProfile.jsx - Full Width + Bottom Nav
 import { useState, useEffect } from "react";
 import "./FireFighterProfile.css";
 
@@ -20,7 +19,7 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
       .then(data => {
         const f = data.firefighter || data;
         setFf(f);
-        setForm({ gmail: f.gmail||'', matricule: f.matricule||'', grade: f.grade||'', uniteIntervention: f.uniteIntervention||'' });
+        setForm({ fullName: f.fullName||'', gmail: f.gmail||'', matricule: f.matricule||'', grade: f.grade||'', uniteIntervention: f.uniteIntervention||'' });
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -51,7 +50,6 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
     <div className="fp-page">
       <div className="fp-skeleton-hero" />
       <div className="fp-main"><div className="fp-skeleton-card" /></div>
-      <BottomNav onNavigate={onNavigate} />
     </div>
   );
 
@@ -61,7 +59,6 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
         <div className="fp-error-box"><span>⚠️</span><p>Firefighter not found</p>
           <button onClick={() => onNavigate?.('home')}>← Go Back</button></div>
       </div>
-      <BottomNav onNavigate={onNavigate} />
     </div>
   );
 
@@ -71,23 +68,22 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
     <div className="fp-page">
       {toast && <div className={`fp-toast ${toast.type}`}>{toast.text}</div>}
 
-      {/* HERO */}
       <div className="fp-hero">
         <button className="fp-back-btn" onClick={() => onNavigate?.('home')}>← Back</button>
         <div className="fp-avatar">🚒</div>
         <div className="fp-hero-info">
-          <h2 className="fp-hero-name">{ff.matricule || 'Firefighter'}</h2>
+          <h2 className="fp-hero-name">{ff.fullName || ff.matricule || 'Firefighter'}</h2>
           <span className="fp-hero-badge">{ff.grade || 'Firefighter'}</span>
         </div>
       </div>
 
-      {/* MAIN */}
       <div className="fp-main">
         {!editing ? (
           <>
             <div className="fp-info-card">
               {[
-                { icon: '✉️', label: 'Email',    val: ff.gmail },
+                { icon: '👤', label: 'Full Name', val: ff.fullName || 'Not specified' },
+                { icon: '✉️', label: 'Email',     val: ff.gmail },
                 { icon: '🔢', label: 'Matricule', val: ff.matricule },
                 { icon: '⭐', label: 'Grade',     val: ff.grade || 'Not specified' },
                 { icon: '🚒', label: 'Unit',      val: ff.uniteIntervention || 'Not specified' },
@@ -112,9 +108,10 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
           <div className="fp-edit-card">
             <h3 className="fp-edit-title">Edit Firefighter</h3>
             {[
-              { key: 'gmail',             label: 'Email',    type: 'email', isSelect: false },
-              { key: 'matricule',         label: 'Matricule', type: 'text', isSelect: false },
-              { key: 'uniteIntervention', label: 'Unit',      type: 'text', isSelect: false },
+              { key: 'fullName',         label: 'Full Name', type: 'text'  },
+              { key: 'gmail',            label: 'Email',     type: 'email' },
+              { key: 'matricule',        label: 'Matricule', type: 'text'  },
+              { key: 'uniteIntervention', label: 'Unit',     type: 'text'  },
             ].map(({ key, label, type }) => (
               <div key={key} className="fp-form-group">
                 <label>{label}</label>
@@ -136,18 +133,6 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
         )}
       </div>
 
-      <BottomNav onNavigate={onNavigate} active="profile" />
-    </div>
-  );
-}
-
-function BottomNav({ onNavigate, active }) {
-  return (
-    <div className="fp-bottom-nav">
-      <button className={`fp-nav-btn ${active === 'home' ? 'fp-nav-active' : ''}`} onClick={() => onNavigate?.('home')}><span>🏠</span><span>Home</span></button>
-      <button className={`fp-nav-btn ${active === 'messages' ? 'fp-nav-active' : ''}`} onClick={() => onNavigate?.('messages')}><span>💬</span><span>Messages</span></button>
-      <button className={`fp-nav-btn ${active === 'garde' ? 'fp-nav-active' : ''}`} onClick={() => onNavigate?.('garde')}><span>🛡️</span><span>Shifts</span></button>
-      <button className={`fp-nav-btn ${active === 'profile' ? 'fp-nav-active' : ''}`} onClick={() => onNavigate?.('profile')}><span>👤</span><span>Profile</span></button>
     </div>
   );
 }

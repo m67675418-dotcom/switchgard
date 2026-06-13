@@ -1,4 +1,3 @@
-// NurseProfile.jsx - Fixed Full Width + Bottom Nav
 import { useState, useEffect } from "react";
 import "./NurseProfile.css";
 
@@ -19,7 +18,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
       .then((data) => {
         const n = data.nurse || data;
         setNurse(n);
-        setForm({ userId: n.userId||'', gmail: n.gmail||'', diplome: n.diplome||'', service: n.service||'', equipe: n.equipe||'' });
+        setForm({ fullName: n.fullName||'', userId: n.userId||'', gmail: n.gmail||'', diplome: n.diplome||'', service: n.service||'', equipe: n.equipe||'' });
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -47,16 +46,13 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
     } catch { setMsg({ type: 'error', text: 'Delete failed ❌' }); setDeleting(false); }
   };
 
-  // Loading skeleton
   if (loading) return (
     <div className="np-page">
       <div className="np-skeleton-hero" />
       <div className="np-main"><div className="np-skeleton-card" /></div>
-      <div className="np-bottom-nav" />
     </div>
   );
 
-  // Not found
   if (!nurse) return (
     <div className="np-page">
       <div className="np-main">
@@ -66,28 +62,24 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
           <button className="np-btn-back" onClick={() => onNavigate?.('home')}>← Go Back</button>
         </div>
       </div>
-      <div className="np-bottom-nav">
-        <button className="np-nav-btn" onClick={() => onNavigate?.('home')}><span>🏠</span><span>Home</span></button>
-        <button className="np-nav-btn" onClick={() => onNavigate?.('messages')}><span>💬</span><span>Messages</span></button>
-        <button className="np-nav-btn" onClick={() => onNavigate?.('garde')}><span>🛡️</span><span>Shifts</span></button>
-        <button className="np-nav-btn np-nav-active"><span>👤</span><span>Profile</span></button>
-      </div>
     </div>
   );
 
   const fields = [
-    { icon: '✉️', label: 'Email',   val: nurse.gmail },
-    { icon: '🎓', label: 'Diploma', val: nurse.diplome },
-    { icon: '🏥', label: 'Service', val: nurse.service || 'Not specified' },
-    { icon: '👥', label: 'Team',    val: nurse.equipe  || 'Not specified' },
+    { icon: '👤', label: 'Full Name', val: nurse.fullName || 'Not specified' },
+    { icon: '✉️', label: 'Email',     val: nurse.gmail },
+    { icon: '🎓', label: 'Diploma',   val: nurse.diplome },
+    { icon: '🏥', label: 'Service',   val: nurse.service || 'Not specified' },
+    { icon: '👥', label: 'Team',      val: nurse.equipe  || 'Not specified' },
   ];
 
   const editFields = [
-    { key: 'userId',  label: 'User ID', type: 'text'  },
-    { key: 'gmail',   label: 'Email',   type: 'email' },
-    { key: 'diplome', label: 'Diploma', type: 'text'  },
-    { key: 'service', label: 'Service', type: 'text'  },
-    { key: 'equipe',  label: 'Team',    type: 'text'  },
+    { key: 'fullName', label: 'Full Name', type: 'text'  },
+    { key: 'userId',   label: 'User ID',   type: 'text'  },
+    { key: 'gmail',    label: 'Email',     type: 'email' },
+    { key: 'diplome',  label: 'Diploma',   type: 'text'  },
+    { key: 'service',  label: 'Service',   type: 'text'  },
+    { key: 'equipe',   label: 'Team',      type: 'text'  },
   ];
 
   return (
@@ -98,7 +90,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
         <button className="np-back-btn" onClick={() => onNavigate?.('home')}>← Back</button>
         <div className="np-avatar">👩‍⚕️</div>
         <div className="np-hero-info">
-          <h2 className="np-hero-name">{nurse.userId || 'Nurse'}</h2>
+          <h2 className="np-hero-name">{nurse.fullName || nurse.userId || 'Nurse'}</h2>
           <span className="np-hero-badge">{nurse.diplome || 'Nurse'}</span>
         </div>
         <span className="np-status-dot" title="Active" />
@@ -147,22 +139,6 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
             </div>
           </div>
         )}
-      </div>
-
-      {/* ── BOTTOM NAV ── */}
-      <div className="np-bottom-nav">
-        <button className="np-nav-btn" onClick={() => onNavigate?.('home')}>
-          <span>🏠</span><span>Home</span>
-        </button>
-        <button className="np-nav-btn" onClick={() => onNavigate?.('messages')}>
-          <span>💬</span><span>Messages</span>
-        </button>
-        <button className="np-nav-btn" onClick={() => onNavigate?.('garde')}>
-          <span>🛡️</span><span>Shifts</span>
-        </button>
-        <button className="np-nav-btn np-nav-active">
-          <span>👤</span><span>Profile</span>
-        </button>
       </div>
 
     </div>

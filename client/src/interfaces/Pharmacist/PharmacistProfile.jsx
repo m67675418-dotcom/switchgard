@@ -1,4 +1,3 @@
-// PharmacistProfile.jsx - Full Width + Bottom Nav
 import { useState, useEffect } from "react";
 import "./PharmacistProfile.css";
 
@@ -20,7 +19,7 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
       .then(data => {
         const p = data.pharmacist || data;
         setPh(p);
-        setForm({ gmail: p.gmail||'', nomPharmacie: p.nomPharmacie||'', adressePharmacie: p.adressePharmacie||'', numAgrement: p.numAgrement||'' });
+        setForm({ fullName: p.fullName||'', gmail: p.gmail||'', nomPharmacie: p.nomPharmacie||'', numAgrement: p.numAgrement||'' });
         setLoading(false);
       })
       .catch(() => setLoading(false));
@@ -51,7 +50,6 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
     <div className="pp-page">
       <div className="pp-skeleton-hero" />
       <div className="pp-main"><div className="pp-skeleton-card" /></div>
-      <BottomNav onNavigate={onNavigate} />
     </div>
   );
 
@@ -61,7 +59,6 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
         <div className="pp-error-box"><span>⚠️</span><p>Pharmacist not found</p>
           <button onClick={() => onNavigate?.('home')}>← Go Back</button></div>
       </div>
-      <BottomNav onNavigate={onNavigate} />
     </div>
   );
 
@@ -73,8 +70,8 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
         <button className="pp-back-btn" onClick={() => onNavigate?.('home')}>← Back</button>
         <div className="pp-avatar">💊</div>
         <div className="pp-hero-info">
-          <h2 className="pp-hero-name">{ph.nomPharmacie || 'Pharmacist'}</h2>
-          <span className="pp-hero-badge">{ph.gmail || 'Pharmacist'}</span>
+          <h2 className="pp-hero-name">{ph.fullName || ph.nomPharmacie || 'Pharmacist'}</h2>
+          <span className="pp-hero-badge">{ph.nomPharmacie || ph.gmail || 'Pharmacist'}</span>
         </div>
       </div>
 
@@ -83,10 +80,10 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
           <>
             <div className="pp-info-card">
               {[
-                { icon: '✉️', label: 'Email',            val: ph.gmail },
-                { icon: '🏪', label: 'Pharmacy Name',    val: ph.nomPharmacie },
-                { icon: '📍', label: 'Pharmacy Address', val: ph.adressePharmacie || 'Not specified' },
-                { icon: '📋', label: 'Agrement Number',  val: ph.numAgrement || 'Not specified' },
+                { icon: '👤', label: 'Full Name',      val: ph.fullName       || 'Not specified' },
+                { icon: '✉️', label: 'Email',           val: ph.gmail },
+                { icon: '🏪', label: 'Pharmacy Name',  val: ph.nomPharmacie },
+                { icon: '📋', label: 'Agrement Number', val: ph.numAgrement   || 'Not specified' },
               ].map(({ icon, label, val }) => (
                 <div key={label} className="pp-info-row">
                   <span className="pp-info-icon">{icon}</span>
@@ -108,10 +105,10 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
           <div className="pp-edit-card">
             <h3 className="pp-edit-title">Edit Pharmacist</h3>
             {[
-              { key: 'gmail',             label: 'Email',            type: 'email' },
-              { key: 'nomPharmacie',      label: 'Pharmacy Name',    type: 'text'  },
-              { key: 'adressePharmacie',  label: 'Pharmacy Address', type: 'text'  },
-              { key: 'numAgrement',       label: 'Agrement Number',  type: 'text'  },
+              { key: 'fullName',     label: 'Full Name',      type: 'text'  },
+              { key: 'gmail',        label: 'Email',           type: 'email' },
+              { key: 'nomPharmacie', label: 'Pharmacy Name',  type: 'text'  },
+              { key: 'numAgrement',  label: 'Agrement Number', type: 'text'  },
             ].map(({ key, label, type }) => (
               <div key={key} className="pp-form-group">
                 <label>{label}</label>
@@ -126,18 +123,6 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
         )}
       </div>
 
-      <BottomNav onNavigate={onNavigate} active="profile" />
-    </div>
-  );
-}
-
-function BottomNav({ onNavigate, active }) {
-  return (
-    <div className="pp-bottom-nav">
-      <button className={`pp-nav-btn ${active === 'home' ? 'pp-nav-active' : ''}`} onClick={() => onNavigate?.('home')}><span>🏠</span><span>Home</span></button>
-      <button className={`pp-nav-btn ${active === 'messages' ? 'pp-nav-active' : ''}`} onClick={() => onNavigate?.('messages')}><span>💬</span><span>Messages</span></button>
-      <button className={`pp-nav-btn ${active === 'garde' ? 'pp-nav-active' : ''}`} onClick={() => onNavigate?.('garde')}><span>🛡️</span><span>Shifts</span></button>
-      <button className={`pp-nav-btn ${active === 'profile' ? 'pp-nav-active' : ''}`} onClick={() => onNavigate?.('profile')}><span>👤</span><span>Profile</span></button>
     </div>
   );
 }

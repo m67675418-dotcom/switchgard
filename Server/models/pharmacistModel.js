@@ -4,10 +4,11 @@ const bcrypt   = require('bcryptjs');
 
 const PharmacistSchema = new mongoose.Schema({
   userId:           { type: String },
+  fullName:         { type: String },
   gmail:            { type: String, required: true, lowercase: true },
   password:         { type: String, required: true, select: false },
   nomPharmacie:     { type: String, required: true },
-  adressePharmacie: { type: String, required: true },
+  adressePharmacie: { type: String },
   numAgrement:      { type: String, required: true },
   location:         { type: String },   // ✅ اسم المدينة
   wilaya:           { type: String },
