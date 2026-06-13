@@ -5,13 +5,13 @@ const Nurse = require('../../models/nurseModel');
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId, gmail, diplome, service, equipe } = req.body;
+        const { fullName, userId, gmail, diplome, service, equipe } = req.body;
 
         console.log('✏️ Updating nurse:', id);
 
         const updated = await Nurse.findByIdAndUpdate(
-            id, 
-            { userId, gmail, diplome, service, equipe },
+            id,
+            { fullName, userId, gmail, diplome, service, equipe },
             { new: true, runValidators: true }
         ).select('-password');
         

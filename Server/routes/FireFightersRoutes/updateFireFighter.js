@@ -5,13 +5,13 @@ const FireFighter = require('../../models/FireFighters');
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId, gmail, matricule, grade, uniteIntervention } = req.body;
+        const { fullName, userId, gmail, matricule, grade, uniteIntervention } = req.body;
 
         console.log('✏️ Updating firefighter:', id);
 
         const updated = await FireFighter.findByIdAndUpdate(
-            id, 
-            { userId, gmail, matricule, grade, uniteIntervention },
+            id,
+            { fullName, userId, gmail, matricule, grade, uniteIntervention },
             { new: true, runValidators: true }
         ).select('-password');
         

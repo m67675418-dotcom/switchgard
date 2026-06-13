@@ -5,13 +5,13 @@ const Pharmacist = require('../../models/pharmacistModel');
 router.put('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift } = req.body;
+        const { fullName, userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift } = req.body;
 
         console.log('✏️ Updating pharmacist:', id);
 
         const updated = await Pharmacist.findByIdAndUpdate(
-            id, 
-            { userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift },
+            id,
+            { fullName, userId, gmail, nomPharmacie, adressePharmacie, numAgrement, isNightShift },
             { new: true, runValidators: true }
         ).select('-password');
         

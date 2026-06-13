@@ -161,9 +161,9 @@ router.post('/', async (req, res) => {
                 role:  role.toLowerCase(),
                 locationSet: account.locationSet || false,
                 ...(role === 'doctor'      && { fullName: user.fullName, specialty: user.specialty }),
-                ...(role === 'nurse'       && { userId: user.userId, diplome: user.diplome, service: user.service, equipe: user.equipe }),
-                ...(role === 'pharmacist'  && { nomPharmacie: user.nomPharmacie }),
-                ...(role === 'firefighter' && { matricule: user.matricule, grade: user.grade }),
+                ...(role === 'nurse'       && { fullName: user.fullName, userId: user.userId, diplome: user.diplome, service: user.service, equipe: user.equipe }),
+                ...(role === 'pharmacist'  && { fullName: user.fullName, nomPharmacie: user.nomPharmacie }),
+                ...(role === 'firefighter' && { fullName: user.fullName, matricule: user.matricule, grade: user.grade }),
                 ...(role === 'manager'      && { fullName: user.fullName, position: user.position, managerType: user.managerType })
             }
         });
