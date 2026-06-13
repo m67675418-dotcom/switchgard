@@ -11,10 +11,6 @@ const Signup = ({ onSignupSuccess }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [selectedRole, setSelectedRole]       = useState('');
 
-  // Location for map
-  const [address, setAddress]   = useState('');
-  const [wilaya, setWilaya]     = useState('');
-
   // Doctor
   const [fullName, setFullName]   = useState('');
   const [specialty, setSpecialty] = useState('');
@@ -40,65 +36,26 @@ const Signup = ({ onSignupSuccess }) => {
 
   const specialtyOptions = ['Cardiology','Pediatrics','Dermatology','Orthopedics','Neurology','General Practice','Surgery','Psychiatry'];
 
-  const wilayas = [
-    "Adrar","Chlef","Laghouat","Oum El Bouaghi","Batna","Bejaia","Biskra","Bechar",
-    "Blida","Bouira","Tamanrasset","Tebessa","Tlemcen","Tiaret","Tizi Ouzou","Alger",
-    "Djelfa","Jijel","Setif","Saida","Skikda","Sidi Bel Abbes","Annaba","Guelma",
-    "Constantine","Medea","Mostaganem","Msila","Mascara","Ouargla","Oran","El Bayadh",
-    "Illizi","Bordj Bou Arreridj","Boumerdes","El Tarf","Tindouf","Tissemsilt",
-    "El Oued","Khenchela","Souk Ahras","Tipaza","Mila","Ain Defla","Naama",
-    "Ain Temouchent","Ghardaia","Relizane","Touggourt","El Menia"
-  ];
-
-  // ✅ Geocode address using OpenStreetMap
-  const geocodeAddress = async (fullAddress) => {
-    try {
-      const encoded = encodeURIComponent(fullAddress + ', Algeria');
-      const res  = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encoded}&limit=1`,
-        { headers: { 'Accept-Language': 'en' } }
-      );
-      const data = await res.json();
-      if (data && data.length > 0) {
-        return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-      }
-    } catch (e) {
-      console.warn('Geocoding failed:', e);
-    }
-    return null;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true); setError(''); setSuccess('');
 
     if (password !== confirmPassword) { setError('⚠️ Passwords do not match'); setLoading(false); return; }
     if (!selectedRole)                { setError('⚠️ Please select a role');    setLoading(false); return; }
-    if (!wilaya)                      { setError('⚠️ Please select your wilaya'); setLoading(false); return; }
-
-    // ✅ Geocode the real address
-    setSuccess('📍 Getting your location coordinates...');
-    const fullAddress  = address ? `${address}, ${wilaya}` : wilaya;
-    const coords       = await geocodeAddress(fullAddress);
-    const lat          = coords?.lat || null;
-    const lng          = coords?.lng || null;
-    const locationStr  = fullAddress;
-
-    setSuccess('');
 
     let additionalData = {};
     switch (selectedRole) {
       case 'doctor':
-        additionalData = { fullName, specialty, numOrdre, location: locationStr, lat, lng };
+        additionalData = { fullName, specialty, numOrdre };
         break;
       case 'nurse':
-        additionalData = { diplome, service, equipe, location: locationStr, lat, lng };
+        additionalData = { diplome, service, equipe };
         break;
       case 'pharmacist':
-        additionalData = { nomPharmacie, adressePharmacie: address || wilaya, numAgrement, location: locationStr, lat, lng };
+        additionalData = { nomPharmacie, numAgrement };
         break;
       case 'firefighter':
-        additionalData = { matricule, grade, uniteIntervention, location: locationStr, lat, lng };
+        additionalData = { matricule, grade, uniteIntervention };
         break;
       default: break;
     }
@@ -148,11 +105,11 @@ const Signup = ({ onSignupSuccess }) => {
             </div>
             <div className="signup-step">
               <span className="signup-step-num">2</span>
-              <span className="signup-step-text">Enter your real address</span>
+              <span className="signup-step-text">Fill in your details</span>
             </div>
             <div className="signup-step">
               <span className="signup-step-num">3</span>
-              <span className="signup-step-text">Appear on the map! 📍</span>
+              <span className="signup-step-text">Set your location after approval 📍</span>
             </div>
           </div>
         </div>
@@ -186,22 +143,6 @@ const Signup = ({ onSignupSuccess }) => {
               <option value="pharmacist">💊 Pharmacist</option>
               <option value="firefighter">🚒 Firefighter</option>
             </select>
-
-            {/* ✅ Location section */}
-            <div className="location-section">
-              <p className="location-title">📍 Your Location (for the map)</p>
-              <select value={wilaya} onChange={e=>setWilaya(e.target.value)} required className="form-select">
-                <option value="">-- Select Wilaya --</option>
-                {wilayas.map(w=><option key={w} value={w}>{w}</option>)}
-              </select>
-              <input
-                type="text"
-                placeholder="🏥 Exact address (hospital, clinic, unit...)"
-                value={address}
-                onChange={e=>setAddress(e.target.value)}
-              />
-              <p className="location-hint">💡 The more precise your address, the better you appear on the map</p>
-            </div>
 
             {/* ── Doctor Fields ── */}
             {selectedRole === 'doctor' && (
