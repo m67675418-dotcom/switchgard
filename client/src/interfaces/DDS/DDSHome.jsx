@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "./DDSHome.css";
+import UserProfileModal from './UserProfileModal';
 
 const API = 'http://localhost:5000/api';
 
@@ -14,6 +15,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
   const [pendingShifts, setPendingShifts] = useState([]);
   const [loading, setLoading]           = useState(true);
   const [stats, setStats]               = useState({ total: 0, onShift: 0, pending: 0 });
+  const [selectedDemande, setSelectedDemande] = useState(null);
 
   const managerType = currentUser?.managerType;
   const token = localStorage.getItem('token');
@@ -82,6 +84,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
     try {
       await axios.put(`${API}/demande/${id}/director-approve`, {}, authHeader);
       setPendingShifts(prev => prev.filter(d => d._id !== id));
+      setSelectedDemande(null);
       alert('✅ Shift exchange approved!');
     } catch (err) {
       alert('❌ ' + (err.response?.data?.message || err.message));
@@ -93,6 +96,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
     try {
       await axios.put(`${API}/demande/${id}/director-reject`, {}, authHeader);
       setPendingShifts(prev => prev.filter(d => d._id !== id));
+      setSelectedDemande(null);
     } catch (err) {
       alert('❌ ' + (err.response?.data?.message || err.message));
     }
@@ -191,12 +195,12 @@ const DDSHome = ({ currentUser, onNavigate }) => {
                 </thead>
                 <tbody>
                   {pendingShifts.map(d => (
-                    <tr key={d._id}>
+                    <tr key={d._id} style={{ cursor: 'pointer' }} onClick={() => setSelectedDemande(d)}>
                       <td className="dds-td">{d.gardeOwner || '—'}</td>
                       <td className="dds-td">{d.demandeurName || '—'}</td>
                       <td className="dds-td">{d.gardeDate ? new Date(d.gardeDate).toLocaleDateString() : '—'}</td>
                       <td className="dds-td"><span className="dds-capitalize">{roleEmoji[d.role] || ''} {d.role}</span></td>
-                      <td className="dds-td">
+                      <td className="dds-td" onClick={e => e.stopPropagation()}>
                         <button className="dds-btn-approve" onClick={() => approveShift(d._id)}>✅ Approve</button>
                         <button className="dds-btn-reject"  onClick={() => rejectShift(d._id)}>❌ Reject</button>
                       </td>
@@ -208,6 +212,15 @@ const DDSHome = ({ currentUser, onNavigate }) => {
           )
         )}
       </div>
+      {selectedDemande && (
+        <UserProfileModal
+          demande={selectedDemande}
+          token={token}
+          onClose={() => setSelectedDemande(null)}
+          onApprove={(id) => approveShift(id)}
+          onReject={(id) => rejectShift(id)}
+        />
+      )}
     </div>
   );
 };
