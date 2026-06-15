@@ -66,6 +66,7 @@ app.use("/api/account/admin-register", require("./routes/accountRoutes/adminRegi
 app.use("/api/account/pending", require("./routes/accountRoutes/pendingAccounts"));
 app.use("/api/account", require("./routes/accountRoutes/approveRejectAccount"));
 app.use("/api/account/profile", require("./routes/accountRoutes/getProfile"));
+app.use("/api/user/profile", require("./routes/accountRoutes/getUserProfile"));
 
 // ✅ Doctor Routes
 app.use("/api/doctor/add", require("./routes/DoctorRoutes/addDoctor"));
