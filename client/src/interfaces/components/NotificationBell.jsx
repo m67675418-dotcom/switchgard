@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './NotificationBell.css';
 
-const NotificationBell = ({ currentUser }) => {
+const NotificationBell = ({ currentUser, onNavigate }) => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -74,6 +74,18 @@ const NotificationBell = ({ currentUser }) => {
     }
   };
 
+  const handleMessageOtherUser = async (notif, e) => {
+    e.stopPropagation();
+    await handleMarkAsRead(notif._id);
+    setShowDropdown(false);
+    const isManager = currentUser?.role === 'manager';
+    if (isManager) {
+      onNavigate('messages', { openUserId: notif.otherUserId });
+    } else {
+      onNavigate('messages', { openUserName: notif.otherUserName });
+    }
+  };
+
   const getIcon = (type) => {
     switch (type) {
       case 'demande_received': return '📩';
@@ -134,6 +146,17 @@ const NotificationBell = ({ currentUser }) => {
                           onClick={(e) => handleRejectDemande(notif.demandeId, e)}
                         >
                           ❌ Rejeter
+                        </button>
+                      </div>
+                    )}
+
+                    {notif.type === 'final_approved' && notif.otherUserName && onNavigate && (
+                      <div className="nb-notif-actions">
+                        <button
+                          className="nb-btn-message-small"
+                          onClick={(e) => handleMessageOtherUser(notif, e)}
+                        >
+                          💬 Message {notif.otherUserName}
                         </button>
                       </div>
                     )}

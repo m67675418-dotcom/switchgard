@@ -171,3 +171,19 @@
   background: #dc2626;
   transform: translateY(-1px);
 }
+
+.nb-btn-message-small {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 4px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.nb-btn-message-small:hover {
+  background: #1d4ed8;
+}
