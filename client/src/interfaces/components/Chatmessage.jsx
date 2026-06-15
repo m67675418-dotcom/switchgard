@@ -688,7 +688,7 @@ function NotifBanner({ notif, color, onClose }) {
 /* ══════════════════════════════════════
    INBOX
 ══════════════════════════════════════ */
-function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notifications, clearNotifs }) {
+function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notifications, clearNotifs, openUserName }) {
   const [convs, setConvs]         = useState([]);
   const [loading, setLoading]     = useState(true);
   const [search, setSearch]       = useState("");
@@ -730,6 +730,27 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
       
 
   useEffect(() => { loadConvs(); }, [loadConvs]);
+
+  useEffect(() => {
+    if (!openUserName || loading) return;
+    const existing = convs.find(c => c.name === openUserName);
+    if (existing) {
+      handleSelect(existing);
+    } else {
+      const newConv = {
+        id:      `open-${Date.now()}`,
+        name:    openUserName,
+        avatar:  '👤',
+        lastMsg: '',
+        time:    'maintenant',
+        unread:  0,
+        online:  true,
+      };
+      setConvs(prev => [newConv, ...prev]);
+      handleSelect(newConv);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openUserName, loading]);
 
   // Socket: update inbox in real-time
   useEffect(() => {
@@ -835,7 +856,7 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
 /* ══════════════════════════════════════
    MAIN EXPORT
 ══════════════════════════════════════ */
-export default function ChatMessage({ role = "doctor", onNavigate, currentUser }) {
+export default function ChatMessage({ role = "doctor", onNavigate, currentUser, openUserName }) {
   const [activeConv, setActiveConv] = useState(null);
   const [socket, setSocket]         = useState(null);
   const [notifications, setNotifications] = useState({});
@@ -875,7 +896,8 @@ export default function ChatMessage({ role = "doctor", onNavigate, currentUser }
       ) : (
         <Inbox cfg={cfg} role={role} onSelect={setActiveConv}
           onNavigate={onNavigate} currentUser={currentUser}
-          socket={socket} notifications={notifications} clearNotifs={clearNotifs} />
+          socket={socket} notifications={notifications} clearNotifs={clearNotifs}
+          openUserName={openUserName} />
       )}
     </div>
   );
