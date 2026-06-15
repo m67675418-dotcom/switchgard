@@ -6,20 +6,22 @@ const Nurse      = require('../../models/nurseModel');
 const FireFighter = require('../../models/FireFighters');
 const Pharmacist = require('../../models/pharmacistModel');
 
+const VALID_ROLES = ['doctor', 'nurse', 'firefighter', 'pharmacist'];
 const MODELS = { doctor: Doctor, nurse: Nurse, firefighter: FireFighter, pharmacist: Pharmacist };
 
 // GET /api/user/profile/:id?role=doctor|nurse|firefighter|pharmacist
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   const { role } = req.query;
+  if (!VALID_ROLES.includes(role)) return res.status(400).json({ message: 'Invalid role' });
   const Model = MODELS[role];
-  if (!Model) return res.status(400).json({ message: 'Invalid role' });
   try {
     const user = await Model.findById(id).select('-password');
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({ ...user.toObject(), _role: role });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    console.error('Error fetching user profile:', err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 });
 
