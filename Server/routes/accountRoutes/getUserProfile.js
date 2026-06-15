@@ -16,7 +16,29 @@ router.get('/:id', async (req, res) => {
   if (!VALID_ROLES.includes(role)) return res.status(400).json({ message: 'Invalid role' });
   const Model = MODELS[role];
   try {
-    const user = await Model.findById(id).select('-password');
+    let user = null;
+
+    // Try by MongoDB _id first
+    try {
+      user = await Model.findById(id).select('-password');
+    } catch (_castErr) {
+      // id is not a valid ObjectId — fall through to name-based search
+    }
+
+    // Fallback: search by known identifier fields
+    if (!user) {
+      user = await Model.findOne({
+        $or: [
+          { userId: id },
+          { matricule: id },
+          { numOrdre: id },
+          { numAgrement: id },
+          { email: id },
+          { gmail: id },
+        ],
+      }).select('-password');
+    }
+
     if (!user) return res.status(404).json({ message: 'User not found' });
     res.json({ ...user.toObject(), _role: role });
   } catch (err) {
