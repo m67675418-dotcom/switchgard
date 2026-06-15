@@ -60,6 +60,7 @@ function RoleShell({ role, roleClass, currentUser, onLogout, onUpdateUser, child
           greeting={`Welcome`}
           title={currentUser?.fullName || currentUser?.userId || currentUser?.nomPharmacie || currentUser?.matricule || role}
           currentUser={currentUser}
+          onNavigate={onNavigate}
         />
         <div className="role-body">
           {children}
@@ -71,32 +72,50 @@ function RoleShell({ role, roleClass, currentUser, onLogout, onUpdateUser, child
 
 // ── ROLE VIEWS ───────────────────────────────────────────────────
 function DoctorView({ currentUser, onLogout, onUpdateUser }) {
-  const [view, setView]       = useState("home");
+  const [view, setView]           = useState("home");
   const [profileId, setProfileId] = useState(currentUser?.id || null);
-  const nav = (newView, id = null) => { if (id) setProfileId(id); setView(newView); };
+  const [openUserName, setOpenUserName] = useState(null);
+
+  const nav = (newView, param = null) => {
+    if (param && typeof param === 'object') {
+      if (param.openUserName) setOpenUserName(param.openUserName);
+    } else if (param) {
+      setProfileId(param);
+    }
+    setView(newView);
+  };
 
   return (
     <RoleShell role="doctor" roleClass="role-doctor" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
-      {view === "home"     && <DoctorHome onNavigate={nav} currentUser={currentUser} />}
-      {view === "garde"    && <DoctorGard onNavigate={nav} currentUser={currentUser} />}
-      {view === "message"  && <DoctorMessage onNavigate={nav} currentUser={currentUser} />}
-      {view === "profile"  && <DoctorProfile doctorId={profileId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
-      {view === "demandes" && <DemandesPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
-      {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
+      {view === "home"                              && <DoctorHome onNavigate={nav} currentUser={currentUser} />}
+      {view === "garde"                             && <DoctorGard onNavigate={nav} currentUser={currentUser} />}
+      {(view === "message" || view === "messages")  && <DoctorMessage onNavigate={nav} currentUser={currentUser} openUserName={openUserName} />}
+      {view === "profile"                           && <DoctorProfile doctorId={profileId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
+      {view === "demandes"                          && <DemandesPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
+      {view === "director"                          && <DirectorApprovalPage currentUser={currentUser} role="doctor" onNavigate={nav} />}
     </RoleShell>
   );
 }
 
 function NurseView({ currentUser, onLogout, onUpdateUser }) {
-  const [view, setView]   = useState("home");
-  const [nurseId, setNurseId] = useState(currentUser?.id || null);
-  const nav = (v, id = null) => { if (id) setNurseId(id); setView(v); };
+  const [view, setView]             = useState("home");
+  const [nurseId, setNurseId]       = useState(currentUser?.id || null);
+  const [openUserName, setOpenUserName] = useState(null);
+
+  const nav = (v, param = null) => {
+    if (param && typeof param === 'object') {
+      if (param.openUserName) setOpenUserName(param.openUserName);
+    } else if (param) {
+      setNurseId(param);
+    }
+    setView(v);
+  };
 
   return (
     <RoleShell role="nurse" roleClass="role-nurse" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
       {view === "home"     && <NurseHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <NurseGarde onNavigate={nav} currentUser={currentUser} />}
-      {view === "messages" && <NurseMessage onNavigate={nav} currentUser={currentUser} />}
+      {view === "messages" && <NurseMessage onNavigate={nav} currentUser={currentUser} openUserName={openUserName} />}
       {view === "profile"  && <NurseProfile nurseId={nurseId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="nurse" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="nurse" onNavigate={nav} />}
@@ -105,14 +124,21 @@ function NurseView({ currentUser, onLogout, onUpdateUser }) {
 }
 
 function PharmacistView({ currentUser, onLogout, onUpdateUser }) {
-  const [view, setView] = useState("home");
-  const nav = (v) => setView(v);
+  const [view, setView]                 = useState("home");
+  const [openUserName, setOpenUserName] = useState(null);
+
+  const nav = (v, param = null) => {
+    if (param && typeof param === 'object') {
+      if (param.openUserName) setOpenUserName(param.openUserName);
+    }
+    setView(v);
+  };
 
   return (
     <RoleShell role="pharmacist" roleClass="role-pharmacist" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
       {view === "home"     && <PharmacistHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <PharmacistGarde onNavigate={nav} currentUser={currentUser} />}
-      {view === "messages" && <PharmacistMessage onNavigate={nav} currentUser={currentUser} />}
+      {view === "messages" && <PharmacistMessage onNavigate={nav} currentUser={currentUser} openUserName={openUserName} />}
       {view === "profile"  && <PharmacistProfile pharmacistId={currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="pharmacist" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="pharmacist" onNavigate={nav} />}
@@ -121,14 +147,21 @@ function PharmacistView({ currentUser, onLogout, onUpdateUser }) {
 }
 
 function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
-  const [view, setView] = useState("home");
-  const nav = (v) => setView(v);
+  const [view, setView]                 = useState("home");
+  const [openUserName, setOpenUserName] = useState(null);
+
+  const nav = (v, param = null) => {
+    if (param && typeof param === 'object') {
+      if (param.openUserName) setOpenUserName(param.openUserName);
+    }
+    setView(v);
+  };
 
   return (
     <RoleShell role="firefighter" roleClass="role-firefighter" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
       {view === "home"     && <FirefighterHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <FirefighterGarde onNavigate={nav} currentUser={currentUser} />}
-      {view === "messages" && <FirefighterMessage onNavigate={nav} currentUser={currentUser} />}
+      {view === "messages" && <FirefighterMessage onNavigate={nav} currentUser={currentUser} openUserName={openUserName} />}
       {view === "profile"  && <FireFighterProfile firefighterId={currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="firefighter" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="firefighter" onNavigate={nav} />}
@@ -137,15 +170,24 @@ function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
 }
 
 function DDSView({ currentUser, onLogout, onUpdateUser }) {
-  const [view, setView]   = useState("home");
-  const [ddsId, setDdsId] = useState(currentUser?.id || null);
-  const nav = (v, id = null) => { if (id) setDdsId(id); setView(v); };
+  const [view, setView]               = useState("home");
+  const [ddsId, setDdsId]             = useState(currentUser?.id || null);
+  const [openUserId, setOpenUserId]   = useState(null);
+
+  const nav = (v, param = null) => {
+    if (param && typeof param === 'object') {
+      if (param.openUserId) setOpenUserId(param.openUserId);
+    } else if (param) {
+      setDdsId(param);
+    }
+    setView(v);
+  };
 
   return (
     <RoleShell role="manager" roleClass="role-manager" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
       {view === "home"     && <DDSHome onNavigate={nav} currentUser={currentUser} />}
       {view === "garde"    && <DDSGarde onNavigate={nav} currentUser={currentUser} />}
-      {view === "messages" && <DDSMessage onNavigate={nav} currentUser={currentUser} />}
+      {view === "messages" && <DDSMessage onNavigate={nav} currentUser={currentUser} openUserId={openUserId} />}
       {view === "profile"  && <DDSProfile ddsId={ddsId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
       {view === "demandes" && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
       {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}
