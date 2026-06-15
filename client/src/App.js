@@ -79,8 +79,9 @@ function DoctorView({ currentUser, onLogout, onUpdateUser }) {
   const nav = (newView, param = null) => {
     if (param && typeof param === 'object') {
       if (param.openUserName) setOpenUserName(param.openUserName);
-    } else if (param) {
-      setProfileId(param);
+    } else {
+      if (param) setProfileId(param);
+      setOpenUserName(null);
     }
     setView(newView);
   };
@@ -105,8 +106,9 @@ function NurseView({ currentUser, onLogout, onUpdateUser }) {
   const nav = (v, param = null) => {
     if (param && typeof param === 'object') {
       if (param.openUserName) setOpenUserName(param.openUserName);
-    } else if (param) {
-      setNurseId(param);
+    } else {
+      if (param) setNurseId(param);
+      setOpenUserName(null);
     }
     setView(v);
   };
@@ -130,6 +132,8 @@ function PharmacistView({ currentUser, onLogout, onUpdateUser }) {
   const nav = (v, param = null) => {
     if (param && typeof param === 'object') {
       if (param.openUserName) setOpenUserName(param.openUserName);
+    } else {
+      setOpenUserName(null);
     }
     setView(v);
   };
@@ -153,6 +157,8 @@ function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
   const nav = (v, param = null) => {
     if (param && typeof param === 'object') {
       if (param.openUserName) setOpenUserName(param.openUserName);
+    } else {
+      setOpenUserName(null);
     }
     setView(v);
   };
@@ -177,8 +183,9 @@ function DDSView({ currentUser, onLogout, onUpdateUser }) {
   const nav = (v, param = null) => {
     if (param && typeof param === 'object') {
       if (param.openUserId) setOpenUserId(param.openUserId);
-    } else if (param) {
-      setDdsId(param);
+    } else {
+      if (param) setDdsId(param);
+      setOpenUserId(null);
     }
     setView(v);
   };
