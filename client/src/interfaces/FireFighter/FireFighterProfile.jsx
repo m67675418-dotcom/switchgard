@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import "./FireFighterProfile.css";
+import "./FirefighterProfile.css";
 
 export default function FirefighterProfile({ firefighterId, onNavigate, onUpdateUser }) {
   const [ff, setFf]           = useState(null);
