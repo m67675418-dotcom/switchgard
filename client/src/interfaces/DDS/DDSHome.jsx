@@ -102,6 +102,25 @@ const DDSHome = ({ currentUser, onNavigate }) => {
     }
   };
 
+  const approveShiftFromModal = async (id) => {
+    try {
+      await axios.put(`${API}/demande/${id}/director-approve`, {}, authHeader);
+      setPendingShifts(prev => prev.filter(d => d._id !== id));
+      alert('✅ Shift exchange approved!');
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
+    }
+  };
+
+  const rejectShiftFromModal = async (id) => {
+    try {
+      await axios.put(`${API}/demande/${id}/director-reject`, {}, authHeader);
+      setPendingShifts(prev => prev.filter(d => d._id !== id));
+    } catch (err) {
+      alert('❌ ' + (err.response?.data?.message || err.message));
+    }
+  };
+
   const typeLabel = managerType ? `${roleEmoji[managerType]} ${roleLabel[managerType]}` : 'All';
 
   return (
@@ -195,7 +214,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
                 </thead>
                 <tbody>
                   {pendingShifts.map(d => (
-                    <tr key={d._id} style={{ cursor: 'pointer' }} onClick={() => setSelectedDemande(d)}>
+                    <tr key={d._id} className="dds-row-clickable" onClick={() => setSelectedDemande(d)}>
                       <td className="dds-td">{d.gardeOwner || '—'}</td>
                       <td className="dds-td">{d.demandeurName || '—'}</td>
                       <td className="dds-td">{d.gardeDate ? new Date(d.gardeDate).toLocaleDateString() : '—'}</td>
@@ -217,8 +236,8 @@ const DDSHome = ({ currentUser, onNavigate }) => {
           demande={selectedDemande}
           token={token}
           onClose={() => setSelectedDemande(null)}
-          onApprove={(id) => approveShift(id)}
-          onReject={(id) => rejectShift(id)}
+          onApprove={approveShiftFromModal}
+          onReject={rejectShiftFromModal}
         />
       )}
     </div>

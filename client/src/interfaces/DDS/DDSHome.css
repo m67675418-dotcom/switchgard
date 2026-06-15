@@ -400,6 +400,15 @@
   text-transform: capitalize;
 }
 
+.dds-row-clickable {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.dds-row-clickable:hover {
+  background: #f0f7ff;
+}
+
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
   .dds-search-box {

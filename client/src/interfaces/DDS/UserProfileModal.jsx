@@ -15,7 +15,7 @@ function useProfile(userId, role, token) {
   const [error, setError]   = useState(null);
 
   useEffect(() => {
-    if (!userId || !role) return;
+    if (!userId || !role) { setLoading(false); return; }
     setLoading(true);
     setError(null);
     fetch(`http://localhost:5000/api/user/profile/${userId}?role=${role}`, {
@@ -87,13 +87,13 @@ function ProfilePanel({ title, userId, role, token }) {
 export default function UserProfileModal({ demande, onClose, onApprove, onReject, token }) {
   if (!demande) return null;
 
-  const handleApprove = () => {
-    onApprove(demande._id);
+  const handleApprove = async () => {
+    await onApprove(demande._id);
     onClose();
   };
 
-  const handleReject = () => {
-    onReject(demande._id);
+  const handleReject = async () => {
+    await onReject(demande._id);
     onClose();
   };
 
