@@ -8,7 +8,7 @@ const ROLE_EMOJI = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist
 
 const getName = (u) => u.fullName || u.nomPharmacie || u.matricule || u.userId || 'User';
 
-export default function DDSMessage({ currentUser }) {
+export default function DDSMessage({ currentUser, openUserId }) {
   const [contacts, setContacts]     = useState([]);
   const [selected, setSelected]     = useState(null);
   const [messages, setMessages]     = useState([]);
@@ -36,6 +36,12 @@ export default function DDSMessage({ currentUser }) {
       setLoading(false);
     }).catch(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (!openUserId || loading) return;
+    const target = contacts.find(c => c._id === openUserId);
+    if (target) setSelected(target);
+  }, [openUserId, loading]);
 
   useEffect(() => {
     if (!selected || !me) return;
