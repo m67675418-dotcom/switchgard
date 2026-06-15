@@ -3,7 +3,7 @@ import React from 'react';
 import './PageHeader.css';
 import NotificationBell from '../interfaces/components/NotificationBell';
 
-export default function PageHeader({ greeting, title, currentUser, onBack, rightExtra }) {
+export default function PageHeader({ greeting, title, currentUser, onBack, rightExtra, onNavigate }) {
   return (
     <div className="pgh-bar">
       <div className="pgh-left">
@@ -18,7 +18,7 @@ export default function PageHeader({ greeting, title, currentUser, onBack, right
       <div className="pgh-right">
         {rightExtra}
         {currentUser && (
-          <NotificationBell currentUser={currentUser} />
+          <NotificationBell currentUser={currentUser} onNavigate={onNavigate} />
         )}
       </div>
     </div>
