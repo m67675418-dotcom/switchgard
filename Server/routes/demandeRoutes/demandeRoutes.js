@@ -110,18 +110,6 @@ router.put('/:id/accept', async (req, res) => {
       console.warn(`⚠️  No managers found for role "${demande.role}" — check managerType field in DDS collection`);
     }
 
-    // Auto-start a conversation between the two users
-    try {
-      await Message.create({
-        senderId:   demande.gardeOwner,
-        receiverId: demande.demandeurName,
-        content: `🤝 Shift exchange accepted! Let's coordinate the details here.`,
-        isRead: false,
-      });
-    } catch (msgErr) {
-      console.warn('⚠️ Auto-message failed (non-fatal):', msgErr.message);
-    }
-
     res.json({ message: 'Demande acceptée', demande, notification: notificationDemandeur });
 
   } catch (error) {
@@ -177,36 +165,57 @@ router.put('/:id/director-approve', protect, authorize('admin', 'manager'), asyn
     const garde = await Garde.findById(demande.gardeId);
     if (!garde) return res.status(404).json({ message: 'Garde non trouvée' });
 
-    garde.ownerId = demande.demandeurId;
-    garde.owner = demande.demandeurName;
-    garde.status = 'Transferred';
-    garde.archived = true;
-    garde.archivedAt = new Date();
+    garde.ownerId      = demande.demandeurId;
+    garde.owner        = demande.demandeurName;
+    garde.status       = 'Transferred';
+    garde.archived     = true;
+    garde.archivedAt   = new Date();
     garde.transferredTo = demande.demandeurId;
     await garde.save();
 
     demande.directorStatus = 'approved';
-    demande.status = 'completed';
-    demande.archived = true;
+    demande.status         = 'completed';
+    demande.archived       = true;
     await demande.save();
 
     const notifOwner = new Notification({
-      userId: demande.proprietaireId,
-      type: 'final_approved',
-      message: `✅ Demande approuvée! Garde transférée à ${demande.demandeurName}`,
-      demandeId: demande._id.toString()
+      userId:        demande.proprietaireId,
+      type:          'final_approved',
+      message:       `✅ Demande approuvée! Garde transférée à ${demande.demandeurName}`,
+      demandeId:     demande._id.toString(),
+      otherUserId:   demande.demandeurId,
+      otherUserName: demande.demandeurName,
     });
     await notifOwner.save();
 
     const notifDemandeur = new Notification({
-      userId: demande.demandeurId,
-      type: 'final_approved',
-      message: `🎉 Félicitations! Vous êtes maintenant propriétaire de la garde`,
-      demandeId: demande._id.toString()
+      userId:        demande.demandeurId,
+      type:          'final_approved',
+      message:       `🎉 Félicitations! Vous êtes maintenant propriétaire de la garde`,
+      demandeId:     demande._id.toString(),
+      otherUserId:   demande.proprietaireId,
+      otherUserName: demande.gardeOwner,
     });
     await notifDemandeur.save();
 
-    // Record 200 DZD commission for this shift exchange
+    if (global.io) {
+      global.io.to(demande.proprietaireId).emit('new_notification', notifOwner);
+      global.io.to(demande.demandeurId).emit('new_notification', notifDemandeur);
+    }
+
+    // Auto-message now that the exchange is officially approved
+    try {
+      await Message.create({
+        senderId:   demande.gardeOwner,
+        receiverId: demande.demandeurName,
+        content:    `🎉 Shift exchange approved! Your shift has been successfully transferred.`,
+        isRead:     false,
+      });
+    } catch (msgErr) {
+      console.warn('⚠️ Auto-message failed (non-fatal):', msgErr.message);
+    }
+
+    // Record 200 DZD commission
     try {
       await Transaction.create({
         gardeId:       demande.gardeId.toString(),
