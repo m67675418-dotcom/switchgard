@@ -1,0 +1,134 @@
+/* UserProfileModal.css */
+
+.upm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.upm-modal {
+  background: var(--color-card);
+  max-width: 760px;
+  width: 100%;
+  padding: 24px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+
+.upm-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.upm-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.upm-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--color-muted);
+  padding: 0 4px;
+}
+
+.upm-close:hover {
+  color: var(--color-text);
+}
+
+.upm-panels {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+}
+
+.upm-panel {
+  flex: 1;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.upm-panel-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-muted);
+  margin-bottom: 8px;
+}
+
+.upm-field {
+  margin-bottom: 6px;
+}
+
+.upm-label {
+  display: block;
+  font-size: 11px;
+  color: var(--color-muted);
+  margin-bottom: 2px;
+}
+
+.upm-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.upm-loading {
+  text-align: center;
+  color: var(--color-muted);
+  font-size: 14px;
+  padding: 12px 0;
+}
+
+.upm-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.upm-btn-approve {
+  background: #16a34a;
+  color: #fff;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.upm-btn-approve:hover {
+  background: #15803d;
+}
+
+.upm-btn-reject {
+  background: #dc2626;
+  color: #fff;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.upm-btn-reject:hover {
+  background: #b91c1c;
+}
