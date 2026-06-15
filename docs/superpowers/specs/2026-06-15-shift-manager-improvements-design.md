@@ -55,22 +55,25 @@ The `Notification` model has no field for the other party's ID.
 ### Design
 
 **`Notification` schema change:**  
-Add `otherUserId: { type: String, default: null }`
+Add `otherUserId: { type: String, default: null }` and `otherUserName: { type: String, default: null }`
 
 **Server: `director-approve` route change:**  
-When creating the two `final_approved` notifications, populate `otherUserId`:
-- Owner's notification → `otherUserId: demande.demandeurId`
-- Demandeur's notification → `otherUserId: demande.proprietaireId`
+When creating the two `final_approved` notifications, populate both fields:
+- Owner's notification → `otherUserId: demande.demandeurId`, `otherUserName: demande.demandeurName`
+- Demandeur's notification → `otherUserId: demande.proprietaireId`, `otherUserName: demande.gardeOwner`
 
 **`NotificationBell.jsx` changes:**
-- Accept a new prop `onNavigate(page, params)` passed from each role's home layout
-- For `final_approved` type, render a **"💬 Message [other party name]"** button below the notification message
+- Accept a new prop `onNavigate(page, params)` 
+- For `final_approved` type, render a **"💬 Message [notif.otherUserName]"** button below the notification message
 - On click: mark notification as read, call `onNavigate('message', { openUserId: notif.otherUserId })`
-- The other party name is derived from the existing `notif.message` text or fetched via `otherUserId`
 
-**Role home layouts (DDSHome, DoctorHome, NurseHome, etc.):**
-- Pass `onNavigate` to wherever `NotificationBell` is rendered (via `PageHeader` or directly)
-- The message page for each role already handles opening a conversation; it needs to accept an `openUserId` param to pre-select a thread
+**`PageHeader.jsx` changes:**
+- `NotificationBell` is rendered inside `PageHeader`. `PageHeader` already receives `currentUser`; add an `onNavigate` prop and pass it through to `NotificationBell`.
+- All role home layouts already use `PageHeader` — they pass `onNavigate` to `PageHeader`.
+
+**Role message components (DoctorMessage, NurseMessage, etc.):**
+- Accept an optional `openUserId` prop
+- If provided, auto-select and open the conversation thread with that user on mount
 
 **Role message components (DoctorMessage, NurseMessage, etc.):**
 - Accept an optional `openUserId` prop
@@ -115,8 +118,9 @@ The message now arrives after the manager's final approval, and is properly link
 | `client/src/interfaces/DDS/UserProfileModal.jsx` | New file — two-panel profile overlay |
 | `client/src/interfaces/DDS/UserProfileModal.css` | New file — modal styles |
 | `client/src/interfaces/components/NotificationBell.jsx` | Add `onNavigate` prop; add message button for `final_approved` |
+| `client/src/components/PageHeader.jsx` | Add `onNavigate` prop; pass it to `NotificationBell` |
 | Role message components (DoctorMessage, NurseMessage, etc.) | Accept `openUserId` prop to pre-open a conversation |
-| PageHeader or role home layouts | Pass `onNavigate` down to NotificationBell |
+| Role home layouts (DDSHome, DoctorHome, etc.) | Pass `onNavigate` to `PageHeader` |
 
 ---
 
