@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Nurse = require('../../models/nurseModel');
 
+// ✅ GET /api/nurse/:id
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;

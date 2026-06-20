@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './AddDDS.css';
+import './AddManager.css';
 import '../styles/form.css';
 
 const MANAGER_TYPES = [

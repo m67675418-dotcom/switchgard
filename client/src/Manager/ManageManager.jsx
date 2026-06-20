@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './ManageDDS.css';
+import './ManageManager.css';
 import '../styles/form.css';
 
 const ManageDDS = ({ onSelectDDS }) => {

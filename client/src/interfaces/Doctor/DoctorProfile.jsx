@@ -1,4 +1,4 @@
-// DoctorProfile.jsx - Fixed Full Width + Bottom Nav
+// DoctorProfile.jsx - Without Bottom Nav
 import { useState, useEffect } from "react";
 import "./DoctorProfile.css";
 
@@ -67,7 +67,6 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
           <button className="dp-btnBack" onClick={() => onNavigate?.('home')}>← Go Back</button>
         </div>
       </div>
-      <BottomNav onNavigate={onNavigate} active="profile" />
     </div>
   );
 
@@ -141,28 +140,6 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
           </div>
         )}
       </div>
-
-      {/* ── BOTTOM NAV ── */}
-      <BottomNav onNavigate={onNavigate} active="profile" />
-    </div>
-  );
-}
-
-function BottomNav({ onNavigate, active }) {
-  return (
-    <div className="dp-bottomNav">
-      <button className={`dp-navBtn ${active === 'home' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('home')}>
-        <span>🏠</span><span>Home</span>
-      </button>
-      <button className={`dp-navBtn ${active === 'message' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('message')}>
-        <span>💬</span><span>Messages</span>
-      </button>
-      <button className={`dp-navBtn ${active === 'garde' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('garde')}>
-        <span>🛡️</span><span>Shifts</span>
-      </button>
-      <button className={`dp-navBtn ${active === 'profile' ? 'dp-navActive' : ''}`} onClick={() => onNavigate?.('profile')}>
-        <span>👤</span><span>Profile</span>
-      </button>
     </div>
   );
 }

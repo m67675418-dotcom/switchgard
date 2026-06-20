@@ -3,7 +3,7 @@ import axios from 'axios';
 import './ManagePharmacist.css';
 import '../styles/form.css';
 
-const ManagePharmacist = () => {
+const ManagePharmacist = ({ onSelectPharmacist }) => {
     const [pharmacists, setPharmacists] = useState([]);
     const [selectedPharmacist, setSelectedPharmacist] = useState(null);
     const [formData, setFormData] = useState({
@@ -17,7 +17,7 @@ const ManagePharmacist = () => {
     const [status, setStatus] = useState({ type: '', message: '' });
     const [searchId, setSearchId] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
-    
+
     const [modal, setModal] = useState({
         show: false,
         type: '',
@@ -66,7 +66,7 @@ const ManagePharmacist = () => {
         fetchPharmacists();
     }, [fetchPharmacists]);
 
-    // ✅ Row click selection
+    // ✅ Row click selection (Edit)
     const handleRowClick = useCallback((pharmacist) => {
         const id = pharmacist.id || pharmacist._id;
         setSearchId(id);
@@ -79,6 +79,14 @@ const ManagePharmacist = () => {
             isNightShift: pharmacist.isNightShift || false
         });
     }, []);
+
+    // ✅ View details — sends id up to AdminView (GetSinglePharmacist)
+    const handleViewDetails = useCallback((pharmacist) => {
+        const id = pharmacist.id || pharmacist._id;
+        if (onSelectPharmacist) {
+            onSelectPharmacist(id);
+        }
+    }, [onSelectPharmacist]);
 
     // ✅ Search by ID
     const handleSearch = useCallback(async (e) => {
@@ -130,7 +138,7 @@ const ManagePharmacist = () => {
             },
             onConfirm: async () => {
                 try {
-                    await axios.delete(`/deletepharmacist/${id}`);
+                    await axios.delete(`/api/pharmacist/${id}`);
                     showStatus('success', `✅ Pharmacist ${id} deleted!`);
                     if (selectedPharmacist && (selectedPharmacist.id === id || selectedPharmacist._id === id)) {
                         handleCancel();
@@ -164,7 +172,7 @@ const ManagePharmacist = () => {
                 setLoading(true);
                 try {
                     const id = selectedPharmacist.id || selectedPharmacist._id;
-                    await axios.put(`/updatePharmacist/${id}`, formData);
+                    await axios.put(`/api/pharmacist/${id}`, formData);
                     showStatus('success', `✅ Pharmacist ${id} updated!`);
                     fetchPharmacists();
                     handleCancel();
@@ -255,9 +263,9 @@ const ManagePharmacist = () => {
                                 {filteredPharmacists.map((pharmacist) => {
                                     const pharmacistId = pharmacist.id || pharmacist._id;
                                     const isSelected = selectedPharmacist && (selectedPharmacist.id === pharmacistId || selectedPharmacist._id === pharmacistId);
-                                    
+
                                     return (
-                                        <tr 
+                                        <tr
                                             key={pharmacistId}
                                             className={isSelected ? 'selected' : ''}
                                             onClick={() => handleRowClick(pharmacist)}
@@ -276,8 +284,14 @@ const ManagePharmacist = () => {
                                                 </span>
                                             </td>
                                             <td className="actions-cell" onClick={(e) => e.stopPropagation()}>
-                                                <button className="action-btn edit" onClick={() => handleRowClick(pharmacist)}>✏️ Edit</button>
-                                                <button className="action-btn delete" onClick={() => handleDelete(pharmacist)}>🗑️ Delete</button>
+                                                <button
+                                                    className="action-btn view"
+                                                    onClick={(e) => { e.stopPropagation(); handleViewDetails(pharmacist); }}
+                                                >
+                                                    👁️ View
+                                                </button>
+                                                <button className="action-btn edit" onClick={() => handleRowClick(pharmacist)}>✏️</button>
+                                                <button className="action-btn delete" onClick={() => handleDelete(pharmacist)}>🗑️</button>
                                             </td>
                                         </tr>
                                     );
@@ -295,46 +309,46 @@ const ManagePharmacist = () => {
                 {selectedPharmacist && (
                     <form onSubmit={handleSubmit} className="edit-form">
                         <h3>📋 Edit Pharmacist Information</h3>
-                        
-                        <input 
-                            type="text" 
-                            name="userId" 
-                            placeholder="🆔 User ID" 
-                            value={formData.userId} 
-                            onChange={handleInputChange} 
-                            required 
+
+                        <input
+                            type="text"
+                            name="userId"
+                            placeholder="🆔 User ID"
+                            value={formData.userId}
+                            onChange={handleInputChange}
+                            required
                         />
-                        <input 
-                            type="text" 
-                            name="nomPharmacie" 
-                            placeholder="🏪 Pharmacy Name" 
-                            value={formData.nomPharmacie} 
-                            onChange={handleInputChange} 
-                            required 
+                        <input
+                            type="text"
+                            name="nomPharmacie"
+                            placeholder="🏪 Pharmacy Name"
+                            value={formData.nomPharmacie}
+                            onChange={handleInputChange}
+                            required
                         />
-                        <input 
-                            type="text" 
-                            name="adressePharmacie" 
-                            placeholder="📍 Pharmacy Address" 
-                            value={formData.adressePharmacie} 
-                            onChange={handleInputChange} 
-                            required 
+                        <input
+                            type="text"
+                            name="adressePharmacie"
+                            placeholder="📍 Pharmacy Address"
+                            value={formData.adressePharmacie}
+                            onChange={handleInputChange}
+                            required
                         />
-                        <input 
-                            type="text" 
-                            name="numAgrement" 
-                            placeholder="📋 Approval Number" 
-                            value={formData.numAgrement} 
-                            onChange={handleInputChange} 
-                            required 
+                        <input
+                            type="text"
+                            name="numAgrement"
+                            placeholder="📋 Approval Number"
+                            value={formData.numAgrement}
+                            onChange={handleInputChange}
+                            required
                         />
-                        
+
                         <label className="checkbox-label">
-                            <input 
-                                type="checkbox" 
-                                name="isNightShift" 
-                                checked={formData.isNightShift} 
-                                onChange={handleInputChange} 
+                            <input
+                                type="checkbox"
+                                name="isNightShift"
+                                checked={formData.isNightShift}
+                                onChange={handleInputChange}
                             />
                             <span>🌙 Night Shift Pharmacy</span>
                         </label>
@@ -371,7 +385,7 @@ const ManagePharmacist = () => {
                         )}
                         <div className="modal-actions">
                             <button className="modal-btn cancel" onClick={closeModal}>Cancel</button>
-                            <button 
+                            <button
                                 className={`modal-btn confirm ${modal.type === 'confirmUpdate' ? 'edit' : ''}`}
                                 onClick={() => { closeModal(); modal.onConfirm?.(); }}
                             >

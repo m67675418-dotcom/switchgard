@@ -31,10 +31,10 @@ import FirefighterGarde from "./interfaces/FireFighter/FirefighterGarde";
 import FirefighterMessage from "./interfaces/FireFighter/FirefighterMessage";
 import FireFighterProfile from "./interfaces/FireFighter/FireFighterProfile";
 
-import DDSHome from "./interfaces/DDS/DDSHome";
-import DDSGarde from "./interfaces/DDS/DDSGarde";
-import DDSMessage from "./interfaces/DDS/DDSMessage";
-import DDSProfile from "./interfaces/DDS/DDSProfile";
+import ManagerHome from './interfaces/Manager/ManagerHome';
+import ManagerGarde from './interfaces/Manager/ManagerGarde';
+import ManagerMessage from './interfaces/Manager/ManagerMessage';
+import ManagerProfile from './interfaces/Manager/ManagerProfile';
 
 import DemandesPage from "./interfaces/components/DemandesPage";
 import DirectorApprovalPage from "./interfaces/components/DirectorApprovalPage";
@@ -192,13 +192,13 @@ function DDSView({ currentUser, onLogout, onUpdateUser }) {
 
   return (
     <RoleShell role="manager" roleClass="role-manager" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
-      {view === "home"     && <DDSHome onNavigate={nav} currentUser={currentUser} />}
-      {view === "garde"    && <DDSGarde onNavigate={nav} currentUser={currentUser} />}
-      {view === "messages" && <DDSMessage onNavigate={nav} currentUser={currentUser} openUserId={openUserId} />}
-      {view === "profile"  && <DDSProfile ddsId={ddsId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
-      {view === "demandes" && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
-      {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}
-    </RoleShell>
+  {view === "home"     && <ManagerHome onNavigate={nav} currentUser={currentUser} />}
+  {view === "garde"    && <ManagerGarde onNavigate={nav} currentUser={currentUser} />}
+  {view === "messages" && <ManagerMessage onNavigate={nav} currentUser={currentUser} openUserId={openUserId} />}
+  {view === "profile"  && <ManagerProfile ddsId={ddsId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
+  {view === "demandes" && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
+  {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}
+     </RoleShell>
   );
 }
 

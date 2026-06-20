@@ -9,14 +9,16 @@ import ManageDoctor from '../Doctor/ManageDoctor';
 import GetSingleDoctor from '../Doctor/GetSingleDoctor';
 import AddNurse from '../Nurse/AddNurse';
 import ManageNurse from '../Nurse/ManageNurse';
+import GetSingleNurse from '../Nurse/GetSingleNurse';
 import AddPharmacist from '../pharmacist/AddPharmacist';
 import ManagePharmacist from '../pharmacist/ManagePharmacist';
+import GetSinglePharmacist from '../pharmacist/GetSinglePharmacist';
 import AddFireFighter from '../FireFighter/AddFireFighter';
 import ManageFireFighter from '../FireFighter/ManageFireFighter';
 import GetSingleFireFighter from '../FireFighter/GetSingleFireFighter';
-import AddDDS from '../DDS/AddDDS';
-import ManageDDS from '../DDS/ManageDDS';
-import GetSingleDDS from '../DDS/GetSingleDDS';
+import AddDDS from '../Manager/AddManager';
+import ManageDDS from '../Manager/ManageManager';
+import GetSingleDDS from '../Manager/GetSingleManager';
 import AddMessage from '../message/AddMessage';
 import ManageMessage from '../message/ManageMessage';
 import GetSingleMessage from '../message/GetSingleMessage';
@@ -46,10 +48,12 @@ const MODULES = [
   { key: 'pending',       icon: '⏳',   name: 'Approvals',     desc: 'Approve new accounts' },
 ];
 
-export default function AdminView({ currentUser, onLogout }) {
+function AdminView({ currentUser, onLogout }) {
   const [activeModule, setActiveModule]                   = useState(null);
   const [showAddModal, setShowAddModal]                   = useState(false);
   const [selectedDoctorId, setSelectedDoctorId]           = useState(null);
+  const [selectedNurseId, setSelectedNurseId]             = useState(null);
+  const [selectedPharmacistId, setSelectedPharmacistId]   = useState(null);
   const [selectedFireFighterId, setSelectedFireFighterId] = useState(null);
   const [selectedManagerId, setSelectedManagerId]         = useState(null);
   const [selectedMessageId, setSelectedMessageId]         = useState(null);
@@ -97,7 +101,8 @@ export default function AdminView({ currentUser, onLogout }) {
         <div className="av-mod-bar">
           <button className="av-add-btn" onClick={openModal}>➕ Add Nurse</button>
         </div>
-        <ManageNurse />
+        <ManageNurse onSelectNurse={setSelectedNurseId} />
+        <GetSingleNurse nurseId={selectedNurseId} />
         <AddModal title="👩‍⚕️ Add Nurse"><AddNurse /></AddModal>
       </>
     ),
@@ -106,7 +111,8 @@ export default function AdminView({ currentUser, onLogout }) {
         <div className="av-mod-bar">
           <button className="av-add-btn" onClick={openModal}>➕ Add Pharmacist</button>
         </div>
-        <ManagePharmacist />
+        <ManagePharmacist onSelectPharmacist={setSelectedPharmacistId} />
+        <GetSinglePharmacist pharmacistId={selectedPharmacistId} />
         <AddModal title="💊 Add Pharmacist"><AddPharmacist /></AddModal>
       </>
     ),
@@ -208,3 +214,5 @@ export default function AdminView({ currentUser, onLogout }) {
     </div>
   );
 }
+
+export default AdminView;

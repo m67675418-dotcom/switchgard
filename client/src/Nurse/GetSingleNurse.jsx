@@ -1,34 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './GetSingleNurse.css';  // ✅ صحيح: GetSingleNurse.css
+import './GetSingleNurse.css';
 import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
-const GetSingleNurse = ({ nurseId }) => {  // ✅ صحيح: GetSingleNurse
+const GetSingleNurse = ({ nurseId }) => {
   const [nurse, setNurse] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!nurseId) { 
-      setNurse(null); 
-      return; 
+    console.log('🔍 Received nurseId (_id):', nurseId);
+
+    if (!nurseId) {
+      setNurse(null);
+      return;
     }
 
     const fetchNurse = async () => {
       try {
+        console.log('📡 Fetching from API:', `${API_BASE}/nurse/${nurseId}`);
         setLoading(true);
         setError(null);
         const response = await axios.get(`${API_BASE}/nurse/${nurseId}`);
+        console.log('✅ Response:', response.data);
         setNurse(response.data.nurse);
       } catch (err) {
+        console.error('❌ Error:', err);
         setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
     };
-    
+
     fetchNurse();
   }, [nurseId]);
 
@@ -77,20 +82,28 @@ const GetSingleNurse = ({ nurseId }) => {  // ✅ صحيح: GetSingleNurse
       <div className="nurse-card">
         <div className="nurse-header">
           <div className="nurse-icon">🩺</div>
-          <h2 className="nurse-title">ممرضة #{nurse.id?.slice(-6)}</h2>
+          <h2 className="nurse-title">ممرضة #{nurse._id?.slice(-6)}</h2>
           <p className="nurse-diplome">
             <span className="badge diplome">🎓 {nurse.diplome}</span>
           </p>
         </div>
-        
+
         <div className="nurse-info">
           <div className="info-row">
             <span className="info-label">🆔 المعرف</span>
-            <span className="info-value">{nurse.id?.slice(-8)}</span>
+            <span className="info-value">{nurse._id?.slice(-8)}</span>
           </div>
           <div className="info-row">
             <span className="info-label">👤 User ID</span>
             <span className="info-value">{nurse.userId?.slice(-8)}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">👤 الاسم الكامل</span>
+            <span className="info-value">{nurse.fullName || 'N/A'}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">📧 الإيميل</span>
+            <span className="info-value">{nurse.gmail}</span>
           </div>
           <div className="info-row">
             <span className="info-label">🎓 الشهادة</span>

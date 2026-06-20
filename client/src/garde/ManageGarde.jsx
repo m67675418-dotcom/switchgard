@@ -5,7 +5,7 @@ import '../styles/form.css';
 
 const API_BASE = 'http://localhost:5000/api';
 
-const ManageShift = ({ onSelectShift }) => {
+const ManageShift = ({ onSelectGarde }) => {
     const [shifts, setShifts] = useState([]);
     const [selectedShift, setSelectedShift] = useState(null);
     const [formData, setFormData] = useState({
@@ -73,14 +73,14 @@ const ManageShift = ({ onSelectShift }) => {
         });
     }, []);
 
-    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleShift
+    // ✅ دالة جديدة باش نبعثو الـ _id لـ GetSingleGarde (عبر AdminView)
     const handleViewDetails = useCallback((shift) => {
         const id = shift._id;
         console.log('👁️ Viewing shift _id:', id);
-        if (onSelectShift) {
-            onSelectShift(id);
+        if (onSelectGarde) {
+            onSelectGarde(id);
         }
-    }, [onSelectShift]);
+    }, [onSelectGarde]);
 
     const handleSearch = useCallback(async (e) => {
         e.preventDefault();

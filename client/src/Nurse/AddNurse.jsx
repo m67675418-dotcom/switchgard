@@ -7,12 +7,12 @@ const API_BASE = 'http://localhost:5000/api';
 
 const AddNurse = () => {
     const [formData, setFormData] = useState({
-        userId: '',
         gmail: '',
         password: '',
         diplome: '',
         service: '',
         equipe: ''
+        // ✅ حيدنا userId من هنا، حيت غادي يتولد وحدو فالسيرفر
     });
     const [loading, setLoading] = useState(false);
     const [status, setStatus] = useState({ type: '', message: '' });
@@ -36,10 +36,12 @@ const AddNurse = () => {
         }
 
         try {
-            await axios.post(`${API_BASE}/nurse/add`, formData);
-            setStatus({ type: 'success', message: '✅ Nurse added successfully!' });
-            setFormData({ userId: '', gmail: '', password: '', diplome: '', service: '', equipe: '' });
+            const response = await axios.post(`${API_BASE}/nurse/add`, formData);
+            console.log('✅ Add response:', response.data);
+            setStatus({ type: 'success', message: `✅ Nurse added successfully! (ID: ${response.data.nurse?.userId})` });
+            setFormData({ gmail: '', password: '', diplome: '', service: '', equipe: '' });
         } catch (error) {
+            console.error('❌ Error:', error);
             setStatus({ type: 'error', message: '❌ Failed to add: ' + (error.response?.data?.message || error.message) });
         } finally {
             setLoading(false);
@@ -55,7 +57,7 @@ const AddNurse = () => {
                 {status.message && <div className={`status-message form-status ${status.type}`}>{status.message}</div>}
 
                 <form onSubmit={handleSubmit}>
-                    <input type="text" name="userId" placeholder="🆔 User ID" value={formData.userId} onChange={handleChange} className="form-field" />
+                    {/* ✅ حيدنا input ديال userId، حيت كيتولد وحدو */}
                     <input type="email" name="gmail" placeholder="📧 Email Address" value={formData.gmail} onChange={handleChange} required className="form-field" />
                     <input type="password" name="password" placeholder="🔒 Password" value={formData.password} onChange={handleChange} required className="form-field" />
                     <select name="diplome" value={formData.diplome} onChange={handleChange} required className="form-select form-field">

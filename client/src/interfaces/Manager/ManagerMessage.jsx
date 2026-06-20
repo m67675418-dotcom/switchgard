@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import './DDSMessage.css';
+import './ManagerMessage.css';
 
 const API = 'http://localhost:5000/api';
 

@@ -1,7 +1,7 @@
 // client/src/interfaces/DDS/DDSHome.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import "./DDSHome.css";
+import "./ManagerHome.css";
 import UserProfileModal from './UserProfileModal';
 
 const API = 'http://localhost:5000/api';

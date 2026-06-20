@@ -127,12 +127,11 @@ app.use(
 );
 
 // ✅ Manager Routes
-app.use("/api/manager/add", require("./routes/DDSRoutes/addDDS"));
-app.use("/api/manager/getAll", require("./routes/DDSRoutes/getDDS"));
-app.use("/api/manager", require("./routes/DDSRoutes/GetSingleDDS"));
-app.use("/api/manager", require("./routes/DDSRoutes/updateDDS"));
-app.use("/api/manager", require("./routes/DDSRoutes/deleteDDS"));
-
+app.use("/api/manager/add", require("./routes/ManagerRoutes/addManager"));
+app.use("/api/manager/getAll", require("./routes/ManagerRoutes/getManager"));
+app.use("/api/manager", require("./routes/ManagerRoutes/GetSingleManager"));
+app.use("/api/manager", require("./routes/ManagerRoutes/updateManager"));
+app.use("/api/manager", require("./routes/ManagerRoutes/deleteManager"));
 // ✅ Garde Routes
 app.use("/api/garde/add", require("./routes/gardeRoutes/addgarde"));
 app.use("/api/garde/getAll", require("./routes/gardeRoutes/getgarde"));

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './DDSProfile.css';
+import './ManagerProfile.css';
 
 const DDSProfile = ({ ddsId, currentUser, onNavigate, onUpdateUser }) => {
   const [isEditing, setIsEditing] = useState(false);
