@@ -1,3 +1,4 @@
+// client/src/interfaces/Manager/ManagerMessage.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './ManagerMessage.css';
@@ -8,7 +9,19 @@ const ROLE_EMOJI = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist
 
 const getName = (u) => u.fullName || u.nomPharmacie || u.matricule || u.userId || 'User';
 
-export default function DDSMessage({ currentUser, openUserId }) {
+// The Message collection stores senderId/receiverId as display names
+// (fullName / userId / matricule / nomPharmacie), not MongoDB _ids — same
+// convention as Chatmessage.jsx used by doctor/nurse/pharmacist/firefighter.
+const getMe = (u) =>
+  u?.fullName ||
+  u?.nomPharmacie ||
+  u?.userId ||
+  u?.matricule ||
+  u?.displayName ||
+  u?.email ||
+  'manager';
+
+export default function ManagerMessage({ currentUser, openUserId, openUserName }) {
   const [contacts, setContacts]     = useState([]);
   const [selected, setSelected]     = useState(null);
   const [messages, setMessages]     = useState([]);
@@ -18,7 +31,7 @@ export default function DDSMessage({ currentUser, openUserId }) {
   const [sending, setSending]       = useState(false);
   const bottomRef                   = useRef(null);
 
-  const me = currentUser?._id || currentUser?.id;
+  const me = getMe(currentUser);
 
   useEffect(() => {
     Promise.all([
@@ -37,16 +50,34 @@ export default function DDSMessage({ currentUser, openUserId }) {
     }).catch(() => setLoading(false));
   }, []);
 
+  // Auto-select a conversation when navigated here with a specific user
+  // (e.g. from a notification's "Message X" button). Matches by id first,
+  // falls back to matching by display name if only a name was provided.
   useEffect(() => {
-    if (!openUserId || loading) return;
-    const target = contacts.find(c => c._id === openUserId);
-    if (target) setSelected(target);
-  }, [openUserId, loading]);
+    if (loading || (!openUserId && !openUserName)) return;
+    let target = openUserId ? contacts.find(c => c._id === openUserId) : null;
+    if (!target && openUserName) target = contacts.find(c => getName(c) === openUserName);
+    if (target) {
+      setSelected(target);
+    } else if (openUserName) {
+      // Contact not found in the loaded lists (e.g. name mismatch) — still
+      // let the manager start a conversation using the name we have.
+      setSelected({ _id: `name-${openUserName}`, fullName: openUserName, role: null });
+    }
+  }, [openUserId, openUserName, loading, contacts]);
 
   useEffect(() => {
     if (!selected || !me) return;
-    axios.get(`${API}/message/conversation/${me}/${selected._id}`)
-      .then(r => setMessages(r.data || []))
+    const partnerName = getName(selected);
+    axios.get(`${API}/message/getAll`)
+      .then(r => {
+        const all = Array.isArray(r.data) ? r.data : [];
+        const filtered = all.filter(m =>
+          (m.senderId === me && m.receiverId === partnerName) ||
+          (m.receiverId === me && m.senderId === partnerName)
+        );
+        setMessages(filtered);
+      })
       .catch(() => setMessages([]));
   }, [selected, me]);
 
@@ -57,16 +88,22 @@ export default function DDSMessage({ currentUser, openUserId }) {
   const handleSend = async (e) => {
     e.preventDefault();
     if (!text.trim() || !selected || sending) return;
+    const partnerName = getName(selected);
     setSending(true);
     try {
       await axios.post(`${API}/message/add`, {
         senderId:   me,
-        receiverId: selected._id,
+        receiverId: partnerName,
         content:    text.trim(),
       });
       setText('');
-      const r = await axios.get(`${API}/message/conversation/${me}/${selected._id}`);
-      setMessages(r.data || []);
+      const r = await axios.get(`${API}/message/getAll`);
+      const all = Array.isArray(r.data) ? r.data : [];
+      const filtered = all.filter(m =>
+        (m.senderId === me && m.receiverId === partnerName) ||
+        (m.receiverId === me && m.senderId === partnerName)
+      );
+      setMessages(filtered);
     } catch {
       alert('Failed to send message');
     } finally {

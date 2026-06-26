@@ -11,6 +11,7 @@ const ROLE_CONFIG = {
   nurse:       { heroEmoji: "💉", emoji: "👩‍⚕️", color: "#10b981", light: "#d1fae5" },
   firefighter: { heroEmoji: "🔥", emoji: "🚒",   color: "#ef4444", light: "#fee2e2" },
   pharmacist:  { heroEmoji: "💊", emoji: "💊",   color: "#059669", light: "#d1fae5" },
+  manager:     { heroEmoji: "👔", emoji: "👔",   color: "#7c3aed", light: "#f5f3ff" },
 };
 
 // nameKey for each role's API
@@ -19,6 +20,7 @@ const ROLE_NAME_KEY = {
   nurse:       "userId",
   firefighter: "matricule",
   pharmacist:  "nomPharmacie",
+  manager:     "fullName",
 };
 
 const EMOJI_LIST = ["😀","😂","🥰","😎","🤩","😴","🥺","😭","🙏","👍","❤️","🔥","✅","💯","👋","💪","🤝","🩺","💊","🩹","🏥","🚑","⚡","🌟","🎯"];
@@ -37,10 +39,13 @@ const getMe = (u) =>
   u?.email ||
   "user";
 
-  // أضف هذا بعد const getMe = (u) => {...}
+// أضف هذا بعد const getMe = (u) => {...}
+// Searches every staff collection (including managers) to find which role
+// a given display name/email belongs to. Used to tag conversation partners
+// with the right role so each inbox only shows same-role contacts.
 const getUserRole = async (userNameOrEmail) => {
   try {
-    const roles = ["doctor", "nurse", "firefighter", "pharmacist"];
+    const roles = ["doctor", "nurse", "firefighter", "pharmacist", "manager"];
     for (const role of roles) {
       const res = await fetch(`${API}/${role}/getAll`);
       const data = await res.json();
@@ -727,8 +732,7 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
     })
     .catch(() => setLoading(false));
 }, [me, role]);
-      
-
+        
   useEffect(() => { loadConvs(); }, [loadConvs]);
 
   useEffect(() => {
@@ -793,7 +797,6 @@ function Inbox({ cfg, role, onSelect, onNavigate, currentUser, socket, notificat
   setConvs(prev => [newConv, ...prev]);
   handleSelect(newConv);
 };
-
 
   const totalUnread = Object.values(notifications).reduce((a,b) => a+b, 0);
 

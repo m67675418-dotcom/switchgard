@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './NotificationBell.css';
 import NotificationDetailModal from './NotificationDetailModal';
+import ManagerNotificationModal from './ManagerNotificationModal';
 
 const NotificationBell = ({ currentUser, onNavigate }) => {
   const [notifications, setNotifications] = useState([]);
@@ -192,7 +193,17 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
         </div>
       )}
 
-      {detailNotif && (
+      {detailNotif && currentUser?.role === 'manager' && (
+        <ManagerNotificationModal
+          notif={detailNotif}
+          currentUser={currentUser}
+          onClose={() => setDetailNotif(null)}
+          onNavigate={onNavigate}
+          onDecided={fetchNotifications}
+        />
+      )}
+
+      {detailNotif && currentUser?.role !== 'manager' && (
         <NotificationDetailModal
           notif={detailNotif}
           currentUser={currentUser}

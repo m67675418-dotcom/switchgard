@@ -36,7 +36,7 @@ const TABS = [
   { key: 'rejected', label: '❌ Rejetées' },
 ];
 
-const ManagerNotifications = ({ currentUser }) => {
+const ManagerNotifications = ({ currentUser, onNavigate }) => {
   const [notifications, setNotifications] = useState([]);
   const [demandeCache, setDemandeCache]   = useState({}); // demandeId -> demande
   const [loading, setLoading]             = useState(true);
@@ -100,6 +100,10 @@ const ManagerNotifications = ({ currentUser }) => {
     } catch (err) {
       alert('❌ ' + (err.response?.data?.message || err.message));
     }
+  };
+
+  const handleMessage = (userId, name) => {
+    onNavigate?.('messages', { openUserId: userId, openUserName: name });
   };
 
   const filtered = notifications.filter(n => tab === 'all' || STATUS_OF(n) === tab);
@@ -181,6 +185,7 @@ const ManagerNotifications = ({ currentUser }) => {
           onClose={closeModal}
           onApprove={approveFromModal}
           onReject={rejectFromModal}
+          onMessage={handleMessage}
           readOnly={STATUS_OF(selected.notif) !== 'pending'}
         />
       )}

@@ -105,7 +105,18 @@ export default function NotificationDetailModal({ notif, currentUser, onClose, o
     onNavigate?.('messages', { openUserName: otherUserFallbackName, openUserId: otherUserId });
   };
 
-  const isPendingDecision = notif.type === 'demande_received';
+  const isPendingDecision = notif.type === 'demande_received' && demande?.status === 'pending';
+
+  // Once the demande has moved past pending (proprietaire accepted it), both
+  // sides should be able to jump straight into a conversation — no need to
+  // wait for the manager's final approval. This covers:
+  //  - the demandeur's own 'demande_accepted' notification
+  //  - the proprietaire's original 'demande_received' notification, which
+  //    they still have on file after clicking Accept on it
+  //  - the eventual 'final_approved' notifications once a manager decides
+  const canMessage = demande
+    ? ['accepted', 'completed'].includes(demande.status)
+    : notif.type === 'final_approved';
 
   const handleAccept = async () => {
     if (!window.confirm('✅ Accepter cette demande?')) return;
@@ -202,13 +213,15 @@ export default function NotificationDetailModal({ notif, currentUser, onClose, o
               </button>
             </div>
           )}
-          <button
-            className="ndm-btn-message"
-            onClick={handleMessage}
-            disabled={!otherUserFallbackName && !otherUserId}
-          >
-            💬 Message {otherUserFallbackName || ''}
-          </button>
+          {canMessage && (
+            <button
+              className="ndm-btn-message"
+              onClick={handleMessage}
+              disabled={!otherUserFallbackName && !otherUserId}
+            >
+              💬 Message {otherUserFallbackName || ''}
+            </button>
+          )}
         </div>
       </div>
     </div>

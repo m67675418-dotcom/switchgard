@@ -33,6 +33,7 @@ import FireFighterProfile from "./interfaces/FireFighter/FireFighterProfile";
 
 import ManagerHome from './interfaces/Manager/ManagerHome';
 import ManagerGarde from './interfaces/Manager/ManagerGarde';
+import ManagerMessage from './interfaces/Manager/ManagerMessage';
 import ManagerNotifications from './interfaces/Manager/ManagerNotifications';
 import ManagerProfile from './interfaces/Manager/ManagerProfile';
 
@@ -48,7 +49,7 @@ const NAV = {
   nurse:      [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
   pharmacist: [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
   firefighter:[{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
-  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'notifications',icon:'🔔',label:'Notifications' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'notifications',icon:'🔔',label:'Notifications' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
 };
 
 // ── ROLE SHELL (shared wrapper for all field roles) ──────────────
@@ -180,13 +181,17 @@ function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
 function DDSView({ currentUser, onLogout, onUpdateUser }) {
   const [view, setView]               = useState("home");
   const [ddsId, setDdsId]             = useState(currentUser?.id || null);
+  const [openUserId, setOpenUserId]     = useState(null);
+  const [openUserName, setOpenUserName] = useState(null);
 
   const nav = (v, param = null) => {
-    // param.openUserId from older notification flows is no longer used here
-    // since manager messaging was removed, but we keep nav's signature stable
-    // in case other screens still pass it through.
-    if (param && typeof param !== 'object') {
-      setDdsId(param);
+    if (param && typeof param === 'object') {
+      if (param.openUserId)   setOpenUserId(param.openUserId);
+      if (param.openUserName) setOpenUserName(param.openUserName);
+    } else {
+      if (param) setDdsId(param);
+      setOpenUserId(null);
+      setOpenUserName(null);
     }
     setView(v);
   };
@@ -195,6 +200,7 @@ function DDSView({ currentUser, onLogout, onUpdateUser }) {
     <RoleShell role="manager" roleClass="role-manager" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
   {view === "home"          && <ManagerHome onNavigate={nav} currentUser={currentUser} />}
   {view === "garde"         && <ManagerGarde onNavigate={nav} currentUser={currentUser} />}
+  {view === "messages"      && <ManagerMessage onNavigate={nav} currentUser={currentUser} openUserId={openUserId} openUserName={openUserName} />}
   {view === "notifications" && <ManagerNotifications onNavigate={nav} currentUser={currentUser} />}
   {view === "profile"       && <ManagerProfile ddsId={ddsId || currentUser?.id} currentUser={currentUser} onNavigate={nav} onUpdateUser={onUpdateUser} />}
   {view === "demandes"      && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}

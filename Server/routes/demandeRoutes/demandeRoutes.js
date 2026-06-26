@@ -96,7 +96,9 @@ router.put('/:id/accept', async (req, res) => {
       userId: demande.demandeurId,
       type: 'demande_accepted',
       message: `✅ ${demande.gardeOwner} a accepté votre demande`,
-      demandeId: demande._id.toString()
+      demandeId: demande._id.toString(),
+      otherUserId:   demande.proprietaireId,
+      otherUserName: demande.gardeOwner,
     });
     await notificationDemandeur.save();
 
