@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const Email = require('../../models/email');
+const Email = require('../../models/Email');
 
 router.get('/:id', async (req, res) => {
     try {

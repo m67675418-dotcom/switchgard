@@ -1,7 +1,7 @@
 // 📁 routes/emailRoutes/GetAllEmails.js
 const express = require('express');
 const router = express.Router();
-const Email = require('../../models/email');
+const Email = require('../../models/Email');
 const { protect, authorize } = require('../../middleware/authMiddleware');
 
 // 🔍 GET /api/emails - جلب كل الإيميلات (محمي للأدمن فقط)
