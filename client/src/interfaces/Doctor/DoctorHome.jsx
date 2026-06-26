@@ -20,7 +20,7 @@ export default function DoctorHome({ onNavigate, currentUser }) {
       fetch("http://localhost:5000/api/garde/getAll")
         .then(r => r.json())
         .catch(() => []),
-      fetch("http://localhost:5000/api/demandes/getAll")
+      fetch("http://localhost:5000/api/demande")
         .then(r => r.json())
         .catch(() => []),
     ]).then(([docs, gardes, demandes]) => {

@@ -21,6 +21,14 @@ const notificationSchema = new mongoose.Schema({
   read:          { type: Boolean, default: false },
   otherUserId:   { type: String, default: null },
   otherUserName: { type: String, default: null },
+  // Tracks the outcome of a 'director_review' notification once a manager
+  // approves/rejects the underlying demande. Stays 'pending' for every other
+  // notification type (it's only meaningful for director_review).
+  status: {
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Notification', notificationSchema);

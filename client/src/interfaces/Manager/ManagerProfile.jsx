@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './ManagerProfile.css';
 
-const DDSProfile = ({ ddsId, currentUser, onNavigate, onUpdateUser }) => {
+const ManagerProfile = ({ ddsId, currentUser, onNavigate, onUpdateUser }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     fullName: currentUser?.fullName || '',
@@ -84,4 +84,4 @@ const DDSProfile = ({ ddsId, currentUser, onNavigate, onUpdateUser }) => {
   );
 };
 
-export default DDSProfile;
+export default ManagerProfile;

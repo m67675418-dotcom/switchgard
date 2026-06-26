@@ -1,21 +1,21 @@
-/* client/src/interfaces/Manager/UserProfileModal.css */
+/* client/src/interfaces/components/NotificationDetailModal.css */
 
-.upm-overlay {
+.ndm-overlay {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 1100;
   padding: 20px;
 }
 
-.upm-modal {
+.ndm-modal {
   background: #fff;
   border-radius: 16px;
   width: 100%;
-  max-width: 720px;
+  max-width: 420px;
   max-height: 90vh;
   overflow-y: auto;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
@@ -23,11 +23,11 @@
   flex-direction: column;
 }
 
-.upm-header {
+.ndm-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 24px;
+  padding: 16px 20px;
   border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
@@ -35,21 +35,21 @@
   border-radius: 16px 16px 0 0;
 }
 
-.upm-title {
-  font-size: 18px;
+.ndm-title {
+  font-size: 16px;
   font-weight: 700;
   color: #1e293b;
 }
 
-.upm-close {
+.ndm-close {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 20px;
   line-height: 1;
   color: #64748b;
   cursor: pointer;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 8px;
   display: flex;
   align-items: center;
@@ -57,32 +57,30 @@
   transition: background 0.15s;
 }
 
-.upm-close:hover {
+.ndm-close:hover {
   background: #f1f5f9;
   color: #1e293b;
 }
 
-.upm-panels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  padding: 24px;
+.ndm-body {
+  padding: 20px;
 }
 
-@media (max-width: 600px) {
-  .upm-panels {
-    grid-template-columns: 1fr;
-  }
+.ndm-message {
+  font-size: 14px;
+  color: #334155;
+  margin: 0 0 16px;
+  line-height: 1.5;
 }
 
-.upm-panel {
+.ndm-panel {
   background: #f8fafc;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
   padding: 16px;
 }
 
-.upm-panel-title {
+.ndm-panel-title {
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
@@ -91,18 +89,18 @@
   margin-bottom: 12px;
 }
 
-.upm-field {
+.ndm-field {
   display: flex;
   flex-direction: column;
   gap: 2px;
   margin-bottom: 12px;
 }
 
-.upm-field:last-child {
+.ndm-field:last-child {
   margin-bottom: 0;
 }
 
-.upm-label {
+.ndm-label {
   font-size: 11px;
   color: #94a3b8;
   text-transform: uppercase;
@@ -110,25 +108,35 @@
   font-weight: 600;
 }
 
-.upm-value {
+.ndm-value {
   font-size: 14px;
   color: #1e293b;
   font-weight: 500;
   word-break: break-word;
 }
 
-.upm-loading {
+.ndm-loading, .ndm-empty {
   font-size: 13px;
   color: #94a3b8;
   padding: 8px 0;
 }
 
-.upm-footer {
+.ndm-garde-meta {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
   gap: 12px;
-  padding: 16px 24px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ndm-capitalize {
+  text-transform: capitalize;
+}
+
+.ndm-footer {
+  padding: 16px 20px;
   border-top: 1px solid #e2e8f0;
   position: sticky;
   bottom: 0;
@@ -136,59 +144,74 @@
   border-radius: 0 0 16px 16px;
 }
 
-.upm-btn-approve {
+.ndm-decision-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.ndm-btn-approve {
+  flex: 1;
   background: #16a34a;
   color: #fff;
   border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.upm-btn-approve:hover {
-  background: #15803d;
-}
-
-.upm-btn-reject {
-  background: #dc2626;
-  color: #fff;
-  border: none;
-  padding: 10px 22px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.upm-btn-reject:hover {
-  background: #b91c1c;
-}
-
-/* Status banner — shown instead of Approve/Reject when read-only (history) */
-.upm-status-banner {
-  width: 100%;
-  text-align: center;
-  padding: 12px 16px;
+  padding: 11px 16px;
   border-radius: 10px;
   font-weight: 600;
   font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
 }
 
-.upm-status-approved {
-  background: #d1fae5;
-  color: #065f46;
+.ndm-btn-approve:hover {
+  background: #15803d;
 }
 
-.upm-status-rejected {
-  background: #fee2e2;
-  color: #991b1b;
+.ndm-btn-approve:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
 }
 
-.upm-status-pending {
-  background: #fef3c7;
-  color: #92400e;
+.ndm-btn-reject {
+  flex: 1;
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ndm-btn-reject:hover {
+  background: #b91c1c;
+}
+
+.ndm-btn-reject:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
+}
+
+.ndm-btn-message {
+  width: 100%;
+  background: #4338ca;
+  color: #fff;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.ndm-btn-message:hover {
+  background: #3730a3;
+}
+
+.ndm-btn-message:disabled {
+  background: #cbd5e1;
+  cursor: not-allowed;
 }

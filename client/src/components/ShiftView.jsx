@@ -12,6 +12,9 @@ const ROLE_LABELS = {
   manager:     'Manager',
 };
 
+const ROLE_ORDER = ['doctor', 'nurse', 'pharmacist', 'firefighter'];
+const ROLE_ICON  = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
+
 function getTimePeriod(timeStr) {
   if (!timeStr) return null;
   const h = parseInt(timeStr.split(':')[0], 10);
@@ -41,7 +44,192 @@ const STATUS_STYLE = {
   Completed: { bg: '#dbeafe', color: '#1e40af' },
 };
 
-export default function ShiftView({ currentUser, role }) {
+// Shared shift card, used by both the manager view and the default view.
+function ShiftCard({ s, iconFallback, onSelect, onDelete }) {
+  const sc = STATUS_STYLE[s.status] || { bg: '#f1f5f9', color: '#64748b' };
+  return (
+    <div className="sv-card" onClick={() => onSelect(s)}>
+      <div className="sv-card-icon">{iconFallback}</div>
+      <div className="sv-card-body">
+        <div className="sv-card-top">
+          <span className="sv-card-owner">{s.owner || 'Unknown'}</span>
+          {s.role && <span className="sv-role-chip">{ROLE_LABELS[s.role] || s.role}</span>}
+        </div>
+        <div className="sv-card-meta">
+          <span>📅 {fmtDate(s.dateGarde)}</span>
+          {s.time    && <span>🕐 {fmtTime(s.time)}</span>}
+          {s.place   && <span>📍 {s.place}</span>}
+          {s.service && <span>🩺 {s.service}</span>}
+        </div>
+      </div>
+      <div className="sv-card-right">
+        <span className="sv-badge" style={{ background: sc.bg, color: sc.color }}>
+          {s.status || 'Active'}
+        </span>
+        <button className="sv-del-btn" onClick={e => onDelete(e, s._id)} title="Delete shift">
+          🗑️
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// MANAGER VIEW — separate, simplified UI: no stat cards, no Active/
+// My Shifts/Archived tabs. Instead, one tab per field role. Every shift
+// for the selected role is shown regardless of status.
+// ─────────────────────────────────────────────────────────────────
+function ManagerShiftView({ currentUser }) {
+  const [shifts, setShifts]       = useState([]);
+  const [loading, setLoading]     = useState(true);
+  const [toast, setToast]         = useState(null);
+  const [roleTab, setRoleTab]     = useState('doctor');
+  const [selectedShift, setSelectedShift] = useState(null);
+
+  const [filterDate,   setFilterDate]   = useState('');
+  const [filterPeriod, setFilterPeriod] = useState('');
+
+  const showToast = useCallback((text, type = 'success') => {
+    setToast({ text, type });
+    setTimeout(() => setToast(null), 3000);
+  }, []);
+
+  const fetchShifts = useCallback(() => {
+    setLoading(true);
+    // No role filter here — managers need every field role's shifts so they
+    // can be split client-side into the role tabs below.
+    fetch(`${API}/garde/getAll`)
+      .then(r => r.json())
+      .then(data => { setShifts(Array.isArray(data) ? data : []); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetchShifts(); }, [fetchShifts]);
+
+  const handleDelete = async (e, id) => {
+    e.stopPropagation();
+    if (!window.confirm('Delete this shift?')) return;
+    try {
+      await fetch(`${API}/garde/${id}`, { method: 'DELETE' });
+      setShifts(p => p.filter(s => s._id !== id));
+      showToast('Shift deleted ✅');
+    } catch {
+      showToast('Delete failed ❌', 'error');
+    }
+  };
+
+  const applyFilters = (list) => list.filter(s => {
+    if (filterDate) {
+      const sd = s.dateGarde ? s.dateGarde.split('T')[0] : '';
+      if (sd !== filterDate) return false;
+    }
+    if (filterPeriod && getTimePeriod(s.time) !== filterPeriod) return false;
+    return true;
+  });
+
+  const byDate = (a, b) => new Date(b.dateGarde) - new Date(a.dateGarde);
+
+  const countByRole = (r) => shifts.filter(s => (s.role || 'doctor') === r).length;
+
+  const displayed = applyFilters(shifts.filter(s => (s.role || 'doctor') === roleTab)).sort(byDate);
+
+  const hasFilter = filterDate || filterPeriod;
+
+  return (
+    <div className="sv-container">
+      {toast && <div className={`sv-toast sv-toast-${toast.type}`}>{toast.text}</div>}
+
+      <div className="sv-header">
+        <div>
+          <h2 className="sv-title">🛡️ Shift Management</h2>
+          <p className="sv-subtitle">Browse shifts by staff role</p>
+        </div>
+      </div>
+
+      {/* Role tabs replace Active/My Shifts/Archived for managers */}
+      <div className="sv-tabs">
+        {ROLE_ORDER.map(r => (
+          <button
+            key={r}
+            className={`sv-tab ${roleTab === r ? 'sv-tab-active' : ''}`}
+            onClick={() => setRoleTab(r)}
+          >
+            {ROLE_ICON[r]} {ROLE_LABELS[r]}
+            <span className="sv-tab-count">{countByRole(r)}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Filters (role filter removed — role tabs above replace it) */}
+      <div className="sv-filters">
+        <input
+          type="date"
+          className="sv-filter-ctrl"
+          value={filterDate}
+          onChange={e => setFilterDate(e.target.value)}
+          title="Filter by date"
+        />
+        <select className="sv-filter-ctrl" value={filterPeriod} onChange={e => setFilterPeriod(e.target.value)}>
+          <option value="">Any Time</option>
+          <option value="morning">🌅 Morning (6–12)</option>
+          <option value="afternoon">☀️ Afternoon (12–18)</option>
+          <option value="night">🌙 Night (18–6)</option>
+        </select>
+        {hasFilter && (
+          <button className="sv-clear-btn" onClick={() => { setFilterDate(''); setFilterPeriod(''); }}>
+            Clear
+          </button>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="sv-empty">⏳ Loading shifts…</div>
+      ) : displayed.length === 0 ? (
+        <div className="sv-empty">
+          <span>{ROLE_ICON[roleTab]}</span>
+          <p>
+            {hasFilter
+              ? 'No shifts match your filters'
+              : `No shifts found for ${ROLE_LABELS[roleTab]}`}
+          </p>
+        </div>
+      ) : (
+        <div className="sv-list">
+          {displayed.map(s => (
+            <ShiftCard
+              key={s._id}
+              s={s}
+              iconFallback={ROLE_ICON[roleTab]}
+              onSelect={setSelectedShift}
+              onDelete={handleDelete}
+            />
+          ))}
+        </div>
+      )}
+
+      <div className="sv-count">{displayed.length} of {countByRole(roleTab)} {ROLE_LABELS[roleTab]} shifts shown</div>
+
+      {selectedShift && (
+        <GardeDetailModal
+          garde={selectedShift}
+          currentUser={currentUser}
+          role={selectedShift.role || roleTab}
+          onClose={() => setSelectedShift(null)}
+          onDemande={() => {
+            setSelectedShift(null);
+            showToast('Request sent ✅');
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// DEFAULT VIEW — original behavior, unchanged, used by doctor/nurse/
+// pharmacist/firefighter.
+// ─────────────────────────────────────────────────────────────────
+function DefaultShiftView({ currentUser, role }) {
   const [shifts, setShifts]           = useState([]);
   const [loading, setLoading]         = useState(true);
   const [showForm, setShowForm]       = useState(false);
@@ -77,7 +265,7 @@ export default function ShiftView({ currentUser, role }) {
       .then(r => r.json())
       .then(data => { setShifts(Array.isArray(data) ? data : []); setLoading(false); })
       .catch(() => setLoading(false));
-  }, []);
+  }, [role]);
 
   useEffect(() => { fetchShifts(); }, [fetchShifts]);
 
@@ -315,40 +503,15 @@ export default function ShiftView({ currentUser, role }) {
         </div>
       ) : (
         <div className="sv-list">
-          {displayed.map(s => {
-            const sc = STATUS_STYLE[s.status] || { bg: '#f1f5f9', color: '#64748b' };
-            return (
-              <div key={s._id} className="sv-card" onClick={() => setSelectedShift(s)}>
-                <div className="sv-card-icon">
-                  {activeTab === 'archived' ? '📦' : activeTab === 'mine' ? '👤' : '🛡️'}
-                </div>
-                <div className="sv-card-body">
-                  <div className="sv-card-top">
-                    <span className="sv-card-owner">{s.owner || 'Unknown'}</span>
-                    {s.role && <span className="sv-role-chip">{ROLE_LABELS[s.role] || s.role}</span>}
-                  </div>
-                  <div className="sv-card-meta">
-                    <span>📅 {fmtDate(s.dateGarde)}</span>
-                    {s.time    && <span>🕐 {fmtTime(s.time)}</span>}
-                    {s.place   && <span>📍 {s.place}</span>}
-                    {s.service && <span>🩺 {s.service}</span>}
-                  </div>
-                </div>
-                <div className="sv-card-right">
-                  <span className="sv-badge" style={{ background: sc.bg, color: sc.color }}>
-                    {s.status || 'Active'}
-                  </span>
-                  <button
-                    className="sv-del-btn"
-                    onClick={e => handleDelete(e, s._id)}
-                    title="Delete shift"
-                  >
-                    🗑️
-                  </button>
-                </div>
-              </div>
-            );
-          })}
+          {displayed.map(s => (
+            <ShiftCard
+              key={s._id}
+              s={s}
+              iconFallback={activeTab === 'archived' ? '📦' : activeTab === 'mine' ? '👤' : '🛡️'}
+              onSelect={setSelectedShift}
+              onDelete={handleDelete}
+            />
+          ))}
         </div>
       )}
 
@@ -368,4 +531,15 @@ export default function ShiftView({ currentUser, role }) {
       )}
     </div>
   );
+}
+
+// ─────────────────────────────────────────────────────────────────
+// ENTRY POINT — picks the right view based on role. Nothing about how
+// other roles call <ShiftView role=... /> needs to change.
+// ─────────────────────────────────────────────────────────────────
+export default function ShiftView({ currentUser, role }) {
+  if (role === 'manager') {
+    return <ManagerShiftView currentUser={currentUser} />;
+  }
+  return <DefaultShiftView currentUser={currentUser} role={role} />;
 }

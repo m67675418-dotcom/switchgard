@@ -65,6 +65,20 @@ router.get('/check', async (req, res) => {
   }
 });
 
+// Get a single demande by id (used by Notifications history page to hydrate
+// role / proprietaireId / demandeurId / gardeId for each notification)
+router.get('/:id', async (req, res) => {
+  try {
+    const demande = await Demande.findById(req.params.id);
+    if (!demande) {
+      return res.status(404).json({ message: 'Demande non trouvée' });
+    }
+    res.json(demande);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur', error: error.message });
+  }
+});
+
 // ✅ Accepter la demande (User B accepts, notifies demandeur + manager)
 router.put('/:id/accept', async (req, res) => {
   try {
@@ -203,6 +217,13 @@ router.put('/:id/director-approve', protect, authorize('admin', 'manager'), asyn
       global.io.to(demande.demandeurId).emit('new_notification', notifDemandeur);
     }
 
+    // Mark the original director_review notification(s) as resolved so the
+    // manager's Notifications history page no longer lists them as pending.
+    await Notification.updateMany(
+      { demandeId: demande._id.toString(), type: 'director_review' },
+      { status: 'approved', read: true }
+    );
+
     // Auto-message now that the exchange is officially approved
     try {
       await Message.create({
@@ -273,6 +294,13 @@ router.put('/:id/director-reject', protect, authorize('admin', 'manager'), async
       global.io.to(demande.demandeurId).emit('new_notification', notifDemandeur);
       global.io.to(demande.proprietaireId).emit('new_notification', notifOwner);
     }
+
+    // Mark the original director_review notification(s) as resolved so the
+    // manager's Notifications history page no longer lists them as pending.
+    await Notification.updateMany(
+      { demandeId: demande._id.toString(), type: 'director_review' },
+      { status: 'rejected', read: true }
+    );
 
     res.json({ success: true, message: 'Rejeté', demande });
   } catch (error) {

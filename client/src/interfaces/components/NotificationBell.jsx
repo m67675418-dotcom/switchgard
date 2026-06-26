@@ -1,11 +1,14 @@
+// client/src/interfaces/components/NotificationBell.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './NotificationBell.css';
+import NotificationDetailModal from './NotificationDetailModal';
 
 const NotificationBell = ({ currentUser, onNavigate }) => {
   const [notifications, setNotifications] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [detailNotif, setDetailNotif] = useState(null);
 
   useEffect(() => {
     if (currentUser?._id || currentUser?.id) {
@@ -46,10 +49,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
     }
   };
 
-  const handleAcceptDemande = async (demandeId, e) => {
-    e.stopPropagation();
-    if (!window.confirm('✅ Accepter cette demande?')) return;
-
+  const acceptDemande = async (demandeId) => {
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
@@ -60,10 +60,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
     }
   };
 
-  const handleRejectDemande = async (demandeId, e) => {
-    e.stopPropagation();
-    if (!window.confirm('❌ Rejeter cette demande?')) return;
-
+  const rejectDemande = async (demandeId) => {
     try {
       await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
@@ -74,15 +71,40 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
     }
   };
 
+  const handleAcceptDemande = async (demandeId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('✅ Accepter cette demande?')) return;
+    await acceptDemande(demandeId);
+  };
+
+  const handleRejectDemande = async (demandeId, e) => {
+    e.stopPropagation();
+    if (!window.confirm('❌ Rejeter cette demande?')) return;
+    await rejectDemande(demandeId);
+  };
+
+  // Managers don't have a messaging tab — their final_approved
+  // notifications open the Notifications history page instead. Field roles
+  // (doctor/nurse/pharmacist/firefighter) still go straight to Messages.
   const handleMessageOtherUser = async (notif, e) => {
     e.stopPropagation();
     await handleMarkAsRead(notif._id);
     setShowDropdown(false);
     const isManager = currentUser?.role === 'manager';
     if (isManager) {
-      onNavigate('messages', { openUserId: notif.otherUserId });
+      onNavigate('notifications');
     } else {
       onNavigate('messages', { openUserName: notif.otherUserName });
+    }
+  };
+
+  // Clicking anywhere on a notification's body (not on a button) opens the
+  // detail modal — showing the other party's profile + a Message shortcut —
+  // as long as this notification carries a demandeId we can hydrate.
+  const handleOpenDetail = (notif) => {
+    handleMarkAsRead(notif._id);
+    if (notif.demandeId) {
+      setDetailNotif(notif);
     }
   };
 
@@ -124,7 +146,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
                 <div
                   key={notif._id}
                   className={`nb-notification-item ${!notif.read ? 'unread' : ''}`}
-                  onClick={() => handleMarkAsRead(notif._id)}
+                  onClick={() => handleOpenDetail(notif)}
                 >
                   <span className="nb-notif-icon">{getIcon(notif.type)}</span>
                   <div className="nb-notif-content">
@@ -156,7 +178,9 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
                           className="nb-btn-message-small"
                           onClick={(e) => handleMessageOtherUser(notif, e)}
                         >
-                          💬 Message {notif.otherUserName}
+                          {currentUser?.role === 'manager'
+                            ? '📋 Voir détails'
+                            : `💬 Message ${notif.otherUserName}`}
                         </button>
                       </div>
                     )}
@@ -166,6 +190,17 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
             )}
           </div>
         </div>
+      )}
+
+      {detailNotif && (
+        <NotificationDetailModal
+          notif={detailNotif}
+          currentUser={currentUser}
+          onClose={() => setDetailNotif(null)}
+          onNavigate={onNavigate}
+          onAccept={acceptDemande}
+          onReject={rejectDemande}
+        />
       )}
     </div>
   );

@@ -1,4 +1,4 @@
-// client/src/interfaces/DDS/DDSHome.jsx
+// client/src/interfaces/Manager/ManagerHome.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import "./ManagerHome.css";
@@ -9,7 +9,7 @@ const API = 'http://localhost:5000/api';
 const roleLabel = { doctor: 'Doctors', nurse: 'Nurses', pharmacist: 'Pharmacists', firefighter: 'Firefighters' };
 const roleEmoji = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
 
-const DDSHome = ({ currentUser, onNavigate }) => {
+const ManagerHome = ({ currentUser, onNavigate }) => {
   const [tab, setTab]                   = useState('users');
   const [pendingUsers, setPendingUsers]  = useState([]);
   const [pendingShifts, setPendingShifts] = useState([]);
@@ -32,7 +32,7 @@ const DDSHome = ({ currentUser, onNavigate }) => {
         axios.get(`${API}/account/pending`, authHeader),
         axios.get(`${API}/demande`, authHeader),
         fetch("http://localhost:5000/api/garde/getAll").then(r => r.json()).catch(() => []),
-        fetch("http://localhost:5000/api/demandes/getAll").then(r => r.json()).catch(() => []),
+        fetch("http://localhost:5000/api/demande").then(r => r.json()).catch(() => []),
       ]);
 
       const users = usersRes.data.accounts || [];
@@ -162,6 +162,9 @@ const DDSHome = ({ currentUser, onNavigate }) => {
           <button className="dds-refresh-btn" onClick={fetchAll}>
             🔄 Refresh
           </button>
+          <button className="dds-refresh-btn" onClick={() => onNavigate?.('notifications')}>
+            🔔 Notifications History
+          </button>
         </div>
 
         {loading ? (
@@ -251,4 +254,4 @@ const DDSEmpty = ({ label }) => (
   </div>
 );
 
-export default DDSHome;
+export default ManagerHome;

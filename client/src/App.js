@@ -33,7 +33,7 @@ import FireFighterProfile from "./interfaces/FireFighter/FireFighterProfile";
 
 import ManagerHome from './interfaces/Manager/ManagerHome';
 import ManagerGarde from './interfaces/Manager/ManagerGarde';
-import ManagerMessage from './interfaces/Manager/ManagerMessage';
+import ManagerNotifications from './interfaces/Manager/ManagerNotifications';
 import ManagerProfile from './interfaces/Manager/ManagerProfile';
 
 import DemandesPage from "./interfaces/components/DemandesPage";
@@ -41,12 +41,14 @@ import DirectorApprovalPage from "./interfaces/components/DirectorApprovalPage";
 import LocationSetup from "./interfaces/user/LocationSetup";
 
 // ── NAV CONFIG PER ROLE ──────────────────────────────────────────
+// manager no longer has a "Messages" tab — it's replaced by a Notifications
+// history page (the bell icon dropdown stays for live/unread alerts).
 const NAV = {
   doctor:     [{ view:'home',icon:'🏠',label:'Home' },{ view:'message',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
   nurse:      [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
   pharmacist: [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
   firefighter:[{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
-  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'messages',icon:'💬',label:'Messages' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
+  manager:    [{ view:'home',icon:'🏠',label:'Home' },{ view:'notifications',icon:'🔔',label:'Notifications' },{ view:'garde',icon:'🛡️',label:'Shifts' }],
 };
 
 // ── ROLE SHELL (shared wrapper for all field roles) ──────────────
@@ -178,26 +180,25 @@ function FirefighterView({ currentUser, onLogout, onUpdateUser }) {
 function DDSView({ currentUser, onLogout, onUpdateUser }) {
   const [view, setView]               = useState("home");
   const [ddsId, setDdsId]             = useState(currentUser?.id || null);
-  const [openUserId, setOpenUserId]   = useState(null);
 
   const nav = (v, param = null) => {
-    if (param && typeof param === 'object') {
-      if (param.openUserId) setOpenUserId(param.openUserId);
-    } else {
-      if (param) setDdsId(param);
-      setOpenUserId(null);
+    // param.openUserId from older notification flows is no longer used here
+    // since manager messaging was removed, but we keep nav's signature stable
+    // in case other screens still pass it through.
+    if (param && typeof param !== 'object') {
+      setDdsId(param);
     }
     setView(v);
   };
 
   return (
     <RoleShell role="manager" roleClass="role-manager" currentUser={currentUser} onLogout={onLogout} view={view} onNavigate={nav}>
-  {view === "home"     && <ManagerHome onNavigate={nav} currentUser={currentUser} />}
-  {view === "garde"    && <ManagerGarde onNavigate={nav} currentUser={currentUser} />}
-  {view === "messages" && <ManagerMessage onNavigate={nav} currentUser={currentUser} openUserId={openUserId} />}
-  {view === "profile"  && <ManagerProfile ddsId={ddsId || currentUser?.id} onNavigate={nav} onUpdateUser={onUpdateUser} />}
-  {view === "demandes" && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
-  {view === "director" && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}
+  {view === "home"          && <ManagerHome onNavigate={nav} currentUser={currentUser} />}
+  {view === "garde"         && <ManagerGarde onNavigate={nav} currentUser={currentUser} />}
+  {view === "notifications" && <ManagerNotifications onNavigate={nav} currentUser={currentUser} />}
+  {view === "profile"       && <ManagerProfile ddsId={ddsId || currentUser?.id} currentUser={currentUser} onNavigate={nav} onUpdateUser={onUpdateUser} />}
+  {view === "demandes"      && <DemandesPage currentUser={currentUser} role="manager" onNavigate={nav} />}
+  {view === "director"      && <DirectorApprovalPage currentUser={currentUser} role="manager" onNavigate={nav} />}
      </RoleShell>
   );
 }
