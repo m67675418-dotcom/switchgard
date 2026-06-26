@@ -34,7 +34,7 @@ app.use('/api/doctor',        require('./routes/DoctorRoutes/deleteDoctor'));
 app.use('/api/doctor',        require('./routes/DoctorRoutes/updateDoctor'));
 
 app.use('/api/nurse/add',    require('./routes/nurseRoutes/addNurse'));
-app.use('/api/nurse/getAll', require('./routes/nurseRoutes/getnurse'));
+app.use('/api/nurse/getAll', require('./routes/nurseRoutes/getNurse'));
 app.use('/api/nurse',        require('./routes/nurseRoutes/GetSingleNurse'));
 app.use('/api/nurse',        require('./routes/nurseRoutes/updateNurse'));
 app.use('/api/nurse',        require('./routes/nurseRoutes/deleteNurse'));
