@@ -55,7 +55,7 @@ app.use('/api/garde/add',    require('./routes/gardeRoutes/addgarde'));
 app.use('/api/garde/getAll', require('./routes/gardeRoutes/getgarde'));
 app.use('/api/garde',        require('./routes/gardeRoutes/GetSingleGarde'));
 app.use('/api/garde',        require('./routes/gardeRoutes/updateGarde'));
-app.use('/api/garde',        require('./routes/gardeRoutes/deleteGarde'));
+app.use('/api/garde', require('./routes/gardeRoutes/deletegarde'));
 
 // Message routes — ORDER MATTERS (specific before generic)
 app.use('/api/message/add',          require('./routes/messageRoutes/addmessage'));
