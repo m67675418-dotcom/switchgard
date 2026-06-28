@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API = 'http://localhost:5000/api/account';
+const API = 'https://switchgard-backend.onrender.com/api/account';
 
 const roleEmoji = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒', manager: '👔' };
 

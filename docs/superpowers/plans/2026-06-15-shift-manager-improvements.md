@@ -78,7 +78,7 @@ app.use("/api/user/profile", require("./routes/accountRoutes/getUserProfile"));
 
 Start the server and run:
 ```
-curl "http://localhost:5000/api/user/profile/REPLACE_WITH_REAL_ID?role=doctor"
+curl "REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/user/profile/REPLACE_WITH_REAL_ID?role=doctor"
 ```
 Expected: JSON object with doctor fields, no password field.
 
@@ -276,7 +276,7 @@ git commit -m "fix: move auto-message to director-approve; add otherUser fields 
 import React, { useState, useEffect } from 'react';
 import './UserProfileModal.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const PROF_ID_LABEL = {
   doctor:      { field: 'numOrdre',     label: '🪪 N° Ordre' },
@@ -781,7 +781,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
   const fetchNotifications = async () => {
     try {
       const userId = currentUser._id || currentUser.id;
-      const res = await axios.get(`http://localhost:5000/api/notification/user/${userId}`);
+      const res = await axios.get(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/notification/user/${userId}`);
       setNotifications(res.data || []);
       setUnreadCount(res.data.filter(n => !n.read).length);
     } catch (error) {
@@ -791,7 +791,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/notification/${id}/read`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/notification/${id}/read`);
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
@@ -801,7 +801,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
   const handleMarkAllAsRead = async () => {
     try {
       const userId = currentUser._id || currentUser.id;
-      await axios.put(`http://localhost:5000/api/notification/user/${userId}/read-all`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/notification/user/${userId}/read-all`);
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
@@ -812,7 +812,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
     e.stopPropagation();
     if (!window.confirm('✅ Accepter cette demande?')) return;
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
       fetchNotifications();
       setTimeout(() => window.location.reload(), 500);
@@ -825,7 +825,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
     e.stopPropagation();
     if (!window.confirm('❌ Rejeter cette demande?')) return;
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
       fetchNotifications();
       setTimeout(() => window.location.reload(), 500);

@@ -18,7 +18,7 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
 
   useEffect(() => {
     if (!doctorId) { setLoading(false); return; }
-    fetch(`http://localhost:5000/api/doctor/${doctorId}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/doctor/${doctorId}`)
       .then(r => r.json())
       .then(data => {
         const d = data.doctor || data;
@@ -32,7 +32,7 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/api/doctor/${doctorId}`, {
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/doctor/${doctorId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
       });
       showToast('Doctor updated successfully ✅');
@@ -46,7 +46,7 @@ export default function DoctorProfile({ doctorId, onNavigate, onUpdateUser }) {
     if (!window.confirm('Delete this doctor?')) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/api/doctor/${doctorId}`, { method: 'DELETE' });
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/doctor/${doctorId}`, { method: 'DELETE' });
       onNavigate?.('home');
     } catch { showToast('Delete failed ❌', 'error'); setDeleting(false); }
   };

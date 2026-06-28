@@ -20,7 +20,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
   const fetchDemandes = async () => {
     try {
       const userId = currentUser._id || currentUser.id;
-      const res = await axios.get('http://localhost:5000/api/demande');
+      const res = await axios.get('https://switchgard-backend.onrender.com/api/demande');
 
       const userDemandes = res.data.filter(d =>
         d.proprietaireId === userId || d.demandeurId === userId
@@ -38,7 +38,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
     if (!window.confirm('✅ Accepter cette demande?')) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
       fetchDemandes();
     } catch (error) {
@@ -50,7 +50,7 @@ const DemandesPage = ({ currentUser, onNavigate }) => {
     if (!window.confirm('❌ Rejeter cette demande?')) return;
 
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
+      await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
       fetchDemandes();
     } catch (error) {

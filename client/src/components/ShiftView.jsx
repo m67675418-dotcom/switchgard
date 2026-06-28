@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import './ShiftView.css';
 import GardeDetailModal from '../interfaces/components/GardeDetailModal';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const ROLE_LABELS = {
   doctor:      'Doctor',

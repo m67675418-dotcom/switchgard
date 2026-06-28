@@ -32,7 +32,7 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
     setLoadingProfile(true);
     const id = garde.ownerId;
     if (!id) { setLoadingProfile(false); return; }
-    fetch(`http://localhost:5000/api/${cfg.api}/${id}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/${cfg.api}/${id}`)
       .then(r => r.json())
       .then(data => { setOwnerProfile(data[cfg.api] || data); setLoadingProfile(false); })
       .catch(() => setLoadingProfile(false));
@@ -41,7 +41,7 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
   useEffect(() => {
     const currentUserId = getCurrentUserId();
     if (!garde?._id || !currentUserId) return;
-    fetch(`http://localhost:5000/api/demande/check?gardeId=${garde._id}&demandeurId=${currentUserId}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/check?gardeId=${garde._id}&demandeurId=${currentUserId}`)
       .then(r => r.json())
       .then(data => { if (data.exists) setDemandeSent(true); })
       .catch(() => {});
@@ -85,7 +85,7 @@ export default function GardeDetailModal({ garde, currentUser, role = "doctor", 
         type: 'echange',
       };
 
-      const res = await fetch('http://localhost:5000/api/demande', {
+      const res = await fetch('https://switchgard-backend.onrender.com/api/demande', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(demandeData),

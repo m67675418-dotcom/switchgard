@@ -66,7 +66,7 @@ const Signup = ({ onSignupSuccess }) => {
     const formData = { email: email.toLowerCase(), password, role: selectedRole, ...additionalData };
 
     try {
-      const response = await fetch('http://localhost:5000/api/account/register', {
+      const response = await fetch('https://switchgard-backend.onrender.com/api/account/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

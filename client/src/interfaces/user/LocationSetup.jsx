@@ -4,7 +4,7 @@ import AlgeriaMap from './AlgeriaMap';
 import { ALGERIAN_CITIES } from '../../utils/algerianCities';
 import './LocationSetup.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://switchgard-backend.onrender.com/api';
 
 const ROLE_FACILITY_TYPE = {
   doctor:      'hospital',

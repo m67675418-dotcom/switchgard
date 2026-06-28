@@ -3,8 +3,8 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { io } from "socket.io-client";
 import "./Chatmessage.css";
 
-const SOCKET_URL = "http://localhost:5000";
-const API        = "http://localhost:5000/api";
+const SOCKET_URL = "REACT_APP_API_URL=https://switchgard-backend.onrender.com";
+const API        = "REACT_APP_API_URL=https://switchgard-backend.onrender.com/api";
 
 const ROLE_CONFIG = {
   doctor:      { heroEmoji: "🩺", emoji: "👨‍⚕️", color: "#2563eb", light: "#eff6ff" },

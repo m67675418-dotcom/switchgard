@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './DemandeChatModal.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 // ✅ Get display name - same as ChatMessage
 const getMe = (u) =>

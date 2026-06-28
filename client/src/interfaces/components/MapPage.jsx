@@ -13,10 +13,10 @@ export default function MapPage({ onNavigate, currentUser, role = "doctor" }) {
   const [stats, setStats]       = useState({ total: 0, withLocation: 0 });
 
   const roleConfig = {
-    doctor:      { color:"#2563eb", icon:"🧑‍⚕️", label:"Doctors",      api:"http://localhost:5000/api/doctor/getAll",     name:"fullName",     extra: d=>`🩺 ${d.specialty||""}` },
-    nurse:       { color:"#10b981", icon:"👩‍⚕️", label:"Nurses",       api:"http://localhost:5000/api/nurse/getAll",      name:"userId",       extra: d=>`🎓 ${d.diplome||""}` },
-    pharmacist:  { color:"#059669", icon:"💊",    label:"Pharmacists",  api:"http://localhost:5000/api/pharmacist/getAll", name:"nomPharmacie", extra: d=>`🏪 ${d.nomPharmacie||""}` },
-    firefighter: { color:"#ef4444", icon:"🚒",    label:"Firefighters", api:"http://localhost:5000/api/firefighter/getAll",name:"matricule",    extra: d=>`⭐ ${d.grade||""}` },
+    doctor:      { color:"#2563eb", icon:"🧑‍⚕️", label:"Doctors",      api:"REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/doctor/getAll",     name:"fullName",     extra: d=>`🩺 ${d.specialty||""}` },
+    nurse:       { color:"#10b981", icon:"👩‍⚕️", label:"Nurses",       api:"REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/nurse/getAll",      name:"userId",       extra: d=>`🎓 ${d.diplome||""}` },
+    pharmacist:  { color:"#059669", icon:"💊",    label:"Pharmacists",  api:"REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/pharmacist/getAll", name:"nomPharmacie", extra: d=>`🏪 ${d.nomPharmacie||""}` },
+    firefighter: { color:"#ef4444", icon:"🚒",    label:"Firefighters", api:"REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/firefighter/getAll",name:"matricule",    extra: d=>`⭐ ${d.grade||""}` },
   };
 
   const filters = [

@@ -4,7 +4,7 @@ import axios from 'axios';
 import "./ManagerHome.css";
 import UserProfileModal from './UserProfileModal';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const roleLabel = { doctor: 'Doctors', nurse: 'Nurses', pharmacist: 'Pharmacists', firefighter: 'Firefighters' };
 const roleEmoji = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
@@ -31,8 +31,8 @@ const ManagerHome = ({ currentUser, onNavigate }) => {
       const [usersRes, shiftsRes, gardesRes, demandesRes] = await Promise.all([
         axios.get(`${API}/account/pending`, authHeader),
         axios.get(`${API}/demande`, authHeader),
-        fetch("http://localhost:5000/api/garde/getAll").then(r => r.json()).catch(() => []),
-        fetch("http://localhost:5000/api/demande").then(r => r.json()).catch(() => []),
+        fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/garde/getAll").then(r => r.json()).catch(() => []),
+        fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande").then(r => r.json()).catch(() => []),
       ]);
 
       const users = usersRes.data.accounts || [];

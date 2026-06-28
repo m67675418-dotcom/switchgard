@@ -10,13 +10,13 @@ export default function PharmacistHome({ onNavigate, currentUser }) {
 
   useEffect(() => {
     Promise.all([
-      fetch("http://localhost:5000/api/pharmacist/getAll")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/pharmacist/getAll")
         .then(r => r.json())
         .catch(() => []),
-      fetch("http://localhost:5000/api/garde/getAll")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/garde/getAll")
         .then(r => r.json())
         .catch(() => []),
-      fetch("http://localhost:5000/api/demande")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande")
         .then(r => r.json())
         .catch(() => []),
     ]).then(([pharmacists, gardes, demandes]) => {

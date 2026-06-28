@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import './ManagerMessage.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const ROLE_EMOJI = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒' };
 

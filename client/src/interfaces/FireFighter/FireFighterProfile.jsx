@@ -14,7 +14,7 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
 
   useEffect(() => {
     if (!firefighterId) { setLoading(false); return; }
-    fetch(`http://localhost:5000/api/firefighter/${firefighterId}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/firefighter/${firefighterId}`)
       .then(r => r.json())
       .then(data => {
         const f = data.firefighter || data;
@@ -28,7 +28,7 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/api/firefighter/${firefighterId}`, {
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/firefighter/${firefighterId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
       });
       showToast('Updated successfully ✅');
@@ -41,7 +41,7 @@ export default function FirefighterProfile({ firefighterId, onNavigate, onUpdate
     if (!window.confirm('Delete this firefighter?')) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/api/firefighter/${firefighterId}`, { method: 'DELETE' });
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/firefighter/${firefighterId}`, { method: 'DELETE' });
       onNavigate?.('home');
     } catch { showToast('Delete failed ❌', 'error'); setDeleting(false); }
   };

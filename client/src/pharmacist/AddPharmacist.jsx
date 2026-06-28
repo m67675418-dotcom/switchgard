@@ -3,7 +3,7 @@ import axios from 'axios';
 import './AddPharmacist.css';
 import '../styles/form.css';
 
-const API_BASE = 'http://localhost:5000/api'; // ✅ مسار أساسي
+const API_BASE = 'https://switchgard-backend.onrender.com/api'; // ✅ مسار أساسي
 
 const AddPharmacist = () => {
     const [formData, setFormData] = useState({

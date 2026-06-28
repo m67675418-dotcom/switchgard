@@ -4,7 +4,7 @@ import axios from 'axios';
 import logo from '../assets/logo.png';
 import './Login.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://switchgard-backend.onrender.com/api';
 
 // Map each role to its API endpoint
 const ROLE_API = {

@@ -14,7 +14,7 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
 
   useEffect(() => {
     if (!pharmacistId) { setLoading(false); return; }
-    fetch(`http://localhost:5000/api/pharmacist/${pharmacistId}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/pharmacist/${pharmacistId}`)
       .then(r => r.json())
       .then(data => {
         const p = data.pharmacist || data;
@@ -28,7 +28,7 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/api/pharmacist/${pharmacistId}`, {
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/pharmacist/${pharmacistId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form),
       });
       showToast('Updated successfully ✅');
@@ -41,7 +41,7 @@ export default function PharmacistProfile({ pharmacistId, onNavigate, onUpdateUs
     if (!window.confirm('Delete this pharmacist?')) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/api/pharmacist/${pharmacistId}`, { method: 'DELETE' });
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/pharmacist/${pharmacistId}`, { method: 'DELETE' });
       onNavigate?.('home');
     } catch { showToast('Delete failed ❌', 'error'); setDeleting(false); }
   };

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import './SmartContract.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const ROLE_LABEL = { doctor: 'Doctor', nurse: 'Nurse', pharmacist: 'Pharmacist', firefighter: 'Firefighter', manager: 'Manager' };
 const ROLE_EMOJI = { doctor: '🧑‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒', manager: '👔' };

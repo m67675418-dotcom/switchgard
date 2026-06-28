@@ -10,13 +10,13 @@ export default function FirefighterHome({ onNavigate, currentUser }) {
 
   useEffect(() => {
     Promise.all([
-      fetch("http://localhost:5000/api/firefighter/getAll")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/firefighter/getAll")
         .then(r => r.json())
         .catch(() => []),
-      fetch("http://localhost:5000/api/garde/getAll")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/garde/getAll")
         .then(r => r.json())
         .catch(() => []),
-      fetch("http://localhost:5000/api/demande")
+      fetch("REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande")
         .then(r => r.json())
         .catch(() => []),
     ]).then(([firefighters, gardes, demandes]) => {

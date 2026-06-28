@@ -3,7 +3,7 @@ import axios from 'axios';
 import './GetSingleTransaction.css';
 import '../styles/form.css';
 
-const API_BASE = 'http://localhost:5000/api';
+const API_BASE = 'https://switchgard-backend.onrender.com/api';
 
 const GetSingleTransaction = ({ transactionId }) => {
   const [transaction, setTransaction] = useState(null);

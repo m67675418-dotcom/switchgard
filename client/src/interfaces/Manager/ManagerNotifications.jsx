@@ -4,7 +4,7 @@ import axios from 'axios';
 import './ManagerNotifications.css';
 import UserProfileModal from './UserProfileModal';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const ROLE_EMOJI = { doctor: '👨‍⚕️', nurse: '👩‍⚕️', pharmacist: '💊', firefighter: '🚒', manager: '👔' };
 

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import UserProfileModal from '../Manager/UserProfileModal';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 function useDemande(demandeId) {
   const [data, setData]       = useState(null);

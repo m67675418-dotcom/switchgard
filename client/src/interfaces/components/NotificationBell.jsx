@@ -23,7 +23,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
   const fetchNotifications = async () => {
     try {
       const userId = currentUser._id || currentUser.id;
-      const res = await axios.get(`http://localhost:5000/api/notification/user/${userId}`);
+      const res = await axios.get(`https://switchgard-backend.onrender.com/api/notification/user/${userId}`);
       setNotifications(res.data || []);
       setUnreadCount(res.data.filter(n => !n.read).length);
     } catch (error) {
@@ -33,7 +33,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
 
   const handleMarkAsRead = async (id) => {
     try {
-      await axios.put(`http://localhost:5000/api/notification/${id}/read`);
+      await axios.put(`https://switchgard-backend.onrender.com/api/notification/${id}/read`);
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
@@ -43,7 +43,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
   const handleMarkAllAsRead = async () => {
     try {
       const userId = currentUser._id || currentUser.id;
-      await axios.put(`http://localhost:5000/api/notification/user/${userId}/read-all`);
+      await axios.put(`https://switchgard-backend.onrender.com/api/notification/user/${userId}/read-all`);
       fetchNotifications();
     } catch (error) {
       console.error('Error:', error);
@@ -52,7 +52,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
 
   const acceptDemande = async (demandeId) => {
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/accept`);
+      await axios.put(`https://switchgard-backend.onrender.com/api/demande/${demandeId}/accept`);
       alert('✅ Demande acceptée! Vous pouvez maintenant discuter.');
       fetchNotifications();
       setTimeout(() => window.location.reload(), 500);
@@ -63,7 +63,7 @@ const NotificationBell = ({ currentUser, onNavigate }) => {
 
   const rejectDemande = async (demandeId) => {
     try {
-      await axios.put(`http://localhost:5000/api/demande/${demandeId}/reject`);
+      await axios.put(`https://switchgard-backend.onrender.com/api/demande/${demandeId}/reject`);
       alert('❌ Demande rejetée');
       fetchNotifications();
       setTimeout(() => window.location.reload(), 500);

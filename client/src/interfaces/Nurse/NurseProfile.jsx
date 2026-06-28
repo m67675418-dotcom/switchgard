@@ -309,7 +309,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
   useEffect(() => {
     if (!nurseId) { setLoading(false); return; }
     setLoading(true);
-    fetch(`http://localhost:5000/api/nurse/${nurseId}`)
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/nurse/${nurseId}`)
       .then((r) => r.json())
       .then((data) => {
         const n = data.nurse || data;
@@ -335,7 +335,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
   const handleUpdate = async () => {
     setSaving(true);
     try {
-      await fetch(`http://localhost:5000/api/nurse/${nurseId}`, {
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/nurse/${nurseId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -355,7 +355,7 @@ export default function NurseProfile({ nurseId, onNavigate, onUpdateUser }) {
     if (!window.confirm("Delete this nurse profile?")) return;
     setDeleting(true);
     try {
-      await fetch(`http://localhost:5000/api/nurse/${nurseId}`, { method: "DELETE" });
+      await fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/nurse/${nurseId}`, { method: "DELETE" });
       onNavigate?.("home");
     } catch {
       showMsg("error", "Delete failed ❌");

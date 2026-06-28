@@ -36,7 +36,7 @@ const AddDDS = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/account/admin-register', {
+      await axios.post('https://switchgard-backend.onrender.com/api/account/admin-register', {
         email:       formData.email,
         password:    formData.password,
         role:        'manager',

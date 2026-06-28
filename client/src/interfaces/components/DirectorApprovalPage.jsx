@@ -15,7 +15,7 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
     try {
       setLoading(true);
       // جلب الطلبات اللي directorStatus ديالها pending
-      const res = await axios.get('http://localhost:5000/api/demande');
+      const res = await axios.get('https://switchgard-backend.onrender.com/api/demande');
       console.log('📥 Demandes reçues:', res.data);
 
       const pending = res.data.filter(d => d.directorStatus === 'pending');
@@ -33,7 +33,7 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
 
     setProcessingId(id);
     try {
-      const response = await axios.put(`http://localhost:5000/api/demande/${id}/director-approve`);
+      const response = await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${id}/director-approve`);
       console.log('✅ Approve response:', response.data);
 
       if (response.data.success || response.status === 200) {
@@ -56,7 +56,7 @@ const DirectorApprovalPage = ({ currentUser, onNavigate }) => {
 
     setProcessingId(id);
     try {
-      const response = await axios.put(`http://localhost:5000/api/demande/${id}/director-reject`);
+      const response = await axios.put(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/demande/${id}/director-reject`);
       console.log('✅ Reject response:', response.data);
 
       if (response.data.success || response.status === 200) {

@@ -1,15 +1,8 @@
-// client/src/interfaces/components/NotificationDetailModal.jsx
-// Shared across Doctor, Nurse, Pharmacist, Firefighter.
-//
-// Given a notification (which carries a demandeId) and the current user,
-// this fetches the underlying demande, figures out which side of the
-// exchange is "the other person" relative to the notification's recipient,
-// and shows that person's full profile — with a button to jump straight
-// into a conversation with them.
+
 import React, { useState, useEffect } from 'react';
 import './NotificationDetailModal.css';
 
-const API = 'http://localhost:5000/api';
+const API = 'https://switchgard-backend.onrender.com/api';
 
 const PROF_ID = {
   doctor:      { field: 'numOrdre',    label: 'Ordre N°' },

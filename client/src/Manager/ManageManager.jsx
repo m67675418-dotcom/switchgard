@@ -13,7 +13,7 @@ const ManageDDS = ({ onSelectDDS }) => {
 
   const fetchDDS = async () => {
     try {
-      const res = await axios.get('http://localhost:5000/api/manager/getAll');
+      const res = await axios.get('https://switchgard-backend.onrender.com/api/manager/getAll');
       setDdsList(res.data);
     } catch (error) {
       console.error('Error fetching DDS:', error);
@@ -26,7 +26,7 @@ const ManageDDS = ({ onSelectDDS }) => {
     if (!window.confirm('Are you sure you want to delete this Manager?')) return;
 
     try {
-      await axios.delete(`http://localhost:5000/api/manager/${id}`);
+      await axios.delete(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/manager/${id}`);
       setDdsList(ddsList.filter(d => d._id !== id));
       alert('✅ Manager deleted successfully');
     } catch (error) {

@@ -18,7 +18,7 @@ function useProfile(userId, role, token) {
     if (!userId || !role) { setLoading(false); return; }
     setLoading(true);
     setError(null);
-    fetch(`http://localhost:5000/api/user/profile/${userId}?role=${role}`, {
+    fetch(`REACT_APP_API_URL=https://switchgard-backend.onrender.com/api/user/profile/${userId}?role=${role}`, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then(res => {
